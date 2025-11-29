@@ -15,6 +15,10 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/crops', require('./routes/crops'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/auction', require('./routes/auction'));
+app.use('/api/leaderboard', require('./routes/leaderboard'));
+app.use('/api/ai', require('./routes/ai'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Serve client in production if present
 const clientDist = path.join(__dirname, '..', 'client', 'dist');

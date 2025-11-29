@@ -7,13 +7,48 @@ const UserSchema = new mongoose.Schema({
     enum: ['farmer', 'buyer', 'admin', 'superadmin'], 
     default: 'farmer' 
   },
-  farmerId: { type: String, unique: true }, 
+  farmerId: { type: String, unique: true, sparse: true }, 
+  buyerId: { type: String, unique: true, sparse: true },
   pin: { type: String, required: true },    
-  phone: { type: String },
+  phone: { type: String, required: true, unique: true },
   district: { type: String, default: 'Kerala' },
+  panchayat: { type: String },
+  
+  // Farmer specific
   landSize: { type: Number },
-  points: { type: Number, default: 0 },
+  crops: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Crop' }],
+  
+  // Reputation & Gamification
+  reputationScore: { type: Number, default: 0 },
+  totalSales: { type: Number, default: 0 },
+  averageRating: { type: Number, default: 0 },
+  badge: { 
+    type: String, 
+    enum: ['none', 'bronze', 'silver', 'gold'], 
+    default: 'none' 
+  },
+  
+  // Buyer specific
+  totalPurchases: { type: Number, default: 0 },
+  maxBidLimit: { type: Number, default: 10000 },
+  
+  // Location
+  location: {
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: { type: [Number], default: [0, 0] } // [longitude, latitude]
+  },
+  
+  // Settings
+  language: { type: String, enum: ['english', 'malayalam', 'hindi'], default: 'english' },
+  voiceAssist: { type: Boolean, default: false },
+  notifications: { type: Boolean, default: true },
+  
+  isActive: { type: Boolean, default: true },
+  lastLogin: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
+
+// Index for geospatial queries
+UserSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('User', UserSchema);

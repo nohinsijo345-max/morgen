@@ -1,26 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  User, CloudRain, Wind, Bell, Trophy, Stethoscope,
-  Timer, Calculator, Truck, LineChart, Gavel, LogOut
+  CloudRain, Wind, Bell, Trophy, Stethoscope, Timer, Calculator,
+  Truck, LineChart, Gavel, LogOut, TrendingUp, Package, DollarSign,
+  Calendar, MapPin, AlertCircle, Leaf, Users, ArrowUp, ArrowDown
 } from "lucide-react";
 import { fetchJSON, endpoints } from "../services/api";
-
-const fade = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35, ease: "easeOut" }
-};
-
-const Badge = ({ color, children }) => (
-  <div className="badge" style={{ backgroundColor: color }}>{children}</div>
-);
-
-const WeatherIcon = ({ icon }) => {
-  if (icon === "cloud-rain") return <CloudRain className="w-5 h-5 text-black/80" />;
-  if (icon === "wind") return <Wind className="w-5 h-5 text-black/80" />;
-  return <Bell className="w-5 h-5 text-black/80" />;
-};
 
 export default function FarmerDashboard({ user, onLogout }) {
   const [summary, setSummary] = useState(null);
@@ -61,10 +46,10 @@ export default function FarmerDashboard({ user, onLogout }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-700 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-600 border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-700 font-medium">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -72,10 +57,14 @@ export default function FarmerDashboard({ user, onLogout }) {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-green-700 text-white rounded-lg">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-xl">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <p className="text-red-600 mb-4 text-lg font-semibold">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors"
+          >
             Retry
           </button>
         </div>
@@ -84,170 +73,316 @@ export default function FarmerDashboard({ user, onLogout }) {
   }
 
   return (
-    <div className="px-6 py-8 max-w-[1400px] mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Morgen Dashboard</h1>
-        <button 
-          onClick={onLogout}
-          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-        >
-          Logout
-        </button>
-      </div>
-      <div className="grid grid-cols-12 gap-6 auto-rows-[260px]">
-
-        {/* Row 1 */}
-        <motion.div className="card col-span-6 row-start-1 col-start-1 h-full" {...fade}>
-          <div className="flex justify-between">
-            <div className="flex gap-3">
-              <Badge color="#79D7A7"><User className="w-5 h-5 text-black/80" /></Badge>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl shadow-lg">
+                <Leaf className="w-6 h-6 text-white" />
+              </div>
               <div>
-                <div className="card-title">Hello, {summary?.name ?? "Farmer"}</div>
-                <div className="subtext">District: {summary?.district ?? "—"}</div>
+                <h1 className="text-2xl font-bold text-gray-900">Morgen</h1>
+                <p className="text-sm text-gray-600">Farmer Dashboard</p>
               </div>
             </div>
-            <button className="glass px-4 py-2 rounded-lg text-sm">My customers are liquid glass</button>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm font-semibold text-gray-900">{summary?.name || user?.name || "Farmer"}</p>
+                <p className="text-xs text-gray-600 flex items-center gap-1 justify-end">
+                  <MapPin className="w-3 h-3" />
+                  {summary?.district || "Kerala"}
+                </p>
+              </div>
+              <button 
+                onClick={onLogout}
+                className="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors font-medium"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
           </div>
-          <div className="line" />
-          <div className="flex justify-between">
-            <button className="glass px-4 py-2 rounded-lg text-sm">Acc centre</button>
-            <div className="subtext">Score: {summary?.score ?? "—"}</div>
-          </div>
-        </motion.div>
+        </div>
+      </div>
 
-        <motion.div className="card col-span-6 row-start-1 col-start-7 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#7CC7FF"><Bell className="w-5 h-5 text-black/80" /></Badge>
-            <div className="card-title">Weather alerts</div>
-          </div>
-          <div className="mt-3 space-y-2">
-            {weather.map((w, i) => (
-              <div key={i} className="glass p-3 rounded-lg flex gap-3">
-                <Badge color={w.icon === "cloud-rain" ? "#7CC7FF" : "#B79CFF"}>
-                  <WeatherIcon icon={w.icon} />
-                </Badge>
-                <div>
-                  <div className="font-medium">{w.type} — {w.message}</div>
-                  <div className="subtext">Severity: {w.severity} • {w.time}</div>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-green-100 rounded-xl">
+                <Package className="w-6 h-6 text-green-600" />
+              </div>
+              <span className="text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                Active
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-1">
+              {countdown?.daysToHarvest || 0}
+            </h3>
+            <p className="text-sm text-gray-600">Days to Harvest</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <DollarSign className="w-6 h-6 text-blue-600" />
+              </div>
+              <TrendingUp className="w-5 h-5 text-green-500" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-1">
+              ₹{profit?.net?.toLocaleString() || 0}
+            </h3>
+            <p className="text-sm text-gray-600">Net Profit</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-purple-100 rounded-xl">
+                <Trophy className="w-6 h-6 text-purple-600" />
+              </div>
+              <span className="text-xs font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
+                Rank #{leaderboard.findIndex(f => f.name === summary?.name) + 1 || 1}
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-1">
+              {summary?.score || 0}
+            </h3>
+            <p className="text-sm text-gray-600">Reputation Score</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-orange-100 rounded-xl">
+                <Gavel className="w-6 h-6 text-orange-600" />
+              </div>
+              <span className="text-xs font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
+                Live
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-1">
+              {bids?.length || 0}
+            </h3>
+            <p className="text-sm text-gray-600">Active Bids</p>
+          </motion.div>
+        </div>
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Weather Alerts */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <CloudRain className="w-5 h-5 text-blue-600" />
                 </div>
+                <h2 className="text-lg font-bold text-gray-900">Weather Alerts</h2>
               </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Row 2 */}
-        <motion.div className="card col-span-6 row-start-2 col-start-1 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#B79CFF"><Timer className="w-5 h-5 text-black/80" /></Badge>
-            <div className="card-title">Countdown</div>
-          </div>
-          <div className="mt-6 text-7xl font-bold">{countdown?.daysToHarvest ?? "—"}</div>
-          <div className="subtext">days to harvest</div>
-        </motion.div>
-
-        <motion.div className="card col-span-6 row-start-2 col-start-7 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#FF9BCB"><Bell className="w-5 h-5 text-black/80" /></Badge>
-            <div className="card-title">New updates</div>
-          </div>
-          <div className="mt-3 space-y-2">
-            {updates.map((u, i) => (
-              <div key={i} className="glass p-3 rounded-lg">
-                <div className="font-medium">{u.title}</div>
-                <div className="subtext">{u.summary}</div>
+              <div className="space-y-3">
+                {weather.map((w, i) => (
+                  <div key={i} className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+                    <div className={`p-2 rounded-lg ${w.icon === 'cloud-rain' ? 'bg-blue-200' : 'bg-purple-200'}`}>
+                      {w.icon === 'cloud-rain' ? (
+                        <CloudRain className="w-5 h-5 text-blue-700" />
+                      ) : (
+                        <Wind className="w-5 h-5 text-purple-700" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="font-semibold text-gray-900">{w.type}</h3>
+                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                          w.severity === 'high' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {w.severity}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-700 mb-1">{w.message}</p>
+                      <p className="text-xs text-gray-500">{w.time}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </motion.div>
+            </motion.div>
 
-        {/* Row 3 */}
-        <motion.div className="card col-span-6 row-start-3 col-start-1 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#FFB774"><Calculator className="w-5 h-5 text-black/80" /></Badge>
-            <div className="card-title">Profit</div>
-          </div>
-          <div className="mt-3 text-xl">Net: ₹{profit?.net?.toLocaleString() ?? "—"}</div>
-        </motion.div>
-
-        <motion.div className="card col-span-6 row-start-3 col-start-7 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#FDD56B"><Truck className="w-5 h-5 text-black/80" /></Badge>
-            <div className="card-title">Transport</div>
-          </div>
-          <div className="mt-3 space-y-2">
-            {transport.map((t, i) => (
-              <div key={i} className="glass p-2 rounded-md flex justify-between">
-                <div>{t.routeName}</div>
-                <div className="subtext">₹{t.cost} • {t.etaHrs}h</div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Row 4 */}
-        <motion.div className="card col-span-6 row-start-4 col-start-1 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#FFB774"><Trophy className="w-5 h-5 text-black/80" /></Badge>
-            <div className="card-title">Leaderboard</div>
-          </div>
-          <div className="mt-3 space-y-2">
-            {leaderboard.map((f, i) => (
-              <div key={i} className="glass p-2 rounded-md flex justify-between">
-                <div>{f.name}</div>
-                <div className="subtext">{f.district} • {f.score}</div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div className="card col-span-6 row-start-4 col-start-7 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#FF9BCB"><Stethoscope className="w-5 h-5 text-black/80" /></Badge>
-            <div className="card-title">AI doctor</div>
-          </div>
-          <div className="mt-3 subtext">{doctor?.tip}</div>
-        </motion.div>
-
-        {/* Row 5 */}
-        <motion.div className="card col-span-6 row-start-5 col-start-1 h-full" {...fade}>
-             <div className="flex gap-3">
-            <Badge color="#FF8F8F">
-              <LineChart className="w-5 h-5 text-black/80" />
-            </Badge>
-            <div className="card-title">Price forecast</div>
-          </div>
-          <div className="mt-3 grid grid-cols-1 gap-3">
-            {forecast.map((f, i) => (
-              <div key={i} className="glass p-3 rounded-lg">
-                <div className="font-medium">{f.crop}</div>
-                <div className="subtext">
-                  Next week: ₹{f.nextWeekPrice} • {f.trend} • conf {Math.round(f.confidence * 100)}%
+            {/* Price Forecast */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <LineChart className="w-5 h-5 text-green-600" />
                 </div>
+                <h2 className="text-lg font-bold text-gray-900">Price Forecast</h2>
               </div>
-            ))}
-          </div>
-        </motion.div>
+              <div className="space-y-4">
+                {forecast.map((f, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{f.crop}</h3>
+                      <p className="text-sm text-gray-600">Next week: ₹{f.nextWeekPrice}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className={`flex items-center gap-1 font-semibold ${
+                        f.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {f.trend === 'up' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
+                        {f.trend}
+                      </div>
+                      <p className="text-xs text-gray-500">{Math.round(f.confidence * 100)}% confidence</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
 
-        {/* Row 5 right: Bidding */}
-        <motion.div className="card col-span-6 row-start-5 col-start-7 h-full" {...fade}>
-          <div className="flex gap-3">
-            <Badge color="#FFB774">
-              <Gavel className="w-5 h-5 text-black/80" />
-            </Badge>
-            <div className="card-title">Bidding</div>
-          </div>
-          <div className="mt-3 grid grid-cols-1 gap-3">
-            {bids.map((b, i) => (
-              <div key={i} className="glass p-3 rounded-lg">
-                <div className="font-medium">{b.crop}</div>
-                <div className="subtext">
-                  ₹{b.minPrice}–₹{b.maxPrice} • ends in {b.endsInMinutes}m
+            {/* AI Doctor */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-6 shadow-lg border border-pink-100"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-pink-200 rounded-lg">
+                  <Stethoscope className="w-5 h-5 text-pink-700" />
                 </div>
+                <h2 className="text-lg font-bold text-gray-900">AI Plant Doctor</h2>
               </div>
-            ))}
+              <p className="text-gray-700 mb-4">{doctor?.tip}</p>
+              <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold py-3 rounded-xl hover:from-pink-700 hover:to-purple-700 transition-all">
+                Scan Plant Now
+              </button>
+            </motion.div>
           </div>
-        </motion.div>
 
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Updates */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <Bell className="w-5 h-5 text-yellow-600" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Updates</h2>
+              </div>
+              <div className="space-y-3">
+                {updates.map((u, i) => (
+                  <div key={i} className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{u.title}</h3>
+                    <p className="text-xs text-gray-600">{u.summary}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Leaderboard */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9 }}
+              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Trophy className="w-5 h-5 text-purple-600" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Leaderboard</h2>
+              </div>
+              <div className="space-y-3">
+                {leaderboard.map((f, i) => (
+                  <div key={i} className={`flex items-center justify-between p-3 rounded-xl ${
+                    i === 0 ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200' :
+                    i === 1 ? 'bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200' :
+                    i === 2 ? 'bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200' :
+                    'bg-gray-50'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                        i === 0 ? 'bg-yellow-400 text-yellow-900' :
+                        i === 1 ? 'bg-gray-400 text-gray-900' :
+                        i === 2 ? 'bg-orange-400 text-orange-900' :
+                        'bg-gray-200 text-gray-700'
+                      }`}>
+                        {i + 1}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm">{f.name}</p>
+                        <p className="text-xs text-gray-600">{f.district}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-gray-900">{f.score}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Transport */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0 }}
+              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Truck className="w-5 h-5 text-green-600" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-900">Transport</h2>
+              </div>
+              <div className="space-y-3">
+                {transport.map((t, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">{t.routeName}</p>
+                      <p className="text-xs text-gray-600">{t.etaHrs}h delivery</p>
+                    </div>
+                    <p className="font-bold text-green-600">₹{t.cost}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </div>
   );
