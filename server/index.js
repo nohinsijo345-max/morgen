@@ -1,0 +1,38 @@
+const path = require('path');
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 5050;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/crops', require('./routes/crops'));
+app.use('/api/dashboard', require('./routes/dashboard'));
+
+// Serve client in production if present
+const clientDist = path.join(__dirname, '..', 'client', 'dist');
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static(clientDist));
+	app.get('*', (req, res) => {
+		res.sendFile(path.join(clientDist, 'index.html'));
+	});
+}
+
+// Connect to MongoDB then start server
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+	.then(() => {
+		console.log('Connected to MongoDB');
+		app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+	})
+	.catch((err) => {
+		console.error('Failed to connect to MongoDB:', err.message);
+		// Start server anyway so dashboard mock routes work without DB
+		app.listen(PORT, () => console.log(`Server (no DB) listening on port ${PORT}`));
+	});
