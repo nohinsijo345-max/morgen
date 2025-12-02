@@ -27,4 +27,4 @@ const SchemeSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Scheme', SchemeSchema);
+module.exports = mongoose.model('Scheme', SchemeSchema, 'Government_Schemes');

@@ -68,4 +68,4 @@ CropSchema.pre('save', function(next) {
   next();
 });
 
-module.exports = mongoose.model('Crop', CropSchema);
+module.exports = mongoose.model('Crop', CropSchema, 'Crops');

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import FarmerDashboard from "./pages/FarmerDashboard";
-import TestStyles from "./pages/TestStyles";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -33,7 +32,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/test" element={<TestStyles />} />
         <Route 
           path="/login" 
           element={user ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Leaf, ArrowRight, Lock, User as UserIcon, Loader, Sparkles, Shield } from 'lucide-react';
+import { ArrowRight, User as UserIcon, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios'; 
 
@@ -33,237 +33,244 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Dynamic gradient background with animation */}
-      <div className="absolute inset-0 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(120,119,198,0.3),transparent_50%)]"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(88,28,135,0.3),transparent_50%)]"></div>
-        </div>
+      {/* Background Image - Tractor in farm field */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=2070&auto=format&fit=crop)', // Tractor spraying crops - Replace with /login-bg.jpg for your own image
+          backgroundColor: '#87CEEB' // Sky blue fallback
+        }}
+      >
+        {/* Lighter overlay to show the beautiful farm scene */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a4d5c]/50 via-[#0d5d6d]/45 to-[#0a4d5c]/50"></div>
       </div>
 
-      {/* Animated floating elements */}
+      {/* Decorative 3D floating shapes */}
       <motion.div 
         animate={{ 
-          y: [0, -20, 0],
+          y: [0, -30, 0],
+          rotate: [0, 180, 360],
           opacity: [0.3, 0.5, 0.3]
         }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-20 left-10 w-64 h-64 bg-pink-400/20 rounded-full blur-3xl"
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-20 left-[10%] w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-500/20 backdrop-blur-sm border border-white/10"
+        style={{ filter: 'blur(2px)' }}
       />
       <motion.div 
         animate={{ 
-          y: [0, 20, 0],
+          y: [0, 40, 0],
+          rotate: [0, -180, -360],
           opacity: [0.2, 0.4, 0.2]
         }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-20 right-10 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl"
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute bottom-32 left-[15%] w-48 h-48 rounded-[30%] bg-gradient-to-br from-teal-400/15 to-cyan-500/15 backdrop-blur-sm border border-white/10"
+        style={{ filter: 'blur(3px)' }}
       />
       <motion.div 
         animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.3, 0.2]
+          y: [0, -25, 0],
+          x: [0, 20, 0],
+          rotate: [0, 90, 180],
+          opacity: [0.25, 0.45, 0.25]
         }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute top-40 right-[12%] w-40 h-40 rounded-[40%] bg-gradient-to-br from-blue-400/20 to-cyan-500/20 backdrop-blur-sm border border-white/10"
+        style={{ filter: 'blur(2px)' }}
+      />
+      <motion.div 
+        animate={{ 
+          y: [0, 35, 0],
+          x: [0, -15, 0],
+          rotate: [0, -90, -180],
+          opacity: [0.2, 0.35, 0.2]
+        }}
+        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        className="absolute bottom-20 right-[20%] w-36 h-36 rounded-full bg-gradient-to-br from-cyan-400/15 to-teal-500/15 backdrop-blur-sm border border-white/10"
+        style={{ filter: 'blur(2px)' }}
       />
       
-      {/* Main card container */}
+      {/* Main login card container */}
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
         className="relative w-full max-w-md z-10"
       >
-        {/* Glow effect behind card */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/50 via-pink-500/50 to-cyan-500/50 rounded-3xl blur-2xl opacity-60"></div>
-        
-        {/* Glassmorphic card */}
-        <div className="relative backdrop-blur-2xl bg-white/10 p-10 rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
-          {/* Animated gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent"></div>
+        {/* Login Card */}
+        <div className="relative backdrop-blur-xl bg-gradient-to-br from-[#1a5f7a]/40 to-[#0d4a5f]/40 p-8 rounded-3xl shadow-2xl border border-white/20">
           
-          {/* Floating particles effect */}
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-white/30 rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  y: [0, -30, 0],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 3 + Math.random() * 2,
-                  repeat: Infinity,
-                  delay: Math.random() * 2,
-                }}
-              />
-            ))}
-          </div>
-          
-          <div className="relative z-10">
-            {/* Logo section */}
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="flex justify-center mb-8"
-            >
-              <div className="relative">
-                {/* Pulsing glow */}
-                <motion.div 
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full blur-xl"
-                />
-                <div className="relative backdrop-blur-xl bg-gradient-to-br from-white/30 to-white/10 p-5 rounded-2xl border border-white/30 shadow-2xl">
-                  <Leaf className="w-12 h-12 text-white drop-shadow-2xl" />
-                </div>
+          {/* Logo Section */}
+          <motion.div 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-center mb-8"
+          >
+            <div className="inline-block mb-4">
+              {/* Logo placeholder - Replace with your logo */}
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-cyan-400/30 to-teal-400/30 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                <span className="text-3xl font-bold text-white">M</span>
               </div>
+            </div>
+            <p className="text-white/60 text-sm">Your logo</p>
+          </motion.div>
+
+          {/* Login Title */}
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-3xl font-bold text-white text-center mb-8"
+          >
+            Login
+          </motion.h2>
+
+          {/* Error Message */}
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-500/20 border border-red-400/40 text-white p-3 rounded-xl text-sm text-center mb-6"
+            >
+              {error}
             </motion.div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-5">
             
-            {/* Title section */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+            {/* Farmer ID Input */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-center mb-10"
             >
-              <h1 className="text-5xl font-bold text-white mb-3 drop-shadow-2xl tracking-tight">
-                Morgen
-              </h1>
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-                <p className="text-white/90 text-sm font-medium">Farming Evolved</p>
-                <Sparkles className="w-4 h-4 text-yellow-300" />
-              </div>
-              <div className="flex items-center justify-center gap-1.5 text-white/70 text-xs">
-                <Shield className="w-3.5 h-3.5" />
-                <span>Secure Authentication</span>
-              </div>
+              <label className="block text-white/80 text-sm mb-2 font-medium">
+                Farmer ID
+              </label>
+              <input 
+                type="text" 
+                className="w-full px-4 py-3 bg-white/90 border-0 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all text-base"
+                placeholder="e.g. FAR-1001"
+                value={farmerId}
+                onChange={(e) => setFarmerId(e.target.value)}
+                required
+              />
             </motion.div>
 
-            {/* Error Message */}
-            {error && (
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="backdrop-blur-xl bg-red-500/20 border border-red-300/40 text-white p-4 rounded-2xl text-sm text-center mb-6 shadow-lg"
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-                  {error}
-                </div>
-              </motion.div>
-            )}
+            {/* PIN Input */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <label className="block text-white/80 text-sm mb-2 font-medium">
+                Password
+              </label>
+              <input 
+                type="password" 
+                maxLength="4"
+                className="w-full px-4 py-3 bg-white/90 border-0 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all text-base tracking-wider"
+                placeholder="••••"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                required
+              />
+            </motion.div>
 
-            <form onSubmit={handleLogin} className="space-y-6">
-              
-              {/* Farmer ID Input */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <label className="block text-sm font-semibold text-white/95 mb-3 drop-shadow">
-                  Farmer ID
-                </label>
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-2xl opacity-0 group-focus-within:opacity-100 blur transition-opacity"></div>
-                  <div className="relative">
-                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 z-10 group-focus-within:text-white transition-colors" />
-                    <input 
-                      type="text" 
-                      className="relative w-full pl-12 pr-4 py-4 backdrop-blur-xl bg-white/10 border border-white/30 rounded-2xl focus:border-white/50 focus:bg-white/20 outline-none text-white placeholder-white/40 transition-all shadow-xl text-base"
-                      placeholder="e.g. FAR-1001"
-                      value={farmerId}
-                      onChange={(e) => setFarmerId(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* PIN Input */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 }}
-              >
-                <label className="block text-sm font-semibold text-white/95 mb-3 drop-shadow">
-                  4-Digit PIN
-                </label>
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-2xl opacity-0 group-focus-within:opacity-100 blur transition-opacity"></div>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/70 z-10 group-focus-within:text-white transition-colors" />
-                    <input 
-                      type="password" 
-                      maxLength="4"
-                      className="relative w-full pl-12 pr-4 py-4 backdrop-blur-xl bg-white/10 border border-white/30 rounded-2xl focus:border-white/50 focus:bg-white/20 outline-none text-white placeholder-white/40 tracking-[0.5em] transition-all shadow-xl text-base"
-                      placeholder="••••"
-                      value={pin}
-                      onChange={(e) => setPin(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Login Button */}
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit" 
-                disabled={loading}
-                className="relative w-full backdrop-blur-xl bg-gradient-to-r from-purple-500/80 to-pink-500/80 hover:from-purple-500 hover:to-pink-500 border border-white/30 text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-2xl group overflow-hidden mt-8"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-                <span className="relative flex items-center gap-3 text-base">
-                  {loading ? (
-                    <>
-                      <Loader className="animate-spin w-5 h-5" />
-                      <span>Authenticating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Login Securely</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </span>
-              </motion.button>
-            </form>
-
-            {/* Footer */}
-            <motion.div 
+            {/* Forgot Password Link */}
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="mt-8 text-center space-y-2"
+              transition={{ delay: 0.6 }}
+              className="text-right"
             >
-              <div className="flex items-center justify-center gap-2">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-white/30"></div>
-                <Shield className="w-4 h-4 text-white/50" />
-                <div className="h-px w-12 bg-gradient-to-l from-transparent to-white/30"></div>
-              </div>
-              <p className="text-white/50 text-xs font-medium">
-                End-to-end encrypted • Secure by design
-              </p>
+              <a href="#" className="text-cyan-300 text-sm hover:text-cyan-200 transition-colors">
+                Forgot Password?
+              </a>
             </motion.div>
-          </div>
-        </div>
 
-        {/* Bottom reflection glow */}
-        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-2/3 h-16 bg-gradient-to-r from-purple-500/40 via-pink-500/40 to-cyan-500/40 blur-3xl rounded-full"></div>
+            {/* Login Button */}
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-[#1a5f7a] to-[#0d4a5f] hover:from-[#1f6d8a] hover:to-[#0f5570] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg"
+            >
+              {loading ? (
+                <>
+                  <Loader className="animate-spin w-5 h-5" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <>
+                  <span>Sign in</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </motion.button>
+          </form>
+
+          {/* Divider */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="mt-6 mb-6"
+          >
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-transparent text-white/60">or continue with</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Social Login Buttons */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="flex gap-3 justify-center"
+          >
+            <button className="flex-1 bg-white hover:bg-gray-100 p-3 rounded-xl transition-all shadow-md flex items-center justify-center">
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+            </button>
+            <button className="flex-1 bg-white hover:bg-gray-100 p-3 rounded-xl transition-all shadow-md flex items-center justify-center">
+              <svg className="w-5 h-5" fill="#333" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+            </button>
+            <button className="flex-1 bg-white hover:bg-gray-100 p-3 rounded-xl transition-all shadow-md flex items-center justify-center">
+              <svg className="w-5 h-5" fill="#0A66C2" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            </button>
+          </motion.div>
+
+          {/* Register Link */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="mt-6 text-center text-sm text-white/60"
+          >
+            Don't have an account yet?{' '}
+            <a href="#" className="text-cyan-300 hover:text-cyan-200 font-medium transition-colors">
+              Register for free
+            </a>
+          </motion.div>
+        </div>
       </motion.div>
     </div>
   );
