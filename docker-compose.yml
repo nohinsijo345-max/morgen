@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: morgen-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: morgen123
+      MONGO_INITDB_DATABASE: morgenDB
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - morgen-network
+
+  # Backend Server
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: morgen-server
+    restart: unless-stopped
+    ports:
+      - "5050:5050"
+    environment:
+      - NODE_ENV=development
+      - PORT=5050
+      - MONGO_URI=mongodb://admin:morgen123@mongodb:27017/morgenDB?authSource=admin
+    depends_on:
+      - mongodb
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    networks:
+      - morgen-network
+    command: npm run dev
+
+  # Frontend Client
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: morgen-client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5050
+    depends_on:
+      - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    networks:
+      - morgen-network
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+networks:
+  morgen-network:
+    driver: bridge

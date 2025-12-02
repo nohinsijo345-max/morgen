@@ -1,0 +1,33 @@
+# Production Server Dockerfile
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY server/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy server source
+COPY server/ ./
+
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy from builder
+COPY --from=builder /app ./
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+USER nodejs
+
+# Expose server port
+EXPOSE 5050
+
+# Start server
+CMD ["node", "index.js"]
