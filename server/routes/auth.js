@@ -5,12 +5,25 @@ const User = require('../models/User');
 // REGISTER API
 router.post('/register', async (req, res) => {
   try {
-    const { name, role, farmerId, pin, district } = req.body;
+    const { name, role, farmerId, pin, phone, district, panchayat, landSize } = req.body;
+
+    // Validation
+    if (!name || !farmerId || !pin || !phone) {
+      return res.status(400).json({ error: "Name, Farmer ID, PIN, and Phone are required" });
+    }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ farmerId });
+    const existingUser = await User.findOne({ 
+      $or: [{ farmerId }, { phone }] 
+    });
+    
     if (existingUser) {
-      return res.status(400).json({ error: "Farmer ID already exists" });
+      if (existingUser.farmerId === farmerId) {
+        return res.status(400).json({ error: "Farmer ID already exists" });
+      }
+      if (existingUser.phone === phone) {
+        return res.status(400).json({ error: "Phone number already registered" });
+      }
     }
 
     // Hash the PIN
@@ -18,10 +31,13 @@ router.post('/register', async (req, res) => {
 
     const newUser = new User({
       name,
-      role,
+      role: role || 'farmer',
       farmerId,
       pin: hashedPin,
-      district
+      phone,
+      district: district || 'Kerala',
+      panchayat,
+      landSize: landSize || 0
     });
 
     const savedUser = await newUser.save();
@@ -32,7 +48,10 @@ router.post('/register', async (req, res) => {
       name: savedUser.name,
       role: savedUser.role,
       farmerId: savedUser.farmerId,
-      district: savedUser.district
+      phone: savedUser.phone,
+      district: savedUser.district,
+      panchayat: savedUser.panchayat,
+      landSize: savedUser.landSize
     };
     
     res.status(201).json(userResponse);

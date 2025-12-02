@@ -1,13 +1,42 @@
-import { useState } from 'react';
-import { ArrowRight, User as UserIcon, Loader } from 'lucide-react';
-import { motion } from 'framer-motion';
-import axios from 'axios'; 
+import { useState, useEffect } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 
 const Login = ({ onLogin }) => {
   const [pin, setPin] = useState('');
   const [farmerId, setFarmerId] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginImage, setLoginImage] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  
+  const [signUpData, setSignUpData] = useState({
+    name: '',
+    farmerId: '',
+    phone: '',
+    pin: '',
+    confirmPin: '',
+    district: '',
+    panchayat: '',
+    landSize: ''
+  });
+  const [showSignUpPassword, setShowSignUpPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    const fetchLoginImage = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+        const response = await axios.get(`${API_URL}/api/settings/login-image`);
+        setLoginImage(response.data.imageUrl);
+      } catch (err) {
+        setLoginImage('https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?q=80&w=2070&auto=format&fit=crop');
+      }
+    };
+    fetchLoginImage();
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,214 +49,369 @@ const Login = ({ onLogin }) => {
         farmerId: farmerId.toUpperCase(),
         pin: pin
       });
-      
-      onLogin(response.data); 
-
+      onLogin(response.data);
     } catch (err) {
-      const errorMessage = err.response?.data?.error || "Server connection failed";
-      setError(errorMessage);
+      setError(err.response?.data?.error || 'Invalid credentials');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (signUpData.pin !== signUpData.confirmPin) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (signUpData.pin.length !== 4) {
+      setError('PIN must be 4 digits');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      await axios.post(`${API_URL}/api/auth/register`, {
+        name: signUpData.name,
+        farmerId: signUpData.farmerId.toUpperCase(),
+        phone: signUpData.phone,
+        pin: signUpData.pin,
+        district: signUpData.district,
+        panchayat: signUpData.panchayat,
+        landSize: parseFloat(signUpData.landSize) || 0,
+        role: 'farmer'
+      });
+
+      setIsSignUp(false);
+      setFarmerId(signUpData.farmerId.toUpperCase());
+      setSignUpData({
+        name: '',
+        farmerId: '',
+        phone: '',
+        pin: '',
+        confirmPin: '',
+        district: '',
+        panchayat: '',
+        landSize: ''
+      });
+    } catch (err) {
+      setError(err.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Image - Tractor in farm field */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=2070&auto=format&fit=crop)', // Tractor spraying crops - Replace with /login-bg.jpg for your own image
-          backgroundColor: '#87CEEB' // Sky blue fallback
-        }}
-      >
-        {/* Lighter overlay to show the beautiful farm scene */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a4d5c]/50 via-[#0d5d6d]/45 to-[#0a4d5c]/50"></div>
-      </div>
+    <div className="min-h-screen flex relative overflow-hidden bg-white">
+      {/* Container for both panels */}
+      <div className="w-full h-screen flex relative">
+        
+        {/* Left Panel - Login Form (Always here) */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center px-8 lg:px-16 relative z-10">
+          <AnimatePresence mode="wait">
+            {!isSignUp && (
+              <motion.div
+                key="login-form"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="w-full max-w-md"
+              >
+                {/* Logo */}
+                <div className="mb-12">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span className="text-2xl font-bold text-white">M</span>
+                  </div>
+                </div>
 
-      {/* Decorative 3D floating shapes */}
-      <motion.div 
-        animate={{ 
-          y: [0, -30, 0],
-          rotate: [0, 180, 360],
-          opacity: [0.3, 0.5, 0.3]
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-20 left-[10%] w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-500/20 backdrop-blur-sm border border-white/10"
-        style={{ filter: 'blur(2px)' }}
-      />
-      <motion.div 
-        animate={{ 
-          y: [0, 40, 0],
-          rotate: [0, -180, -360],
-          opacity: [0.2, 0.4, 0.2]
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-32 left-[15%] w-48 h-48 rounded-[30%] bg-gradient-to-br from-teal-400/15 to-cyan-500/15 backdrop-blur-sm border border-white/10"
-        style={{ filter: 'blur(3px)' }}
-      />
-      <motion.div 
-        animate={{ 
-          y: [0, -25, 0],
-          x: [0, 20, 0],
-          rotate: [0, 90, 180],
-          opacity: [0.25, 0.45, 0.25]
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute top-40 right-[12%] w-40 h-40 rounded-[40%] bg-gradient-to-br from-blue-400/20 to-cyan-500/20 backdrop-blur-sm border border-white/10"
-        style={{ filter: 'blur(2px)' }}
-      />
-      <motion.div 
-        animate={{ 
-          y: [0, 35, 0],
-          x: [0, -15, 0],
-          rotate: [0, -90, -180],
-          opacity: [0.2, 0.35, 0.2]
-        }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        className="absolute bottom-20 right-[20%] w-36 h-36 rounded-full bg-gradient-to-br from-cyan-400/15 to-teal-500/15 backdrop-blur-sm border border-white/10"
-        style={{ filter: 'blur(2px)' }}
-      />
-      
-      {/* Main login card container */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md z-10"
-      >
-        {/* Login Card */}
-        <div className="relative backdrop-blur-xl bg-gradient-to-br from-[#1a5f7a]/40 to-[#0d4a5f]/40 p-8 rounded-3xl shadow-2xl border border-white/20">
-          
-          {/* Logo Section */}
-          <motion.div 
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-center mb-8"
-          >
-            <div className="inline-block mb-4">
-              {/* Logo placeholder - Replace with your logo */}
-              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-cyan-400/30 to-teal-400/30 rounded-2xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                <span className="text-3xl font-bold text-white">M</span>
-              </div>
-            </div>
-            <p className="text-white/60 text-sm">Your logo</p>
-          </motion.div>
+                <div className="mb-10">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+                  <p className="text-gray-500">Please enter your credentials to continue</p>
+                </div>
 
-          {/* Login Title */}
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-3xl font-bold text-white text-center mb-8"
-          >
-            Login
-          </motion.h2>
+                {error && (
+                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                    {error}
+                  </div>
+                )}
 
-          {/* Error Message */}
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-red-500/20 border border-red-400/40 text-white p-3 rounded-xl text-sm text-center mb-6"
-            >
-              {error}
-            </motion.div>
-          )}
+                <form onSubmit={handleLogin} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Farmer ID</label>
+                    <input
+                      type="text"
+                      value={farmerId}
+                      onChange={(e) => setFarmerId(e.target.value)}
+                      placeholder="e.g. FAR-1001"
+                      required
+                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                    />
+                  </div>
 
-          <form onSubmit={handleLogin} className="space-y-5">
-            
-            {/* Farmer ID Input */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <label className="block text-white/80 text-sm mb-2 font-medium">
-                Farmer ID
-              </label>
-              <input 
-                type="text" 
-                className="w-full px-4 py-3 bg-white/90 border-0 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all text-base"
-                placeholder="e.g. FAR-1001"
-                value={farmerId}
-                onChange={(e) => setFarmerId(e.target.value)}
-                required
-              />
-            </motion.div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={pin}
+                        onChange={(e) => setPin(e.target.value)}
+                        placeholder="Enter your PIN"
+                        maxLength="4"
+                        required
+                        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all pr-12"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
 
-            {/* PIN Input */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <label className="block text-white/80 text-sm mb-2 font-medium">
-                Password
-              </label>
-              <input 
-                type="password" 
-                maxLength="4"
-                className="w-full px-4 py-3 bg-white/90 border-0 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition-all text-base tracking-wider"
-                placeholder="••••"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-                required
-              />
-            </motion.div>
+                  <div className="flex justify-end">
+                    <a href="#" className="text-sm font-medium text-emerald-600 hover:text-emerald-700">
+                      Forgot Password?
+                    </a>
+                  </div>
 
-            {/* Forgot Password Link */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="text-right"
-            >
-              <a href="#" className="text-cyan-300 text-sm hover:text-cyan-200 transition-colors">
-                Forgot Password?
-              </a>
-            </motion.div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50"
+                  >
+                    {loading ? 'Signing in...' : 'Sign In'}
+                  </button>
+                </form>
 
-            {/* Login Button */}
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit" 
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-[#1a5f7a] to-[#0d4a5f] hover:from-[#1f6d8a] hover:to-[#0f5570] text-white font-semibold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg"
-            >
-              {loading ? (
-                <>
-                  <Loader className="animate-spin w-5 h-5" />
-                  <span>Signing in...</span>
-                </>
-              ) : (
-                <>
-                  <span>Sign in</span>
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </motion.button>
-          </form>
-
-          {/* Register Link */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="mt-6 text-center text-sm text-white/60"
-          >
-            Don't have an account yet?{' '}
-            <a href="#" className="text-cyan-300 hover:text-cyan-200 font-medium transition-colors">
-              Register for free
-            </a>
-          </motion.div>
+                <div className="mt-8 text-center">
+                  <p className="text-gray-600">
+                    Don't have an account?{' '}
+                    <button onClick={() => setIsSignUp(true)} className="font-semibold text-emerald-600 hover:text-emerald-700">
+                      Sign Up
+                    </button>
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.div>
+
+        {/* Right Panel - Image (Initial) / Sign Up Form (After click) */}
+        <div className="hidden lg:block w-1/2 relative">
+          <AnimatePresence mode="wait">
+            {isSignUp && (
+              <motion.div
+                key="signup-form"
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                className="w-full h-full flex items-center justify-center px-16 py-8 overflow-y-auto"
+              >
+                <div className="w-full max-w-md">
+                  {/* Back Button */}
+                  <button
+                    onClick={() => setIsSignUp(false)}
+                    className="mb-8 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span className="font-medium">Back to Login</span>
+                  </button>
+
+                  <div className="mb-8">
+                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg mb-8">
+                      <span className="text-2xl font-bold text-white">M</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Account</h1>
+                    <p className="text-gray-500">Fill in your details to get started</p>
+                  </div>
+
+                  {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                      {error}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleSignUp} className="space-y-3.5">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                      <input
+                        type="text"
+                        value={signUpData.name}
+                        onChange={(e) => setSignUpData({...signUpData, name: e.target.value})}
+                        placeholder="Enter your full name"
+                        required
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Farmer ID</label>
+                      <input
+                        type="text"
+                        value={signUpData.farmerId}
+                        onChange={(e) => setSignUpData({...signUpData, farmerId: e.target.value})}
+                        placeholder="e.g. FAR-1006"
+                        required
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                      <input
+                        type="tel"
+                        value={signUpData.phone}
+                        onChange={(e) => setSignUpData({...signUpData, phone: e.target.value})}
+                        placeholder="Enter your phone number"
+                        required
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
+                        <input
+                          type="text"
+                          value={signUpData.district}
+                          onChange={(e) => setSignUpData({...signUpData, district: e.target.value})}
+                          placeholder="District"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Land Size</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          value={signUpData.landSize}
+                          onChange={(e) => setSignUpData({...signUpData, landSize: e.target.value})}
+                          placeholder="Acres"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">4-Digit PIN</label>
+                      <div className="relative">
+                        <input
+                          type={showSignUpPassword ? 'text' : 'password'}
+                          value={signUpData.pin}
+                          onChange={(e) => setSignUpData({...signUpData, pin: e.target.value})}
+                          placeholder="Create a 4-digit PIN"
+                          maxLength="4"
+                          required
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 pr-12"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowSignUpPassword(!showSignUpPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          {showSignUpPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Confirm PIN</label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={signUpData.confirmPin}
+                          onChange={(e) => setSignUpData({...signUpData, confirmPin: e.target.value})}
+                          placeholder="Re-enter your PIN"
+                          maxLength="4"
+                          required
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 pr-12"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 mt-4"
+                    >
+                      {loading ? 'Creating Account...' : 'Sign Up'}
+                    </button>
+                  </form>
+
+                  <div className="mt-4 text-center pb-8">
+                    <p className="text-gray-600">
+                      Already have an account?{' '}
+                      <button onClick={() => setIsSignUp(false)} className="font-semibold text-emerald-600 hover:text-emerald-700">
+                        Sign In
+                      </button>
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Sliding Image Panel */}
+        <motion.div
+          initial={false}
+          animate={{
+            x: isSignUp ? '-100%' : '0%'
+          }}
+          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+          className="hidden lg:block absolute top-0 right-0 w-1/2 h-full z-20 pointer-events-none"
+        >
+          <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50">
+            <img
+              src={loginImage}
+              alt="Agriculture"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            
+            <div className="absolute bottom-8 left-8 right-8 text-white">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={isSignUp ? 'signup-text' : 'login-text'}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <h2 className="text-3xl font-bold mb-2">
+                    {isSignUp ? 'Join Our Community' : 'Empowering Farmers'}
+                  </h2>
+                  <p className="text-white/90">
+                    {isSignUp 
+                      ? 'Start your journey with modern agriculture technology' 
+                      : 'Join thousands of farmers transforming agriculture with technology'}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };
