@@ -20,6 +20,8 @@ app.use('/api/leaderboard', require('./routes/leaderboard'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/settings', require('./routes/settings'));
+app.use('/api/customers', require('./routes/customers'));
+app.use('/api/updates', require('./routes/updates'));
 
 // Serve client in production if present
 const clientDist = path.join(__dirname, '..', 'client', 'dist');

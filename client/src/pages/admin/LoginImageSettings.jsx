@@ -154,9 +154,9 @@ const LoginImageSettings = () => {
           <h3 className="text-sm font-medium text-gray-700 mb-4">Suggested Images</h3>
           <div className="grid grid-cols-3 gap-4">
             {[
-              'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?q=80&w=2070',
+              'https://unsplash.com/photos/black-farming-harvesting-machine-FJGZFxtQWko',
               'https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=2070',
-              'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=2070'
+              ''
             ].map((url, index) => (
               <div
                 key={index}

@@ -2,29 +2,86 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
+// Generate next Farmer ID
+const generateFarmerId = async () => {
+  try {
+    // Find the last farmer by sorting farmerId in descending order
+    const lastFarmer = await User.findOne({ 
+      farmerId: { $regex: /^MGN\d+$/ } 
+    }).sort({ farmerId: -1 });
+    
+    if (!lastFarmer || !lastFarmer.farmerId) {
+      return 'MGN001';
+    }
+    
+    // Extract number from MGN001, MGN002, etc.
+    const lastNumber = parseInt(lastFarmer.farmerId.replace('MGN', ''));
+    const nextNumber = lastNumber + 1;
+    
+    // Pad with zeros (MGN001, MGN002, ..., MGN999)
+    return `MGN${String(nextNumber).padStart(3, '0')}`;
+  } catch (err) {
+    console.error('Error generating farmer ID:', err);
+    return 'MGN001';
+  }
+};
+
+// Get next Farmer ID (for frontend to display)
+router.get('/next-farmer-id', async (req, res) => {
+  try {
+    const nextId = await generateFarmerId();
+    res.json({ farmerId: nextId });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to generate Farmer ID' });
+  }
+});
+
 // REGISTER API
 router.post('/register', async (req, res) => {
   try {
-    const { name, role, farmerId, pin, phone, district, panchayat, landSize } = req.body;
+    const { name, role, pin, phone, email, state, district, city, panchayat, landSize, cropTypes, subsidyRequested } = req.body;
 
     // Validation
-    if (!name || !farmerId || !pin || !phone) {
-      return res.status(400).json({ error: "Name, Farmer ID, PIN, and Phone are required" });
+    if (!name || !pin || !phone) {
+      return res.status(400).json({ error: "Name, PIN, and Phone are required" });
+    }
+
+    // Validate phone number (10 digits)
+    if (!/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
+    }
+
+    // Validate email format
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Validate PIN (4 digits)
+    if (!/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ error: "PIN must be exactly 4 digits" });
+    }
+
+    // Phone validation - must be exactly 10 digits
+    if (!/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
     }
 
     // Check if user already exists
     const existingUser = await User.findOne({ 
-      $or: [{ farmerId }, { phone }] 
+      $or: [{ phone }, ...(email ? [{ email }] : [])] 
     });
     
     if (existingUser) {
-      if (existingUser.farmerId === farmerId) {
-        return res.status(400).json({ error: "Farmer ID already exists" });
-      }
       if (existingUser.phone === phone) {
         return res.status(400).json({ error: "Phone number already registered" });
       }
+      if (email && existingUser.email === email) {
+        return res.status(400).json({ error: "Email already registered" });
+      }
     }
+
+    // Auto-generate Farmer ID
+    const farmerId = await generateFarmerId();
 
     // Hash the PIN
     const hashedPin = await bcrypt.hash(pin, 10);
@@ -35,10 +92,22 @@ router.post('/register', async (req, res) => {
       farmerId,
       pin: hashedPin,
       phone,
-      district: district || 'Kerala',
+      email,
+      state,
+      district,
+      city,
       panchayat,
-      landSize: landSize || 0
+      landSize: landSize || 0,
+      cropTypes: cropTypes || [],
+      subsidyRequested: subsidyRequested || false,
+      subsidyStatus: subsidyRequested ? 'pending' : 'none'
     });
+
+    // If subsidy requested, log notification for government module
+    if (subsidyRequested) {
+      console.log(`📢 SUBSIDY REQUEST: Farmer ${farmerId} (${name}) has requested subsidy`);
+      // TODO: Send notification to government module when implemented
+    }
 
     const savedUser = await newUser.save();
     console.log("✅ User registered:", savedUser.farmerId);
@@ -49,9 +118,13 @@ router.post('/register', async (req, res) => {
       role: savedUser.role,
       farmerId: savedUser.farmerId,
       phone: savedUser.phone,
+      email: savedUser.email,
+      state: savedUser.state,
       district: savedUser.district,
+      city: savedUser.city,
       panchayat: savedUser.panchayat,
-      landSize: savedUser.landSize
+      landSize: savedUser.landSize,
+      cropTypes: savedUser.cropTypes
     };
     
     res.status(201).json(userResponse);
@@ -95,6 +168,77 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error("❌ Login error:", err);
     res.status(500).json({ error: "Login failed", details: err.message });
+  }
+});
+
+// GET USER PROFILE
+router.get('/profile/:farmerId', async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+    const user = await User.findOne({ farmerId }).select('-pin');
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json(user);
+  } catch (err) {
+    console.error('❌ Profile fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+// UPDATE USER PROFILE (email, phone, cropTypes only)
+router.put('/profile/:farmerId', async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+    const { email, phone, cropTypes } = req.body;
+    
+    // Phone validation if provided
+    if (phone && !/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
+    }
+    
+    // Check if email/phone already exists for another user
+    if (email || phone) {
+      const existingUser = await User.findOne({
+        farmerId: { $ne: farmerId },
+        $or: [
+          ...(email ? [{ email }] : []),
+          ...(phone ? [{ phone }] : [])
+        ]
+      });
+      
+      if (existingUser) {
+        if (existingUser.email === email) {
+          return res.status(400).json({ error: 'Email already in use' });
+        }
+        if (existingUser.phone === phone) {
+          return res.status(400).json({ error: 'Phone number already in use' });
+        }
+      }
+    }
+    
+    const updateData = {};
+    if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
+    if (cropTypes) updateData.cropTypes = cropTypes;
+    
+    const updatedUser = await User.findOneAndUpdate(
+      { farmerId },
+      updateData,
+      { new: true }
+    ).select('-pin');
+    
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    console.log(`✅ Profile updated for ${farmerId}`);
+    res.json(updatedUser);
+  } catch (err) {
+    console.error('❌ Profile update error:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 

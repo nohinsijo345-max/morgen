@@ -1,46 +1,134 @@
-const router = require('express').Router();
+const express = require('express');
+const router = express.Router();
+const User = require('../models/User');
+const Sale = require('../models/Sale');
+const Update = require('../models/Update');
+const Customer = require('../models/Customer');
+const Crop = require('../models/Crop');
+const axios = require('axios');
 
-// Mock Data Store (In a real app, these query the DB)
-const db = {
-  summary: { name: "Ravi Kumar", district: "Ernakulam", score: 92 },
-  weather: [
-    { type: "Rain", message: "Heavy showers expected", severity: "high", time: "Today 5 PM", icon: "cloud-rain" },
-    { type: "Wind", message: "Gusts up to 30 km/h", severity: "medium", time: "Tomorrow 11 AM", icon: "wind" }
-  ],
-  countdown: { daysToHarvest: 14 },
-  updates: [
-    { title: "Fertilizer subsidy update", summary: "New scheme announced for smallholders." },
-    { title: "Water schedule", summary: "Irrigation downtime on Sunday 2–4 PM." }
-  ],
-  profit: { net: 19200 },
-  transport: [
-    { routeName: "Local Co-op", cost: 1200, etaHrs: 6 },
-    { routeName: "Express", cost: 2200, etaHrs: 3 }
-  ],
-  leaderboard: [
-    { name: "Ravi Kumar", district: "Ernakulam", score: 92 },
-    { name: "Asha Raj", district: "Kollam", score: 88 },
-    { name: "Jose P.", district: "Idukki", score: 85 }
-  ],
-  doctor: { tip: "Your Pepper plants show signs of Quick Wilt. Spray 1% Bordeaux mixture immediately." },
-  forecast: [
-    { crop: "Pepper", nextWeekPrice: 520, trend: "up", confidence: 0.85 },
-    { crop: "Rubber", nextWeekPrice: 180, trend: "stable", confidence: 0.92 }
-  ],
-  bids: [
-    { crop: "Pepper (50kg)", minPrice: 24000, maxPrice: 26500, endsInMinutes: 45 },
-    { crop: "Nutmeg (10kg)", minPrice: 4000, maxPrice: 4200, endsInMinutes: 120 }
-  ]
-};
+// Get farmer dashboard data
+router.get('/farmer/:farmerId', async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+    
+    // Get farmer details
+    const farmer = await User.findOne({ farmerId });
+    if (!farmer) {
+      return res.status(404).json({ error: 'Farmer not found' });
+    }
 
-// Create a route for each endpoint
-router.get('/:type', (req, res) => {
-  const type = req.params.type;
-  if (db[type]) {
-    res.json(db[type]);
-  } else {
-    res.status(404).json({ error: "Data not found" });
+    // Get weather data for farmer's location
+    const weather = await getWeatherData(farmer.district);
+    
+    // Get farmer's crops with harvest countdown
+    const crops = await Crop.find({ farmerId }).sort({ harvestDate: 1 });
+    
+    // Get recent updates
+    const updates = await Update.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .limit(4);
+    
+    // Get farmer's customers count
+    const customersCount = await Customer.countDocuments({ farmerId });
+    
+    // Get farmer's sales this month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    
+    const monthlySales = await Sale.aggregate([
+      {
+        $match: {
+          farmerId,
+          saleDate: { $gte: startOfMonth }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$totalAmount' },
+          totalOrders: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.json({
+      farmer: {
+        name: farmer.name,
+        farmerId: farmer.farmerId,
+        district: farmer.district,
+        landSize: farmer.landSize
+      },
+      weather,
+      crops: crops.slice(0, 3), // Next 3 crops to harvest
+      updates,
+      stats: {
+        customersCount,
+        monthlySales: monthlySales[0]?.totalSales || 0,
+        monthlyOrders: monthlySales[0]?.totalOrders || 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch dashboard data' });
   }
 });
+
+// Get leaderboard data
+router.get('/leaderboard', async (req, res) => {
+  try {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const leaderboard = await Sale.aggregate([
+      {
+        $match: {
+          saleDate: { $gte: startOfMonth }
+        }
+      },
+      {
+        $group: {
+          _id: '$farmerId',
+          farmerName: { $first: '$farmerName' },
+          totalSales: { $sum: '$totalAmount' },
+          totalOrders: { $sum: 1 },
+          avgRating: { $avg: '$rating' }
+        }
+      },
+      {
+        $sort: { totalSales: -1 }
+      },
+      {
+        $limit: 10
+      }
+    ]);
+
+    res.json(leaderboard);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch leaderboard' });
+  }
+});
+
+// Get weather data (mock function - replace with real API)
+async function getWeatherData(location) {
+  try {
+    // Mock weather data - replace with real weather API
+    const mockWeather = {
+      location,
+      temperature: Math.floor(Math.random() * 15) + 20, // 20-35°C
+      condition: ['sunny', 'cloudy', 'rainy', 'partly-cloudy'][Math.floor(Math.random() * 4)],
+      humidity: Math.floor(Math.random() * 40) + 40, // 40-80%
+      windSpeed: Math.floor(Math.random() * 20) + 5, // 5-25 km/h
+      rainChance: Math.floor(Math.random() * 100),
+      icon: 'sunny',
+      lastUpdated: new Date()
+    };
+    
+    return mockWeather;
+  } catch (error) {
+    return null;
+  }
+}
 
 module.exports = router;

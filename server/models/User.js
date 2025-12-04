@@ -11,12 +11,18 @@ const UserSchema = new mongoose.Schema({
   buyerId: { type: String, unique: true, sparse: true },
   pin: { type: String, required: true },    
   phone: { type: String, required: true, unique: true },
-  district: { type: String, default: 'Kerala' },
+  email: { type: String, unique: true, sparse: true },
+  state: { type: String },
+  district: { type: String },
+  city: { type: String },
   panchayat: { type: String },
   
   // Farmer specific
   landSize: { type: Number },
   crops: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Crop' }],
+  cropTypes: [{ type: String }], // Array of crop type strings
+  subsidyRequested: { type: Boolean, default: false },
+  subsidyStatus: { type: String, enum: ['pending', 'approved', 'rejected', 'none'], default: 'none' },
   
   // Reputation & Gamification
   reputationScore: { type: Number, default: 0 },

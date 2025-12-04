@@ -1,389 +1,527 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  CloudRain, Wind, Bell, Trophy, Stethoscope, Timer, Calculator,
-  Truck, LineChart, Gavel, LogOut, TrendingUp, Package, DollarSign,
-  Calendar, MapPin, AlertCircle, Leaf, Users, ArrowUp, ArrowDown
-} from "lucide-react";
-import { fetchJSON, endpoints } from "../services/api";
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  User, 
+  Users, 
+  Cloud, 
+  Timer, 
+  Trophy, 
+  Truck, 
+  TrendingUp, 
+  Gavel, 
+  Stethoscope,
+  Bell,
+  Sun,
+  CloudRain,
+  Wind,
+  Droplets,
+  LogOut
+} from 'lucide-react';
+import axios from 'axios';
 
-export default function FarmerDashboard({ user, onLogout }) {
-  const [summary, setSummary] = useState(null);
-  const [updates, setUpdates] = useState([]);
-  const [weather, setWeather] = useState([]);
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [doctor, setDoctor] = useState(null);
-  const [countdown, setCountdown] = useState(null);
-  const [profit, setProfit] = useState(null);
-  const [transport, setTransport] = useState([]);
-  const [forecast, setForecast] = useState([]);
-  const [bids, setBids] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+const FarmerDashboard = ({ user, onLogout }) => {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      try {
-        setIsLoading(true);
-        setSummary(await fetchJSON(endpoints.summary));
-        setUpdates(await fetchJSON(endpoints.updates));
-        setWeather(await fetchJSON(endpoints.weather));
-        setLeaderboard(await fetchJSON(endpoints.leaderboard));
-        setDoctor(await fetchJSON(endpoints.doctor));
-        setCountdown(await fetchJSON(endpoints.countdown));
-        setProfit(await fetchJSON(endpoints.profit));
-        setTransport(await fetchJSON(endpoints.transport));
-        setForecast(await fetchJSON(endpoints.forecast));
-        setBids(await fetchJSON(endpoints.bids));
-      } catch (e) {
-        console.error(e);
-        setError("Failed to load dashboard data");
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+    fetchDashboardData();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-600 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-700 font-medium">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
+  const fetchDashboardData = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/dashboard/farmer/${user.farmerId}`);
+      setDashboardData(response.data);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (error) {
+  const getWeatherIcon = (condition) => {
+    switch (condition) {
+      case 'sunny': return <Sun className="w-8 h-8 text-yellow-500" />;
+      case 'rainy': return <CloudRain className="w-8 h-8 text-blue-500" />;
+      case 'cloudy': return <Cloud className="w-8 h-8 text-gray-500" />;
+      default: return <Sun className="w-8 h-8 text-yellow-500" />;
+    }
+  };
+
+  const calculateDaysLeft = (harvestDate) => {
+    const today = new Date();
+    const harvest = new Date(harvestDate);
+    const diffTime = harvest - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center bg-white p-8 rounded-2xl shadow-xl">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600 mb-4 text-lg font-semibold">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors"
-          >
-            Retry
-          </button>
-        </div>
+      <div className="min-h-screen bg-[#fbfbef] flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 border-4 border-[#082829]/20 border-t-[#082829] rounded-full"
+        />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50">
+    <div className="min-h-screen bg-[#fbfbef]">
+      {/* Animated Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, #082829 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }} />
+      </div>
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+      <motion.header
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-20 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl border-b border-[#082829]/10 shadow-lg"
+      >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-2 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl shadow-lg">
-                <Leaf className="w-6 h-6 text-white" />
+            {/* Logo/Brand */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+                <span className="text-[#fbfbef] font-bold text-lg">M</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Morgen</h1>
-                <p className="text-sm text-gray-600">Farmer Dashboard</p>
+                <h1 className="text-xl font-bold text-[#082829]">Morgen</h1>
+                <p className="text-xs text-[#082829]/60">Farmer Dashboard</p>
               </div>
             </div>
+
+            {/* User Info & Logout */}
             <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-semibold text-gray-900">{summary?.name || user?.name || "Farmer"}</p>
-                <p className="text-xs text-gray-600 flex items-center gap-1 justify-end">
-                  <MapPin className="w-3 h-3" />
-                  {summary?.district || "Kerala"}
-                </p>
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-semibold text-[#082829]">{dashboardData?.farmer?.name || user?.name || 'Farmer'}</p>
+                <p className="text-xs text-[#082829]/60">{user?.email || 'farmer@morgen.com'}</p>
               </div>
-              <button 
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={onLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors font-medium"
+                className="bg-[#082829] hover:bg-[#082829]/90 rounded-xl px-4 py-2 flex items-center gap-2 transition-all shadow-lg"
               >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
+                <LogOut className="w-4 h-4 text-[#fbfbef]" />
+                <span className="text-[#fbfbef] font-semibold text-sm">Logout</span>
+              </motion.button>
             </div>
           </div>
         </div>
-      </div>
+      </motion.header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Top Left - Welcome Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl relative overflow-hidden group"
+          >
+            {/* Animated gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#082829]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            {/* Top 70% - Welcome Message */}
+            <div className="h-[70%] flex items-center relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-[#082829] to-[#082829]/70 rounded-2xl flex items-center justify-center shadow-lg">
+                  <User className="w-8 h-8 text-[#fbfbef]" />
+                </div>
+                <div>
+                  <motion.h1 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-3xl font-bold text-[#082829] mb-1"
+                  >
+                    Hello, {dashboardData?.farmer?.name || 'Farmer'}
+                  </motion.h1>
+                  <p className="text-[#082829]/60 text-sm">Welcome back to your dashboard</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Bottom 30% - Action Buttons */}
+            <div className="h-[30%] flex gap-3 relative z-10">
+              <motion.button 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/account-center'}
+                className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-xl p-3 flex items-center justify-center gap-2 transition-all shadow-lg"
+              >
+                <User className="w-5 h-5 text-[#fbfbef]" />
+                <span className="text-[#fbfbef] font-semibold text-sm">Account</span>
+              </motion.button>
+              
+              <motion.button 
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/my-customers'}
+                className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-xl p-3 flex items-center justify-center gap-2 transition-all shadow-lg"
+              >
+                <Users className="w-5 h-5 text-[#fbfbef]" />
+                <span className="text-[#fbfbef] font-semibold text-sm">Customers</span>
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Top Right - Weather Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            whileHover={{ scale: 1.02 }}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl relative overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-green-100 rounded-xl">
-                <Package className="w-6 h-6 text-green-600" />
+            {/* Animated weather background */}
+            <motion.div 
+              animate={{ 
+                backgroundPosition: ['0% 0%', '100% 100%'],
+              }}
+              transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
+              className="absolute inset-0 opacity-5"
+              style={{
+                backgroundImage: 'radial-gradient(circle, #082829 1px, transparent 1px)',
+                backgroundSize: '20px 20px'
+              }}
+            />
+            
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#082829]">Weather</h2>
+                <div>
+                  {dashboardData?.weather && getWeatherIcon(dashboardData.weather.condition)}
+                </div>
               </div>
-              <span className="text-xs font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                Active
-              </span>
+              
+              {dashboardData?.weather ? (
+                <div className="space-y-6">
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="text-center"
+                  >
+                    <div className="text-5xl font-bold text-[#082829] mb-2">
+                      {dashboardData.weather.temperature}°C
+                    </div>
+                    <div className="text-[#082829]/70 capitalize font-medium">
+                      {dashboardData.weather.condition}
+                    </div>
+                    <div className="text-[#082829]/50 text-sm mt-1">
+                      {dashboardData.weather.location}
+                    </div>
+                  </motion.div>
+                  
+                  <div className="grid grid-cols-3 gap-4">
+                    <motion.div 
+                      whileHover={{ y: -5 }}
+                      className="flex flex-col items-center p-3 bg-[#082829]/5 rounded-xl"
+                    >
+                      <Wind className="w-6 h-6 text-[#082829] mb-2" />
+                      <span className="text-xs text-[#082829]/60 mb-1">Wind</span>
+                      <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.windSpeed} km/h</span>
+                    </motion.div>
+                    <motion.div 
+                      whileHover={{ y: -5 }}
+                      className="flex flex-col items-center p-3 bg-[#082829]/5 rounded-xl"
+                    >
+                      <Droplets className="w-6 h-6 text-[#082829] mb-2" />
+                      <span className="text-xs text-[#082829]/60 mb-1">Humidity</span>
+                      <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.humidity}%</span>
+                    </motion.div>
+                    <motion.div 
+                      whileHover={{ y: -5 }}
+                      className="flex flex-col items-center p-3 bg-[#082829]/5 rounded-xl"
+                    >
+                      <CloudRain className="w-6 h-6 text-[#082829] mb-2" />
+                      <span className="text-xs text-[#082829]/60 mb-1">Rain</span>
+                      <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.rainChance}%</span>
+                    </motion.div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center text-[#082829]/70 py-8">Weather data unavailable</div>
+              )}
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-1">
-              {countdown?.daysToHarvest || 0}
-            </h3>
-            <p className="text-sm text-gray-600">Days to Harvest</p>
           </motion.div>
 
+          {/* Middle Left - Countdown Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/harvest-countdown'}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <DollarSign className="w-6 h-6 text-blue-600" />
+            {/* Animated pulse effect */}
+            <motion.div
+              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="absolute inset-0 bg-[#082829]/5 rounded-full blur-3xl"
+            />
+            <div className="flex items-center gap-3 mb-6 relative z-10">
+              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+                <Timer className="w-6 h-6 text-[#fbfbef]" />
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
+              <h2 className="text-xl font-bold text-[#082829]">Harvest Countdown</h2>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-1">
-              ₹{profit?.net?.toLocaleString() || 0}
-            </h3>
-            <p className="text-sm text-gray-600">Net Profit</p>
+            
+            {dashboardData?.crops && dashboardData.crops.length > 0 ? (
+              <div className="space-y-4 relative z-10">
+                {/* Main countdown - first crop */}
+                <motion.div 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring" }}
+                  className="text-center bg-gradient-to-br from-[#082829]/10 to-[#082829]/5 rounded-2xl p-6 relative overflow-hidden"
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 opacity-10"
+                    style={{
+                      backgroundImage: 'conic-gradient(from 0deg, transparent, #082829, transparent)',
+                    }}
+                  />
+                  <div className="relative z-10">
+                    <motion.div 
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-5xl font-bold text-[#082829] mb-2"
+                    >
+                      {calculateDaysLeft(dashboardData.crops[0].harvestDate)}
+                    </motion.div>
+                    <div className="text-sm text-[#082829]/60 mb-1">Days Left</div>
+                    <div className="text-[#082829] font-semibold">
+                      {dashboardData.crops[0].name}
+                    </div>
+                  </div>
+                </motion.div>
+                
+                {/* Next crops */}
+                {dashboardData.crops.slice(1, 3).map((crop, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                    whileHover={{ x: 5 }}
+                    className="flex justify-between items-center p-3 bg-[#082829]/5 rounded-xl"
+                  >
+                    <span className="text-[#082829] font-medium">{crop.name}</span>
+                    <span className="text-[#082829] font-bold">
+                      {calculateDaysLeft(crop.harvestDate)} days
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 relative z-10">
+                <Timer className="w-20 h-20 text-[#082829]/20 mx-auto mb-4" />
+                <p className="text-[#082829]/70 font-medium">No harvest scheduled</p>
+              </div>
+            )}
           </motion.div>
 
+          {/* Middle Right - Updates Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/updates'}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-purple-100 rounded-xl">
-                <Trophy className="w-6 h-6 text-purple-600" />
+            <div className="flex items-center gap-3 mb-6 relative z-10">
+              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg relative">
+                <Bell className="w-6 h-6 text-[#fbfbef]" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
               </div>
-              <span className="text-xs font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded-full">
-                Rank #{leaderboard.findIndex(f => f.name === summary?.name) + 1 || 1}
-              </span>
+              <h2 className="text-xl font-bold text-[#082829]">Updates</h2>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-1">
-              {summary?.score || 0}
-            </h3>
-            <p className="text-sm text-gray-600">Reputation Score</p>
+            
+            {dashboardData?.updates && dashboardData.updates.length > 0 ? (
+              <div className="space-y-3 relative z-10">
+                {dashboardData.updates.slice(0, 4).map((update, index) => (
+                  <motion.div 
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                    whileHover={{ x: 5, backgroundColor: 'rgba(8, 40, 41, 0.05)' }}
+                    className="border-l-4 border-[#082829] pl-4 py-2 rounded-r-xl transition-all"
+                  >
+                    <div className="text-sm font-semibold text-[#082829] line-clamp-2">
+                      {update.title}
+                    </div>
+                    <div className="text-xs text-[#082829]/60 mt-1 flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 bg-[#082829]/40 rounded-full" />
+                      {new Date(update.createdAt).toLocaleDateString()}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-[#082829]/70 relative z-10">
+                <Bell className="w-16 h-16 text-[#082829]/20 mx-auto mb-4" />
+                <p className="font-medium">No updates available</p>
+              </div>
+            )}
           </motion.div>
 
+          {/* Bottom Left - Leaderboard Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+            whileHover={{ scale: 1.01, y: -5 }}
+            whileTap={{ scale: 0.99 }}
+            onClick={() => window.location.href = '/leaderboard'}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group row-span-2"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-orange-100 rounded-xl">
-                <Gavel className="w-6 h-6 text-orange-600" />
+            {/* Animated shine effect */}
+            <motion.div
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
+            />
+            
+            <div className="flex items-center gap-3 mb-6 relative z-10">
+              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+                <Trophy className="w-6 h-6 text-[#fbfbef]" />
               </div>
-              <span className="text-xs font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
-                Live
-              </span>
+              <h2 className="text-xl font-bold text-[#082829]">Leaderboard</h2>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-1">
-              {bids?.length || 0}
-            </h3>
-            <p className="text-sm text-gray-600">Active Bids</p>
+            
+            <div className="space-y-3 relative z-10">
+              {[1, 2, 3, 4, 5].map((rank) => (
+                <motion.div 
+                  key={rank}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + rank * 0.1 }}
+                  whileHover={{ x: 10, backgroundColor: 'rgba(8, 40, 41, 0.05)' }}
+                  className="flex items-center gap-4 p-3 rounded-xl transition-all"
+                >
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg bg-[#082829]/10 text-[#082829]">
+                    {rank}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-[#082829] font-semibold">Farmer {rank}</div>
+                    <div className="text-[#082829]/60 text-sm">₹{(50000 - rank * 5000).toLocaleString()}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
-        </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Weather Alerts */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <CloudRain className="w-5 h-5 text-blue-600" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900">Weather Alerts</h2>
+          {/* Bottom Right - Transport Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/local-transport'}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+          >
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+                <Truck className="w-6 h-6 text-[#fbfbef]" />
               </div>
-              <div className="space-y-3">
-                {weather.map((w, i) => (
-                  <div key={i} className="flex items-start gap-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
-                    <div className={`p-2 rounded-lg ${w.icon === 'cloud-rain' ? 'bg-blue-200' : 'bg-purple-200'}`}>
-                      {w.icon === 'cloud-rain' ? (
-                        <CloudRain className="w-5 h-5 text-blue-700" />
-                      ) : (
-                        <Wind className="w-5 h-5 text-purple-700" />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-semibold text-gray-900">{w.type}</h3>
-                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                          w.severity === 'high' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
-                        }`}>
-                          {w.severity}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-700 mb-1">{w.message}</p>
-                      <p className="text-xs text-gray-500">{w.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+              <h2 className="text-xl font-bold text-[#082829]">Local Transport</h2>
+            </div>
+            <div className="text-center py-6 relative z-10">
+              <Truck className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
+              <p className="text-[#082829]/70 font-medium">Find transport services</p>
+            </div>
+          </motion.div>
 
-            {/* Price Forecast */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <LineChart className="w-5 h-5 text-green-600" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900">Price Forecast</h2>
+          {/* Price Forecast Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/price-forecast'}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+          >
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+                <TrendingUp className="w-6 h-6 text-[#fbfbef]" />
               </div>
-              <div className="space-y-4">
-                {forecast.map((f, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{f.crop}</h3>
-                      <p className="text-sm text-gray-600">Next week: ₹{f.nextWeekPrice}</p>
-                    </div>
-                    <div className="text-right">
-                      <div className={`flex items-center gap-1 font-semibold ${
-                        f.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        {f.trend === 'up' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
-                        {f.trend}
-                      </div>
-                      <p className="text-xs text-gray-500">{Math.round(f.confidence * 100)}% confidence</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+              <h2 className="text-xl font-bold text-[#082829]">Price Forecast</h2>
+            </div>
+            <div className="text-center py-6 relative z-10">
+              <TrendingUp className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
+              <p className="text-[#082829]/70 font-medium">Market price predictions</p>
+            </div>
+          </motion.div>
 
-            {/* AI Doctor */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-6 shadow-lg border border-pink-100"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-pink-200 rounded-lg">
-                  <Stethoscope className="w-5 h-5 text-pink-700" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900">AI Plant Doctor</h2>
+          {/* Live Bidding Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/live-bidding'}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+          >
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+                <Gavel className="w-6 h-6 text-[#fbfbef]" />
               </div>
-              <p className="text-gray-700 mb-4">{doctor?.tip}</p>
-              <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold py-3 rounded-xl hover:from-pink-700 hover:to-purple-700 transition-all">
-                Scan Plant Now
-              </button>
-            </motion.div>
-          </div>
+              <h2 className="text-xl font-bold text-[#082829]">Live Bidding</h2>
+            </div>
+            <div className="text-center py-6 relative z-10">
+              <Gavel className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
+              <p className="text-[#082829]/70 font-medium">Join live auctions</p>
+            </div>
+          </motion.div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Updates */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <Bell className="w-5 h-5 text-yellow-600" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900">Updates</h2>
+          {/* AI Doctor Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/ai-doctor'}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+          >
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#082829]/70 rounded-xl flex items-center justify-center shadow-lg relative">
+                <Stethoscope className="w-6 h-6 text-[#fbfbef]" />
               </div>
-              <div className="space-y-3">
-                {updates.map((u, i) => (
-                  <div key={i} className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{u.title}</h3>
-                    <p className="text-xs text-gray-600">{u.summary}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Leaderboard */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Trophy className="w-5 h-5 text-purple-600" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900">Leaderboard</h2>
-              </div>
-              <div className="space-y-3">
-                {leaderboard.map((f, i) => (
-                  <div key={i} className={`flex items-center justify-between p-3 rounded-xl ${
-                    i === 0 ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200' :
-                    i === 1 ? 'bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200' :
-                    i === 2 ? 'bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200' :
-                    'bg-gray-50'
-                  }`}>
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                        i === 0 ? 'bg-yellow-400 text-yellow-900' :
-                        i === 1 ? 'bg-gray-400 text-gray-900' :
-                        i === 2 ? 'bg-orange-400 text-orange-900' :
-                        'bg-gray-200 text-gray-700'
-                      }`}>
-                        {i + 1}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-900 text-sm">{f.name}</p>
-                        <p className="text-xs text-gray-600">{f.district}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-900">{f.score}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Transport */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Truck className="w-5 h-5 text-green-600" />
-                </div>
-                <h2 className="text-lg font-bold text-gray-900">Transport</h2>
-              </div>
-              <div className="space-y-3">
-                {transport.map((t, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div>
-                      <p className="font-semibold text-gray-900 text-sm">{t.routeName}</p>
-                      <p className="text-xs text-gray-600">{t.etaHrs}h delivery</p>
-                    </div>
-                    <p className="font-bold text-green-600">₹{t.cost}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+              <h2 className="text-xl font-bold text-[#082829]">AI Doctor</h2>
+            </div>
+            <div className="text-center py-6 relative z-10">
+              <Stethoscope className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
+              <p className="text-[#082829]/70 font-medium">Crop health diagnosis</p>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default FarmerDashboard;

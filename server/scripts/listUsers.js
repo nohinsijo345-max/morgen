@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const listUsers = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://admin:morgen123@localhost:27017/morgenDB?authSource=admin');
+    const MONGO_URI = process.env.MONGO_URI || 'mongodb://admin:morgen123@localhost:27017/morgenDB?authSource=admin';
+    await mongoose.connect(MONGO_URI);
     console.log('✅ Connected to MongoDB\n');
     
     const db = mongoose.connection.db;

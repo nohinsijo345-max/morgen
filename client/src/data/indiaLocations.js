@@ -1,0 +1,214 @@
+// India States, Districts, and Cities data
+export const indiaStates = [
+  { value: 'kerala', label: 'Kerala' },
+  { value: 'karnataka', label: 'Karnataka' },
+  { value: 'tamil-nadu', label: 'Tamil Nadu' },
+  { value: 'andhra-pradesh', label: 'Andhra Pradesh' },
+  { value: 'telangana', label: 'Telangana' },
+  { value: 'maharashtra', label: 'Maharashtra' },
+  { value: 'gujarat', label: 'Gujarat' },
+  { value: 'rajasthan', label: 'Rajasthan' },
+  { value: 'punjab', label: 'Punjab' },
+  { value: 'haryana', label: 'Haryana' },
+  { value: 'uttar-pradesh', label: 'Uttar Pradesh' },
+  { value: 'madhya-pradesh', label: 'Madhya Pradesh' },
+  { value: 'west-bengal', label: 'West Bengal' },
+  { value: 'bihar', label: 'Bihar' },
+  { value: 'odisha', label: 'Odisha' }
+];
+
+export const indiaDistricts = {
+  'kerala': [
+    { value: 'thiruvananthapuram', label: 'Thiruvananthapuram' },
+    { value: 'kollam', label: 'Kollam' },
+    { value: 'pathanamthitta', label: 'Pathanamthitta' },
+    { value: 'alappuzha', label: 'Alappuzha' },
+    { value: 'kottayam', label: 'Kottayam' },
+    { value: 'idukki', label: 'Idukki' },
+    { value: 'ernakulam', label: 'Ernakulam' },
+    { value: 'thrissur', label: 'Thrissur' },
+    { value: 'palakkad', label: 'Palakkad' },
+    { value: 'malappuram', label: 'Malappuram' },
+    { value: 'kozhikode', label: 'Kozhikode' },
+    { value: 'wayanad', label: 'Wayanad' },
+    { value: 'kannur', label: 'Kannur' },
+    { value: 'kasaragod', label: 'Kasaragod' }
+  ],
+  'karnataka': [
+    { value: 'bengaluru-urban', label: 'Bengaluru Urban' },
+    { value: 'bengaluru-rural', label: 'Bengaluru Rural' },
+    { value: 'mysuru', label: 'Mysuru' },
+    { value: 'dakshina-kannada', label: 'Dakshina Kannada' },
+    { value: 'dharwad', label: 'Dharwad' },
+    { value: 'belagavi', label: 'Belagavi' },
+    { value: 'tumakuru', label: 'Tumakuru' },
+    { value: 'shivamogga', label: 'Shivamogga' },
+    { value: 'hassan', label: 'Hassan' },
+    { value: 'mandya', label: 'Mandya' },
+    { value: 'chitradurga', label: 'Chitradurga' },
+    { value: 'ballari', label: 'Ballari' }
+  ],
+  'tamil-nadu': [
+    { value: 'chennai', label: 'Chennai' },
+    { value: 'coimbatore', label: 'Coimbatore' },
+    { value: 'madurai', label: 'Madurai' },
+    { value: 'tiruchirappalli', label: 'Tiruchirappalli' },
+    { value: 'salem', label: 'Salem' },
+    { value: 'tirunelveli', label: 'Tirunelveli' },
+    { value: 'erode', label: 'Erode' },
+    { value: 'vellore', label: 'Vellore' },
+    { value: 'thanjavur', label: 'Thanjavur' },
+    { value: 'dindigul', label: 'Dindigul' },
+    { value: 'kanyakumari', label: 'Kanyakumari' },
+    { value: 'tiruppur', label: 'Tiruppur' }
+  ],
+  'andhra-pradesh': [
+    { value: 'visakhapatnam', label: 'Visakhapatnam' },
+    { value: 'vijayawada', label: 'Vijayawada' },
+    { value: 'guntur', label: 'Guntur' },
+    { value: 'nellore', label: 'Nellore' },
+    { value: 'kurnool', label: 'Kurnool' },
+    { value: 'kakinada', label: 'Kakinada' },
+    { value: 'rajahmundry', label: 'Rajahmundry' },
+    { value: 'tirupati', label: 'Tirupati' },
+    { value: 'anantapur', label: 'Anantapur' },
+    { value: 'chittoor', label: 'Chittoor' }
+  ],
+  'telangana': [
+    { value: 'hyderabad', label: 'Hyderabad' },
+    { value: 'warangal', label: 'Warangal' },
+    { value: 'nizamabad', label: 'Nizamabad' },
+    { value: 'khammam', label: 'Khammam' },
+    { value: 'karimnagar', label: 'Karimnagar' },
+    { value: 'ramagundam', label: 'Ramagundam' },
+    { value: 'mahbubnagar', label: 'Mahbubnagar' },
+    { value: 'nalgonda', label: 'Nalgonda' }
+  ],
+  'maharashtra': [
+    { value: 'mumbai', label: 'Mumbai' },
+    { value: 'pune', label: 'Pune' },
+    { value: 'nagpur', label: 'Nagpur' },
+    { value: 'nashik', label: 'Nashik' },
+    { value: 'aurangabad', label: 'Aurangabad' },
+    { value: 'solapur', label: 'Solapur' },
+    { value: 'kolhapur', label: 'Kolhapur' },
+    { value: 'thane', label: 'Thane' },
+    { value: 'ahmednagar', label: 'Ahmednagar' },
+    { value: 'satara', label: 'Satara' }
+  ],
+  'gujarat': [
+    { value: 'ahmedabad', label: 'Ahmedabad' },
+    { value: 'surat', label: 'Surat' },
+    { value: 'vadodara', label: 'Vadodara' },
+    { value: 'rajkot', label: 'Rajkot' },
+    { value: 'bhavnagar', label: 'Bhavnagar' },
+    { value: 'jamnagar', label: 'Jamnagar' },
+    { value: 'gandhinagar', label: 'Gandhinagar' },
+    { value: 'anand', label: 'Anand' }
+  ],
+  'rajasthan': [
+    { value: 'jaipur', label: 'Jaipur' },
+    { value: 'jodhpur', label: 'Jodhpur' },
+    { value: 'kota', label: 'Kota' },
+    { value: 'bikaner', label: 'Bikaner' },
+    { value: 'udaipur', label: 'Udaipur' },
+    { value: 'ajmer', label: 'Ajmer' },
+    { value: 'alwar', label: 'Alwar' },
+    { value: 'bharatpur', label: 'Bharatpur' }
+  ],
+  'punjab': [
+    { value: 'ludhiana', label: 'Ludhiana' },
+    { value: 'amritsar', label: 'Amritsar' },
+    { value: 'jalandhar', label: 'Jalandhar' },
+    { value: 'patiala', label: 'Patiala' },
+    { value: 'bathinda', label: 'Bathinda' },
+    { value: 'mohali', label: 'Mohali' },
+    { value: 'pathankot', label: 'Pathankot' },
+    { value: 'hoshiarpur', label: 'Hoshiarpur' }
+  ],
+  'haryana': [
+    { value: 'faridabad', label: 'Faridabad' },
+    { value: 'gurgaon', label: 'Gurgaon' },
+    { value: 'panipat', label: 'Panipat' },
+    { value: 'ambala', label: 'Ambala' },
+    { value: 'yamunanagar', label: 'Yamunanagar' },
+    { value: 'rohtak', label: 'Rohtak' },
+    { value: 'hisar', label: 'Hisar' },
+    { value: 'karnal', label: 'Karnal' }
+  ],
+  'uttar-pradesh': [
+    { value: 'lucknow', label: 'Lucknow' },
+    { value: 'kanpur', label: 'Kanpur' },
+    { value: 'ghaziabad', label: 'Ghaziabad' },
+    { value: 'agra', label: 'Agra' },
+    { value: 'varanasi', label: 'Varanasi' },
+    { value: 'meerut', label: 'Meerut' },
+    { value: 'allahabad', label: 'Allahabad' },
+    { value: 'bareilly', label: 'Bareilly' },
+    { value: 'aligarh', label: 'Aligarh' },
+    { value: 'moradabad', label: 'Moradabad' }
+  ],
+  'madhya-pradesh': [
+    { value: 'indore', label: 'Indore' },
+    { value: 'bhopal', label: 'Bhopal' },
+    { value: 'jabalpur', label: 'Jabalpur' },
+    { value: 'gwalior', label: 'Gwalior' },
+    { value: 'ujjain', label: 'Ujjain' },
+    { value: 'sagar', label: 'Sagar' },
+    { value: 'dewas', label: 'Dewas' },
+    { value: 'satna', label: 'Satna' }
+  ],
+  'west-bengal': [
+    { value: 'kolkata', label: 'Kolkata' },
+    { value: 'howrah', label: 'Howrah' },
+    { value: 'durgapur', label: 'Durgapur' },
+    { value: 'asansol', label: 'Asansol' },
+    { value: 'siliguri', label: 'Siliguri' },
+    { value: 'bardhaman', label: 'Bardhaman' },
+    { value: 'malda', label: 'Malda' },
+    { value: 'baharampur', label: 'Baharampur' }
+  ],
+  'bihar': [
+    { value: 'patna', label: 'Patna' },
+    { value: 'gaya', label: 'Gaya' },
+    { value: 'bhagalpur', label: 'Bhagalpur' },
+    { value: 'muzaffarpur', label: 'Muzaffarpur' },
+    { value: 'darbhanga', label: 'Darbhanga' },
+    { value: 'purnia', label: 'Purnia' },
+    { value: 'bihar-sharif', label: 'Bihar Sharif' },
+    { value: 'arrah', label: 'Arrah' }
+  ],
+  'odisha': [
+    { value: 'bhubaneswar', label: 'Bhubaneswar' },
+    { value: 'cuttack', label: 'Cuttack' },
+    { value: 'rourkela', label: 'Rourkela' },
+    { value: 'berhampur', label: 'Berhampur' },
+    { value: 'sambalpur', label: 'Sambalpur' },
+    { value: 'puri', label: 'Puri' },
+    { value: 'balasore', label: 'Balasore' },
+    { value: 'bhadrak', label: 'Bhadrak' }
+  ]
+};
+
+export const cropTypes = [
+  { value: 'rice', label: 'Rice (Paddy)' },
+  { value: 'wheat', label: 'Wheat' },
+  { value: 'sugarcane', label: 'Sugarcane' },
+  { value: 'cotton', label: 'Cotton' },
+  { value: 'jute', label: 'Jute' },
+  { value: 'tea', label: 'Tea' },
+  { value: 'coffee', label: 'Coffee' },
+  { value: 'rubber', label: 'Rubber' },
+  { value: 'coconut', label: 'Coconut' },
+  { value: 'arecanut', label: 'Arecanut' },
+  { value: 'pepper', label: 'Pepper' },
+  { value: 'cardamom', label: 'Cardamom' },
+  { value: 'turmeric', label: 'Turmeric' },
+  { value: 'ginger', label: 'Ginger' },
+  { value: 'banana', label: 'Banana' },
+  { value: 'mango', label: 'Mango' },
+  { value: 'cashew', label: 'Cashew' },
+  { value: 'vegetables', label: 'Vegetables' },
+  { value: 'pulses', label: 'Pulses' },
+  { value: 'millets', label: 'Millets' }
+];
