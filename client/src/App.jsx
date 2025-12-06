@@ -1,28 +1,48 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
+import AdminLogin from "./pages/AdminLogin";
+import ForgotPassword from "./pages/ForgotPassword";
 import FarmerDashboard from "./pages/FarmerDashboard";
+import Admin from "./pages/Admin";
 
 export default function App() {
-  const [user, setUser] = useState(null);
+  const [farmerUser, setFarmerUser] = useState(null);
+  const [adminUser, setAdminUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    // Load both farmer and admin sessions separately
+    const savedFarmer = localStorage.getItem('farmerUser');
+    const savedAdmin = localStorage.getItem('adminUser');
+    
+    if (savedFarmer) {
+      setFarmerUser(JSON.parse(savedFarmer));
+    }
+    if (savedAdmin) {
+      setAdminUser(JSON.parse(savedAdmin));
     }
     setLoading(false);
   }, []);
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const handleFarmerLogin = (userData) => {
+    setFarmerUser(userData);
+    localStorage.setItem('farmerUser', JSON.stringify(userData));
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  const handleAdminLogin = (userData) => {
+    setAdminUser(userData);
+    localStorage.setItem('adminUser', JSON.stringify(userData));
+  };
+
+  const handleFarmerLogout = () => {
+    setFarmerUser(null);
+    localStorage.removeItem('farmerUser');
+  };
+
+  const handleAdminLogout = () => {
+    setAdminUser(null);
+    localStorage.removeItem('adminUser');
   };
 
   if (loading) {
@@ -34,13 +54,32 @@ export default function App() {
       <Routes>
         <Route 
           path="/login" 
-          element={user ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} 
+          element={farmerUser ? <Navigate to="/dashboard" /> : <Login onLogin={handleFarmerLogin} />} 
+        />
+        <Route 
+          path="/admin-login" 
+          element={adminUser ? <Navigate to="/admin" /> : <AdminLogin onLogin={handleAdminLogin} />} 
+        />
+        <Route 
+          path="/forgot-password" 
+          element={farmerUser ? <Navigate to="/dashboard" /> : <ForgotPassword />} 
         />
         <Route 
           path="/dashboard" 
-          element={user ? <FarmerDashboard user={user} onLogout={handleLogout} /> : <Navigate to="/login" />} 
+          element={farmerUser ? <FarmerDashboard user={farmerUser} onLogout={handleFarmerLogout} /> : <Navigate to="/login" />} 
         />
-        <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+        <Route 
+          path="/admin" 
+          element={adminUser ? <Admin onLogout={handleAdminLogout} /> : <Navigate to="/admin-login" />} 
+        />
+        <Route 
+          path="/" 
+          element={
+            farmerUser ? <Navigate to="/dashboard" /> : 
+            adminUser ? <Navigate to="/admin" /> : 
+            <Navigate to="/login" />
+          } 
+        />
       </Routes>
     </BrowserRouter>
   );

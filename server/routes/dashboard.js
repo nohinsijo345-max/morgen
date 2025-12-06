@@ -57,6 +57,7 @@ router.get('/farmer/:farmerId', async (req, res) => {
       farmer: {
         name: farmer.name,
         farmerId: farmer.farmerId,
+        email: farmer.email,
         district: farmer.district,
         landSize: farmer.landSize
       },

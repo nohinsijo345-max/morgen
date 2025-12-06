@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff, Plus, X, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -32,8 +32,11 @@ const Login = ({ onLogin }) => {
   
   const [selectedCrop, setSelectedCrop] = useState('');
   const [availableDistricts, setAvailableDistricts] = useState([]);
+  const [availableCities, setAvailableCities] = useState([]);
   const [showSignUpPassword, setShowSignUpPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  const registerFormRef = useRef(null);
 
   useEffect(() => {
     const fetchLoginImage = async () => {
@@ -114,28 +117,40 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     setError('');
 
+    // Scroll to top function
+    const scrollToTop = () => {
+      if (registerFormRef.current) {
+        registerFormRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    };
+
     if (signUpData.pin !== signUpData.confirmPin) {
       setError('Passwords do not match');
+      scrollToTop();
       return;
     }
 
     if (signUpData.pin.length !== 4) {
       setError('PIN must be 4 digits');
+      scrollToTop();
       return;
     }
 
     if (!signUpData.email || !/\S+@\S+\.\S+/.test(signUpData.email)) {
       setError('Valid email is required');
+      scrollToTop();
       return;
     }
 
     if (!/^\d{10}$/.test(signUpData.phone)) {
       setError('Phone number must be exactly 10 digits');
+      scrollToTop();
       return;
     }
 
     if (signUpData.cropTypes.length === 0) {
       setError('Please add at least one crop type');
+      scrollToTop();
       return;
     }
 
@@ -166,6 +181,8 @@ const Login = ({ onLogin }) => {
         setShowSuccess(false);
         setIsSignUp(false);
         setFarmerId(signUpData.farmerId);
+        setLoading(false); // Reset loading state
+        setError(''); // Clear any errors
         setSignUpData({
           name: '',
           farmerId: '',
@@ -258,15 +275,13 @@ const Login = ({ onLogin }) => {
                 className="w-full max-w-md"
               >
                 {/* Logo */}
-                <div className="mb-12">
-                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <span className="text-2xl font-bold text-white">M</span>
-                  </div>
+                <div className="mb-8">
+                  <img src="/logo.png" alt="Morgen Logo" className="h-16 w-auto rounded-xl" />
                 </div>
 
                 <div className="mb-10">
-                  <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-                  <p className="text-gray-500">Please enter your credentials to continue</p>
+                  <h1 className="text-4xl font-bold text-[#082829] mb-2">Welcome Back</h1>
+                  <p className="text-[#082829]/60">Please enter your credentials to continue</p>
                 </div>
 
                 {error && (
@@ -311,7 +326,10 @@ const Login = ({ onLogin }) => {
                   </div>
 
                   <div className="flex justify-end">
-                    <a href="#" className="text-sm font-medium text-emerald-600 hover:text-emerald-700">
+                    <a 
+                      href="/forgot-password"
+                      className="text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                    >
                       Forgot Password?
                     </a>
                   </div>
@@ -349,30 +367,29 @@ const Login = ({ onLogin }) => {
                 exit={{ opacity: 0, x: 50 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
                 className="w-full h-full flex items-center justify-center px-16 py-8 overflow-y-auto"
+                ref={registerFormRef}
               >
                 <div className="w-full max-w-md">
-                  {/* Back Button */}
+                  {/* Logo */}
+                  <div className="mb-8">
+                    <img src="/logo.png" alt="Morgen Logo" className="h-16 w-auto rounded-xl" />
+                  </div>
+
+                  <div className="mb-10">
+                    <h1 className="text-4xl font-bold text-[#082829] mb-2">Create Account</h1>
+                    <p className="text-[#082829]/60">Register here to get started</p>
+                  </div>
+
+                  {/* Back Button - moved below title */}
                   <button
                     onClick={() => setIsSignUp(false)}
-                    className="mb-8 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                    className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     <span className="font-medium">Back to Login</span>
                   </button>
-
-                  <div className="mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg mb-8">
-                      <span className="text-2xl font-bold text-white">M</span>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <div className="text-sm font-semibold text-[#082829]/60 mb-2">SIGN UP</div>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Account</h1>
-                    <p className="text-gray-500">Fill in your details to get started</p>
-                  </div>
 
                   {error && (
                     <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">

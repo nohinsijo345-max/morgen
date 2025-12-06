@@ -18,6 +18,7 @@ import {
   LogOut
 } from 'lucide-react';
 import axios from 'axios';
+import WeatherIllustration from '../components/WeatherIllustration';
 
 const FarmerDashboard = ({ user, onLogout }) => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -30,10 +31,13 @@ const FarmerDashboard = ({ user, onLogout }) => {
   const fetchDashboardData = async () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      console.log('Fetching dashboard data for:', user.farmerId);
       const response = await axios.get(`${API_URL}/api/dashboard/farmer/${user.farmerId}`);
+      console.log('Dashboard data received:', response.data);
       setDashboardData(response.data);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      console.error('Error details:', error.response?.data || error.message);
     } finally {
       setLoading(false);
     }
@@ -58,12 +62,27 @@ const FarmerDashboard = ({ user, onLogout }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fbfbef] flex items-center justify-center">
+      <div className="min-h-screen bg-[#fbfbef] flex flex-col items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           className="w-16 h-16 border-4 border-[#082829]/20 border-t-[#082829] rounded-full"
         />
+        <p className="mt-4 text-[#082829]">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="min-h-screen bg-[#fbfbef] flex flex-col items-center justify-center">
+        <p className="text-[#082829] text-xl">Failed to load dashboard data</p>
+        <button 
+          onClick={fetchDashboardData}
+          className="mt-4 px-6 py-2 bg-[#082829] text-[#fbfbef] rounded-lg"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -102,7 +121,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-semibold text-[#082829]">{dashboardData?.farmer?.name || user?.name || 'Farmer'}</p>
-                <p className="text-xs text-[#082829]/60">{user?.email || 'farmer@morgen.com'}</p>
+                <p className="text-xs text-[#082829]/60">{dashboardData?.farmer?.email || user?.email || 'Loading...'}</p>
               </div>
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
@@ -121,59 +140,59 @@ const FarmerDashboard = ({ user, onLogout }) => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">
         {/* Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           
           {/* Top Left - Welcome Card */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl relative overflow-hidden group"
+            whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-5 border border-[#082829]/10 shadow-2xl relative overflow-hidden group h-fit self-start"
           >
             {/* Animated gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#082829]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
-            {/* Top 70% - Welcome Message */}
-            <div className="h-[70%] flex items-center relative z-10">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-[#082829] to-[#082829]/70 rounded-2xl flex items-center justify-center shadow-lg">
-                  <User className="w-8 h-8 text-[#fbfbef]" />
+            <div className="relative z-10">
+              {/* Welcome Message at Top */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#082829] to-[#082829]/70 rounded-xl flex items-center justify-center shadow-lg">
+                  <User className="w-7 h-7 text-[#fbfbef]" />
                 </div>
                 <div>
-                  <motion.h1 
+                  <motion.h2 
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="text-3xl font-bold text-[#082829] mb-1"
+                    className="text-2xl font-bold text-[#082829]"
                   >
                     Hello, {dashboardData?.farmer?.name || 'Farmer'}
-                  </motion.h1>
+                  </motion.h2>
                   <p className="text-[#082829]/60 text-sm">Welcome back to your dashboard</p>
                 </div>
               </div>
-            </div>
-            
-            {/* Bottom 30% - Action Buttons */}
-            <div className="h-[30%] flex gap-3 relative z-10">
-              <motion.button 
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.href = '/account-center'}
-                className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-xl p-3 flex items-center justify-center gap-2 transition-all shadow-lg"
-              >
-                <User className="w-5 h-5 text-[#fbfbef]" />
-                <span className="text-[#fbfbef] font-semibold text-sm">Account</span>
-              </motion.button>
               
-              <motion.button 
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.href = '/my-customers'}
-                className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-xl p-3 flex items-center justify-center gap-2 transition-all shadow-lg"
-              >
-                <Users className="w-5 h-5 text-[#fbfbef]" />
-                <span className="text-[#fbfbef] font-semibold text-sm">Customers</span>
-              </motion.button>
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <motion.button 
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => window.location.href = '/account-center'}
+                  className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
+                >
+                  <User className="w-4 h-4 text-[#fbfbef]" />
+                  <span className="text-[#fbfbef] font-medium text-sm">Account</span>
+                </motion.button>
+                
+                <motion.button 
+                  whileHover={{ scale: 1.03, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => window.location.href = '/my-customers'}
+                  className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
+                >
+                  <Users className="w-4 h-4 text-[#fbfbef]" />
+                  <span className="text-[#fbfbef] font-medium text-sm">Customers</span>
+                </motion.button>
+              </div>
             </div>
           </motion.div>
 
@@ -182,7 +201,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.01 }}
             className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl relative overflow-hidden"
           >
             {/* Animated weather background */}
@@ -199,25 +218,36 @@ const FarmerDashboard = ({ user, onLogout }) => {
             />
             
             <div className="relative z-10">
-              <div className="flex items-center justify-between mb-6">
+              {/* Header with title on left, icon on top-right */}
+              <div className="flex items-start justify-between mb-6">
                 <h2 className="text-xl font-bold text-[#082829]">Weather</h2>
-                <div>
+                <motion.div
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                >
                   {dashboardData?.weather && getWeatherIcon(dashboardData.weather.condition)}
-                </div>
+                </motion.div>
               </div>
               
               {dashboardData?.weather ? (
                 <div className="space-y-6">
+                  {/* Temperature and condition - left aligned */}
                   <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.3, type: "spring" }}
-                    className="text-center"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="text-left"
                   >
-                    <div className="text-5xl font-bold text-[#082829] mb-2">
+                    <motion.div 
+                      initial={{ scale: 0.8 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.4, type: "spring" }}
+                      className="text-5xl font-bold text-[#082829] mb-2"
+                    >
                       {dashboardData.weather.temperature}°C
-                    </div>
-                    <div className="text-[#082829]/70 capitalize font-medium">
+                    </motion.div>
+                    <div className="text-[#082829]/70 capitalize font-medium text-lg">
                       {dashboardData.weather.condition}
                     </div>
                     <div className="text-[#082829]/50 text-sm mt-1">
@@ -225,28 +255,48 @@ const FarmerDashboard = ({ user, onLogout }) => {
                     </div>
                   </motion.div>
                   
-                  <div className="grid grid-cols-3 gap-4">
+                  {/* Animated Weather Illustration */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4, type: "spring" }}
+                    className="h-32 w-full"
+                  >
+                    <WeatherIllustration condition={dashboardData.weather.condition} />
+                  </motion.div>
+                  
+                  {/* Weather stats - left aligned grid */}
+                  <div className="grid grid-cols-3 gap-3">
                     <motion.div 
-                      whileHover={{ y: -5 }}
-                      className="flex flex-col items-center p-3 bg-[#082829]/5 rounded-xl"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                      className="flex flex-col items-start p-3 bg-[#082829]/5 rounded-xl"
                     >
-                      <Wind className="w-6 h-6 text-[#082829] mb-2" />
+                      <Wind className="w-5 h-5 text-[#082829] mb-2" />
                       <span className="text-xs text-[#082829]/60 mb-1">Wind</span>
                       <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.windSpeed} km/h</span>
                     </motion.div>
                     <motion.div 
-                      whileHover={{ y: -5 }}
-                      className="flex flex-col items-center p-3 bg-[#082829]/5 rounded-xl"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.6 }}
+                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                      className="flex flex-col items-start p-3 bg-[#082829]/5 rounded-xl"
                     >
-                      <Droplets className="w-6 h-6 text-[#082829] mb-2" />
+                      <Droplets className="w-5 h-5 text-[#082829] mb-2" />
                       <span className="text-xs text-[#082829]/60 mb-1">Humidity</span>
                       <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.humidity}%</span>
                     </motion.div>
                     <motion.div 
-                      whileHover={{ y: -5 }}
-                      className="flex flex-col items-center p-3 bg-[#082829]/5 rounded-xl"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                      className="flex flex-col items-start p-3 bg-[#082829]/5 rounded-xl"
                     >
-                      <CloudRain className="w-6 h-6 text-[#082829] mb-2" />
+                      <CloudRain className="w-5 h-5 text-[#082829] mb-2" />
                       <span className="text-xs text-[#082829]/60 mb-1">Rain</span>
                       <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.rainChance}%</span>
                     </motion.div>
@@ -266,7 +316,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/harvest-countdown'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group -mt-80 h-[18.75rem]"
           >
             {/* Animated pulse effect */}
             <motion.div
@@ -393,7 +443,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.01, y: -5 }}
             whileTap={{ scale: 0.99 }}
             onClick={() => window.location.href = '/leaderboard'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group row-span-2"
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group -mt-[18.5rem] h-[35rem]"
           >
             {/* Animated shine effect */}
             <motion.div

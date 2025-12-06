@@ -146,15 +146,19 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ farmerId });
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "Invalid Farmer ID" });
     }
 
     // Compare hashed PIN
     const isValidPin = await bcrypt.compare(pin, user.pin);
 
     if (!isValidPin) {
-      return res.status(400).json({ error: "Wrong PIN" });
+      return res.status(400).json({ error: "Invalid PIN" });
     }
+
+    // Update last login time
+    user.lastLogin = new Date();
+    await user.save();
 
     console.log("✅ Login successful for:", user.farmerId);
     
@@ -163,6 +167,7 @@ router.post('/login', async (req, res) => {
       role: user.role,
       name: user.name,
       farmerId: user.farmerId,
+      email: user.email,
       district: user.district
     });
   } catch (err) {
@@ -239,6 +244,63 @@ router.put('/profile/:farmerId', async (req, res) => {
   } catch (err) {
     console.error('❌ Profile update error:', err);
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// RESET PASSWORD
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { farmerId, email, phone, newPin } = req.body;
+
+    // Validation
+    if (!farmerId || !email || !phone || !newPin) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Validate PIN (4 digits)
+    if (!/^\d{4}$/.test(newPin)) {
+      return res.status(400).json({ error: "PIN must be exactly 4 digits" });
+    }
+
+    // Validate phone number (10 digits)
+    if (!/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
+    }
+
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Find user with matching farmerId, email, and phone
+    const user = await User.findOne({ 
+      farmerId: farmerId.toUpperCase(),
+      email: email,
+      phone: phone
+    });
+
+    if (!user) {
+      return res.status(404).json({ 
+        error: "No account found with these details. Please verify your Farmer ID, email, and phone number." 
+      });
+    }
+
+    // Hash the new PIN
+    const hashedPin = await bcrypt.hash(newPin, 10);
+
+    // Update the PIN
+    user.pin = hashedPin;
+    await user.save();
+
+    console.log(`✅ Password reset successful for ${user.farmerId}`);
+    
+    res.status(200).json({ 
+      message: "Password reset successful",
+      farmerId: user.farmerId
+    });
+  } catch (err) {
+    console.error("❌ Password reset error:", err);
+    res.status(500).json({ error: "Failed to reset password", details: err.message });
   }
 });
 

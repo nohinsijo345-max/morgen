@@ -138,18 +138,103 @@ router.post('/scheme/:schemeId/application/:applicationId', async (req, res) => 
 // Dashboard stats
 router.get('/stats', async (req, res) => {
   try {
-    const totalFarmers = await require('../models/User').countDocuments({ role: 'farmer' });
-    const totalBuyers = await require('../models/User').countDocuments({ role: 'buyer' });
+    const User = require('../models/User');
+    const totalUsers = await User.countDocuments();
+    const totalFarmers = await User.countDocuments({ role: 'farmer' });
+    const totalBuyers = await User.countDocuments({ role: 'buyer' });
+    const subsidyRequests = await User.countDocuments({ subsidyRequested: true });
+    const activeUsers = await User.countDocuments({ isActive: true });
     const activeCrops = await Crop.countDocuments({ status: { $in: ['listed', 'in_auction'] } });
     const activeAuctions = await Auction.countDocuments({ status: 'active' });
     const totalSchemes = await Scheme.countDocuments({ status: 'active' });
     
     res.json({
+      totalUsers,
       totalFarmers,
       totalBuyers,
+      subsidyRequests,
+      activeUsers,
       activeCrops,
       activeAuctions,
       totalSchemes
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all users (for user management)
+router.get('/users', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const users = await User.find()
+      .select('name farmerId phone email createdAt lastLogin subsidyRequested subsidyStatus role isActive district landSize cropTypes')
+      .sort({ createdAt: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete user
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully', user });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Send update to user
+router.post('/send-update', async (req, res) => {
+  try {
+    const { userId, message } = req.body;
+    const Update = require('../models/Update');
+    
+    const update = new Update({
+      title: 'Admin Update',
+      message,
+      targetUsers: [userId],
+      createdBy: 'admin'
+    });
+    
+    await update.save();
+    res.json({ message: 'Update sent successfully', update });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get image settings
+router.get('/images', async (req, res) => {
+  try {
+    // For now, return default images
+    // In production, store these in a Settings collection
+    res.json({
+      loginPage: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1200',
+      registerPage: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1200',
+      forgotPasswordPage: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1200'
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update image settings
+router.post('/images', async (req, res) => {
+  try {
+    const { loginPage, registerPage, forgotPasswordPage } = req.body;
+    
+    // In production, save to Settings collection
+    // For now, just return success
+    res.json({ 
+      message: 'Images updated successfully',
+      images: { loginPage, registerPage, forgotPasswordPage }
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
