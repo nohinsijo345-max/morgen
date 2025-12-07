@@ -70,7 +70,7 @@ const RainEffect = () => (
   </div>
 );
 
-// Ultra Realistic Person for Weather Page
+// Cinematic Sky Scene - No Character, Focus on Atmosphere
 const WeatherPerson = ({ condition, isNight }) => {
   const getScene = () => {
     if (isNight) return 'night';
@@ -85,244 +85,126 @@ const WeatherPerson = ({ condition, isNight }) => {
 
   return (
     <motion.div 
-      className="w-full h-80 flex items-end justify-center"
+      className="w-full h-80 relative overflow-hidden rounded-3xl"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.6 }}
     >
-      <svg viewBox="0 0 200 280" className="h-full drop-shadow-2xl">
-        {/* Ground */}
-        <ellipse cx="100" cy="275" rx="60" ry="8" fill="rgba(0,0,0,0.1)" />
-        
-        {scene === 'rainy' && (
-          <g>
-            {/* Large umbrella */}
-            <motion.g animate={{ rotate: [-1, 1, -1] }} transition={{ duration: 5, repeat: Infinity }} style={{ transformOrigin: '100px 80px' }}>
-              <path d="M100 30 L100 160" stroke="#1a365d" strokeWidth="5" strokeLinecap="round" />
-              <ellipse cx="100" cy="30" rx="70" ry="35" fill="#2c5282" />
-              <ellipse cx="100" cy="30" rx="65" ry="30" fill="#3182ce" />
-              <path d="M35 30 Q100 -15 165 30" fill="#4299e1" />
-            </motion.g>
-            {/* Person */}
-            <circle cx="100" cy="145" r="20" fill="#deb887" />
-            <path d="M80 138 Q100 125 120 138" fill="#4a3728" />
-            <circle cx="92" cy="143" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="143" r="3" fill="#2c3e50" />
-            <path d="M95 152 Q100 156 105 152" stroke="#8b7355" strokeWidth="2" fill="none" />
-            {/* Raincoat */}
-            <path d="M100 165 L100 230" stroke="#0d9488" strokeWidth="40" strokeLinecap="round" />
-            <path d="M70 175 L50 210" stroke="#0d9488" strokeWidth="14" strokeLinecap="round" />
-            <path d="M130 175 L145 155" stroke="#0d9488" strokeWidth="14" strokeLinecap="round" />
-            {/* Legs */}
-            <path d="M85 230 L80 268" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 230 L120 268" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            {/* Boots */}
-            <ellipse cx="80" cy="270" rx="14" ry="6" fill="#2c3e50" />
-            <ellipse cx="120" cy="270" rx="14" ry="6" fill="#2c3e50" />
-          </g>
-        )}
-
-        {scene === 'sunny' && (
-          <g>
-            {/* Farmer working */}
-            <circle cx="100" cy="120" r="22" fill="#deb887" />
-            {/* Straw hat */}
-            <ellipse cx="100" cy="105" rx="35" ry="10" fill="#d4a574" />
-            <path d="M75 105 Q100 80 125 105" fill="#c4956a" />
-            <ellipse cx="100" cy="105" rx="28" ry="7" fill="#e4b584" />
-            {/* Face */}
-            <circle cx="92" cy="118" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="118" r="3" fill="#2c3e50" />
-            <path d="M95 128 Q100 133 105 128" stroke="#8b7355" strokeWidth="2" fill="none" />
-            {/* Shirt */}
-            <path d="M100 142 L100 210" stroke="#3498db" strokeWidth="38" strokeLinecap="round" />
-            <path d="M85 145 L100 158 L115 145" stroke="#2980b9" strokeWidth="4" fill="none" />
-            {/* Arms - one holding tool */}
-            <motion.g animate={{ rotate: [0, -5, 0] }} transition={{ duration: 2, repeat: Infinity }} style={{ transformOrigin: '70px 160px' }}>
-              <path d="M70 160 L40 130" stroke="#deb887" strokeWidth="12" strokeLinecap="round" />
-              {/* Hoe/tool */}
-              <path d="M35 125 L25 115" stroke="#8b4513" strokeWidth="4" strokeLinecap="round" />
-              <path d="M20 110 L35 120" stroke="#6b7280" strokeWidth="6" strokeLinecap="round" />
-            </motion.g>
-            <path d="M130 160 L155 190" stroke="#deb887" strokeWidth="12" strokeLinecap="round" />
-            {/* Pants */}
-            <path d="M85 210 L80 265" stroke="#7f8c8d" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 210 L120 265" stroke="#7f8c8d" strokeWidth="16" strokeLinecap="round" />
-            {/* Work boots */}
-            <ellipse cx="80" cy="268" rx="14" ry="6" fill="#8b4513" />
-            <ellipse cx="120" cy="268" rx="14" ry="6" fill="#8b4513" />
-          </g>
-        )}
-
-        {scene === 'cloudy' && (
-          <g>
-            {/* Person walking with coffee */}
-            <circle cx="100" cy="125" r="20" fill="#deb887" />
-            <path d="M80 118 Q100 105 120 118" fill="#3d2314" />
-            <circle cx="92" cy="123" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="123" r="3" fill="#2c3e50" />
-            {/* Jacket */}
-            <path d="M100 145 L100 215" stroke="#34495e" strokeWidth="38" strokeLinecap="round" />
-            <line x1="100" y1="148" x2="100" y2="215" stroke="#2c3e50" strokeWidth="3" />
-            {/* Arms */}
-            <path d="M68 160 L55 195" stroke="#34495e" strokeWidth="14" strokeLinecap="round" />
-            <path d="M132 160 L150 180" stroke="#34495e" strokeWidth="14" strokeLinecap="round" />
-            {/* Coffee cup */}
-            <rect x="145" y="175" width="15" height="20" rx="3" fill="#ecf0f1" />
-            <rect x="145" y="175" width="15" height="5" rx="2" fill="#bdc3c7" />
-            {/* Pants */}
-            <path d="M85 215 L80 265" stroke="#bdc3c7" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 215 L120 265" stroke="#bdc3c7" strokeWidth="16" strokeLinecap="round" />
-            {/* Sneakers */}
-            <ellipse cx="80" cy="268" rx="14" ry="6" fill="#ecf0f1" />
-            <ellipse cx="120" cy="268" rx="14" ry="6" fill="#ecf0f1" />
-          </g>
-        )}
-
-        {scene === 'night' && (
-          <g>
-            {/* Ultra Realistic Person Stargazing with Phone */}
+      {/* Cinematic Sky Background - No Character */}
+      {scene === 'night' && (
+        <div className="absolute inset-0">
+          {/* Ultra Realistic Night Sky with Gradients */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(to bottom, #0a0e27 0%, #1a1f3a 30%, #2d1b4e 60%, #4a2c5e 100%)',
+            }}
+          />
+          
+          {/* Milky Way Effect */}
+          <div 
+            className="absolute inset-0 opacity-30"
+            style={{
+              background: 'radial-gradient(ellipse at 30% 20%, rgba(147, 112, 219, 0.3) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(138, 43, 226, 0.2) 0%, transparent 50%)',
+            }}
+          />
+          
+          {/* Realistic Moon with Glow */}
+          <motion.div
+            className="absolute top-16 right-20"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 1 }}
+          >
+            {/* Moon glow */}
+            <motion.div
+              className="absolute -inset-8 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(255, 250, 205, 0.4) 0%, rgba(255, 250, 205, 0.2) 30%, transparent 70%)',
+              }}
+              animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            />
             
-            {/* Body - Modern hoodie with realistic folds */}
-            <defs>
-              <linearGradient id="hoodieGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style={{ stopColor: '#3a4a5c', stopOpacity: 1 }} />
-                <stop offset="50%" style={{ stopColor: '#2c3e50', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#1a252f', stopOpacity: 1 }} />
-              </linearGradient>
-              <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style={{ stopColor: '#f5d5b8', stopOpacity: 1 }} />
-                <stop offset="100%" style={{ stopColor: '#d4a574', stopOpacity: 1 }} />
-              </linearGradient>
-              <radialGradient id="phoneGlow">
-                <stop offset="0%" style={{ stopColor: '#60a5fa', stopOpacity: 0.9 }} />
-                <stop offset="100%" style={{ stopColor: '#3b82f6', stopOpacity: 0.3 }} />
-              </radialGradient>
-            </defs>
-            
-            {/* Torso - hoodie with depth */}
-            <ellipse cx="100" cy="180" rx="32" ry="45" fill="url(#hoodieGrad)" />
-            <path d="M68 165 Q100 155 132 165" stroke="#4a5a6c" strokeWidth="2" fill="none" />
-            
-            {/* Hood */}
-            <path d="M70 135 Q100 115 130 135 L130 155 Q100 145 70 155 Z" fill="#34495e" />
-            <path d="M75 140 Q100 125 125 140" stroke="#4a5a6c" strokeWidth="1.5" fill="none" />
-            
-            {/* Neck */}
-            <rect x="92" y="145" width="16" height="12" rx="3" fill="url(#skinGrad)" />
-            
-            {/* Head - realistic proportions */}
-            <ellipse cx="100" cy="130" rx="18" ry="22" fill="url(#skinGrad)" />
-            
-            {/* Ear detail */}
-            <ellipse cx="82" cy="132" rx="3" ry="5" fill="#d4a574" opacity="0.8" />
-            <ellipse cx="118" cy="132" rx="3" ry="5" fill="#d4a574" opacity="0.8" />
-            
-            {/* Hair - modern style */}
-            <path d="M82 115 Q100 105 118 115 Q120 120 118 128 Q100 118 82 128 Q80 120 82 115" fill="#2c1810" />
-            <path d="M85 112 Q100 108 115 112" stroke="#1a0f08" strokeWidth="1.5" fill="none" />
-            
-            {/* Eyebrows */}
-            <path d="M88 122 Q92 120 96 121" stroke="#3d2314" strokeWidth="1.5" strokeLinecap="round" />
-            <path d="M104 121 Q108 120 112 122" stroke="#3d2314" strokeWidth="1.5" strokeLinecap="round" />
-            
-            {/* Eyes looking up at stars - detailed */}
-            <ellipse cx="92" cy="127" rx="4" ry="5" fill="white" />
-            <ellipse cx="108" cy="127" rx="4" ry="5" fill="white" />
-            <circle cx="92" cy="125" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="125" r="3" fill="#2c3e50" />
-            <circle cx="93" cy="124" r="1.5" fill="white" opacity="0.9" />
-            <circle cx="109" cy="124" r="1.5" fill="white" opacity="0.9" />
-            
-            {/* Nose - subtle */}
-            <path d="M100 132 L98 136 L100 137" stroke="#c4956a" strokeWidth="1" fill="none" />
-            
-            {/* Mouth - slight smile */}
-            <path d="M95 140 Q100 142 105 140" stroke="#b8876a" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-            
-            {/* Right arm holding phone up */}
-            <motion.g animate={{ rotate: [-2, 2, -2] }} transition={{ duration: 4, repeat: Infinity }} style={{ transformOrigin: '130px 170px' }}>
-              <path d="M130 170 L145 140" stroke="url(#hoodieGrad)" strokeWidth="13" strokeLinecap="round" />
-              <path d="M132 168 L147 138" stroke="#4a5a6c" strokeWidth="2" />
-              {/* Hand */}
-              <ellipse cx="148" cy="135" rx="7" ry="9" fill="url(#skinGrad)" />
-              {/* Fingers holding phone */}
-              <path d="M145 130 L143 125" stroke="#d4a574" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M148 129 L148 124" stroke="#d4a574" strokeWidth="2.5" strokeLinecap="round" />
-              <path d="M151 130 L153 125" stroke="#d4a574" strokeWidth="2.5" strokeLinecap="round" />
-              
-              {/* Phone with glowing screen */}
-              <rect x="140" y="115" width="16" height="28" rx="2" fill="#1a1a1a" />
-              <rect x="141" y="117" width="14" height="24" rx="1" fill="url(#phoneGlow)" />
-              <motion.rect 
-                x="141" y="117" width="14" height="24" rx="1" 
-                fill="url(#phoneGlow)"
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              {/* Phone camera */}
-              <circle cx="148" cy="119" r="1" fill="#4a5a6c" />
-            </motion.g>
-            
-            {/* Left arm relaxed */}
-            <path d="M70 170 L55 200" stroke="url(#hoodieGrad)" strokeWidth="13" strokeLinecap="round" />
-            <path d="M72 168 L57 198" stroke="#4a5a6c" strokeWidth="2" />
-            {/* Left hand in pocket */}
-            <ellipse cx="52" cy="203" rx="6" ry="8" fill="url(#skinGrad)" />
-            
-            {/* Hoodie pocket */}
-            <rect x="85" y="190" width="30" height="15" rx="3" fill="#1a252f" opacity="0.6" />
-            
-            {/* Pants - modern jeans with shading */}
-            <path d="M85 225 L82 268" stroke="#34495e" strokeWidth="17" strokeLinecap="round" />
-            <path d="M115 225 L118 268" stroke="#34495e" strokeWidth="17" strokeLinecap="round" />
-            {/* Jean seams */}
-            <path d="M85 225 L82 268" stroke="#4a5a6c" strokeWidth="1.5" />
-            <path d="M115 225 L118 268" stroke="#4a5a6c" strokeWidth="1.5" />
-            
-            {/* Sneakers - detailed */}
-            <ellipse cx="82" cy="270" rx="15" ry="7" fill="#2c3e50" />
-            <ellipse cx="118" cy="270" rx="15" ry="7" fill="#2c3e50" />
-            <ellipse cx="82" cy="269" rx="13" ry="5" fill="#34495e" />
-            <ellipse cx="118" cy="269" rx="13" ry="5" fill="#34495e" />
-            {/* Shoe laces */}
-            <path d="M78 268 L86 268" stroke="#7f8c8d" strokeWidth="0.5" />
-            <path d="M114 268 L122 268" stroke="#7f8c8d" strokeWidth="0.5" />
-            
-            {/* Phone light glow on face */}
-            <ellipse cx="100" cy="135" rx="12" ry="15" fill="#60a5fa" opacity="0.15" />
-          </g>
-        )}
-
-        {scene === 'snowy' && (
-          <g>
-            {/* Person bundled up */}
-            <circle cx="100" cy="120" r="20" fill="#deb887" />
-            {/* Winter hat */}
-            <path d="M75 115 Q100 85 125 115" fill="#e74c3c" />
-            <ellipse cx="100" cy="115" rx="28" ry="8" fill="#f5f5dc" />
-            <circle cx="100" cy="82" r="10" fill="#f5f5dc" />
-            {/* Scarf */}
-            <rect x="78" cy="135" width="44" height="18" rx="4" fill="#f39c12" />
-            {/* Eyes */}
-            <circle cx="92" cy="118" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="118" r="3" fill="#2c3e50" />
-            {/* Puffy jacket */}
-            <path d="M100 153 L100 220" stroke="#3498db" strokeWidth="45" strokeLinecap="round" />
-            {/* Arms */}
-            <path d="M60 165 L30 200" stroke="#3498db" strokeWidth="18" strokeLinecap="round" />
-            <path d="M140 165 L170 200" stroke="#3498db" strokeWidth="18" strokeLinecap="round" />
-            {/* Gloves */}
-            <circle cx="25" cy="205" r="12" fill="#2c3e50" />
-            <circle cx="175" cy="205" r="12" fill="#2c3e50" />
-            {/* Pants */}
-            <path d="M85 220 L80 262" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 220 L120 262" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            {/* Snow boots */}
-            <ellipse cx="80" cy="265" rx="16" ry="8" fill="#2c3e50" />
-            <ellipse cx="120" cy="265" rx="16" ry="8" fill="#2c3e50" />
-          </g>
-        )}
+            {/* Moon body */}
+            <div 
+              className="w-24 h-24 rounded-full relative"
+              style={{
+                background: 'radial-gradient(circle at 35% 35%, #fffacd 0%, #f5e6d3 40%, #e8d5c4 100%)',
+                boxShadow: '0 0 40px 10px rgba(255, 250, 205, 0.5), inset -10px -10px 20px rgba(0, 0, 0, 0.2)',
+              }}
+            >
+              {/* Moon craters */}
+              <div className="absolute top-4 left-6 w-4 h-4 rounded-full bg-black/10" />
+              <div className="absolute top-10 right-6 w-3 h-3 rounded-full bg-black/8" />
+              <div className="absolute bottom-8 left-8 w-5 h-5 rounded-full bg-black/12" />
+              <div className="absolute top-12 left-12 w-2 h-2 rounded-full bg-black/10" />
+            </div>
+          </motion.div>
+          
+          {/* Twinkling Stars - Multiple Layers */}
+          {[...Array(60)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 70}%`,
+                boxShadow: '0 0 2px 1px rgba(255, 255, 255, 0.5)',
+              }}
+              animate={{
+                opacity: [0.2, 1, 0.2],
+                scale: [0.8, 1.2, 0.8],
+              }}
+              transition={{
+                duration: 2 + Math.random() * 3,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+          
+          {/* Shooting Star */}
+          <motion.div
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{
+              boxShadow: '0 0 4px 2px rgba(255, 255, 255, 0.8)',
+            }}
+            initial={{ x: '10%', y: '10%', opacity: 0 }}
+            animate={{
+              x: ['10%', '90%'],
+              y: ['10%', '60%'],
+              opacity: [0, 1, 1, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              repeatDelay: 8,
+              ease: 'easeOut',
+            }}
+          >
+            <div 
+              className="absolute w-20 h-0.5 -left-20 top-0"
+              style={{
+                background: 'linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8))',
+              }}
+            />
+          </motion.div>
+          
+          {/* Atmospheric Clouds at Bottom */}
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-32"
+            style={{
+              background: 'linear-gradient(to top, rgba(26, 31, 58, 0.6) 0%, transparent 100%)',
+            }}
+          />
+        </div>
+      )}
+      
+      {/* Keep other weather scenes simple without characters */}
+      <svg viewBox="0 0 200 280" className="h-full w-full opacity-0">
+        {/* Placeholder to maintain structure */}
+        <rect width="200" height="280" fill="transparent" />
       </svg>
     </motion.div>
   );
