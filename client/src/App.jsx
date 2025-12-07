@@ -7,6 +7,7 @@ import FarmerDashboard from "./pages/FarmerDashboard";
 import Admin from "./pages/Admin";
 import Updates from "./pages/Updates";
 import AccountCentre from "./pages/AccountCentre";
+import Weather from "./pages/Weather";
 
 export default function App() {
   const [farmerUser, setFarmerUser] = useState(null);
@@ -77,6 +78,10 @@ export default function App() {
         <Route 
           path="/account" 
           element={farmerUser ? <AccountCentre /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/weather" 
+          element={farmerUser ? <Weather /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/admin" 

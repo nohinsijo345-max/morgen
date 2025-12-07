@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { 
   User, 
   Users, 
-  Cloud, 
   Timer, 
   Trophy, 
   Truck, 
@@ -11,14 +10,10 @@ import {
   Gavel, 
   Stethoscope,
   Bell,
-  Sun,
-  CloudRain,
-  Wind,
-  Droplets,
   LogOut
 } from 'lucide-react';
 import axios from 'axios';
-import WeatherIllustration from '../components/WeatherIllustration';
+import WeatherCard from '../components/WeatherCard';
 
 const FarmerDashboard = ({ user, onLogout }) => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -40,15 +35,6 @@ const FarmerDashboard = ({ user, onLogout }) => {
       console.error('Error details:', error.response?.data || error.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getWeatherIcon = (condition) => {
-    switch (condition) {
-      case 'sunny': return <Sun className="w-8 h-8 text-yellow-500" />;
-      case 'rainy': return <CloudRain className="w-8 h-8 text-blue-500" />;
-      case 'cloudy': return <Cloud className="w-8 h-8 text-gray-500" />;
-      default: return <Sun className="w-8 h-8 text-yellow-500" />;
     }
   };
 
@@ -197,116 +183,9 @@ const FarmerDashboard = ({ user, onLogout }) => {
           </motion.div>
 
           {/* Top Right - Weather Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            whileHover={{ scale: 1.01 }}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl relative overflow-hidden"
-          >
-            {/* Animated weather background */}
-            <motion.div 
-              animate={{ 
-                backgroundPosition: ['0% 0%', '100% 100%'],
-              }}
-              transition={{ duration: 20, repeat: Infinity, repeatType: "reverse" }}
-              className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: 'radial-gradient(circle, #082829 1px, transparent 1px)',
-                backgroundSize: '20px 20px'
-              }}
-            />
-            
-            <div className="relative z-10">
-              {/* Header with title on left, icon on top-right */}
-              <div className="flex items-start justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#082829]">Weather</h2>
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                >
-                  {dashboardData?.weather && getWeatherIcon(dashboardData.weather.condition)}
-                </motion.div>
-              </div>
-              
-              {dashboardData?.weather ? (
-                <div className="space-y-6">
-                  {/* Temperature and condition - left aligned */}
-                  <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-left"
-                  >
-                    <motion.div 
-                      initial={{ scale: 0.8 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.4, type: "spring" }}
-                      className="text-5xl font-bold text-[#082829] mb-2"
-                    >
-                      {dashboardData.weather.temperature}°C
-                    </motion.div>
-                    <div className="text-[#082829]/70 capitalize font-medium text-lg">
-                      {dashboardData.weather.condition}
-                    </div>
-                    <div className="text-[#082829]/50 text-sm mt-1">
-                      {dashboardData.weather.location}
-                    </div>
-                  </motion.div>
-                  
-                  {/* Animated Weather Illustration */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4, type: "spring" }}
-                    className="h-32 w-full"
-                  >
-                    <WeatherIllustration condition={dashboardData.weather.condition} />
-                  </motion.div>
-                  
-                  {/* Weather stats - left aligned grid */}
-                  <div className="grid grid-cols-3 gap-3">
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                      className="flex flex-col items-start p-3 bg-[#082829]/5 rounded-xl"
-                    >
-                      <Wind className="w-5 h-5 text-[#082829] mb-2" />
-                      <span className="text-xs text-[#082829]/60 mb-1">Wind</span>
-                      <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.windSpeed} km/h</span>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.6 }}
-                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                      className="flex flex-col items-start p-3 bg-[#082829]/5 rounded-xl"
-                    >
-                      <Droplets className="w-5 h-5 text-[#082829] mb-2" />
-                      <span className="text-xs text-[#082829]/60 mb-1">Humidity</span>
-                      <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.humidity}%</span>
-                    </motion.div>
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.7 }}
-                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                      className="flex flex-col items-start p-3 bg-[#082829]/5 rounded-xl"
-                    >
-                      <CloudRain className="w-5 h-5 text-[#082829] mb-2" />
-                      <span className="text-xs text-[#082829]/60 mb-1">Rain</span>
-                      <span className="text-sm font-bold text-[#082829]">{dashboardData.weather.rainChance}%</span>
-                    </motion.div>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center text-[#082829]/70 py-8">Weather data unavailable</div>
-              )}
-            </div>
-          </motion.div>
+          <div className="row-span-2">
+            <WeatherCard weather={dashboardData?.weather} onClick={() => window.location.href = '/weather'} />
+          </div>
 
           {/* Middle Left - Countdown Card */}
           <motion.div
@@ -316,7 +195,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/harvest-countdown'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group -mt-80 h-[18.75rem]"
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group h-[18.75rem]"
           >
             {/* Animated pulse effect */}
             <motion.div
@@ -443,7 +322,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.01, y: -5 }}
             whileTap={{ scale: 0.99 }}
             onClick={() => window.location.href = '/leaderboard'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group -mt-80 h-[35rem]"
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group h-[22rem]"
           >
             {/* Animated shine effect */}
             <motion.div
