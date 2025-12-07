@@ -307,9 +307,9 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-4 text-[#082829]/70 relative z-10">
-                <Bell className="w-12 h-12 text-[#082829]/20 mx-auto mb-2" />
-                <p className="font-medium text-sm">No updates available</p>
+              <div className="flex flex-col items-center justify-center text-center py-12 text-[#082829]/70 relative z-10">
+                <Bell className="w-16 h-16 text-[#082829]/20 mb-3" />
+                <p className="font-medium">No updates available</p>
               </div>
             )}
           </motion.div>
