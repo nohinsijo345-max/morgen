@@ -376,9 +376,6 @@ router.post('/profile-requests/:requestId/reject', async (req, res) => {
   }
 });
 
-module.exports = router;
-
-
 // Image Settings Management
 const Settings = require('../models/Settings');
 const multer = require('multer');
@@ -492,3 +489,5 @@ router.post('/images', async (req, res) => {
     res.status(500).json({ error: 'Failed to save images' });
   }
 });
+
+module.exports = router;
