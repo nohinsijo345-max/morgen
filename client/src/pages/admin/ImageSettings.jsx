@@ -99,29 +99,17 @@ const ImageSettings = () => {
         }
       }
 
-      // Only include images that were actually uploaded in this session
-      const imagesToSave = {};
-      for (const [key, value] of Object.entries(updatedImages)) {
-        if (value && value.startsWith('http://localhost:5050/uploads/')) {
-          imagesToSave[key] = value;
-        }
-      }
-
-      console.log('💾 Attempting to save to database:', imagesToSave);
+      console.log('💾 Attempting to save to database:', updatedImages);
       console.log('API URL:', `${API_URL}/api/admin/images`);
 
-      // Save image paths to database (only newly uploaded ones)
-      if (Object.keys(imagesToSave).length > 0) {
-        const saveResponse = await axios.post(`${API_URL}/api/admin/images`, imagesToSave);
-        console.log('✅ Save response:', saveResponse.data);
-        console.log('✅ Database save successful!');
-        
-        // Update local state with new images
-        setImages(updatedImages);
-        setPreviews(updatedImages);
-      } else {
-        console.log('⚠️ No new images to save');
-      }
+      // Save ALL image paths to database
+      const saveResponse = await axios.post(`${API_URL}/api/admin/images`, updatedImages);
+      console.log('✅ Save response:', saveResponse.data);
+      console.log('✅ Database save successful!');
+      
+      // Update local state with new images
+      setImages(updatedImages);
+      setPreviews(updatedImages);
       
       alert('Images updated successfully!');
       setSelectedFiles({
