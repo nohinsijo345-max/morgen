@@ -187,7 +187,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             <WeatherCard weather={dashboardData?.weather} onClick={() => window.location.href = '/weather'} />
           </div>
 
-          {/* Middle Left - Countdown Card */}
+          {/* Countdown Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -195,7 +195,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/harvest-countdown'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group h-[18.75rem]"
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             {/* Animated pulse effect */}
             <motion.div
@@ -267,7 +267,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             )}
           </motion.div>
 
-          {/* Middle Right - Updates Card */}
+          {/* Updates Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -275,7 +275,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/updates'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group h-[18.75rem]"
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-6 relative z-10">
               <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg relative">
@@ -314,7 +314,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             )}
           </motion.div>
 
-          {/* Bottom Left - Leaderboard Card */}
+          {/* Leaderboard Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -322,7 +322,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.01, y: -5 }}
             whileTap={{ scale: 0.99 }}
             onClick={() => window.location.href = '/leaderboard'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group h-[22rem]"
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             {/* Animated shine effect */}
             <motion.div
@@ -360,7 +360,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             </div>
           </motion.div>
 
-          {/* Bottom Right - Transport Card */}
+          {/* Local Transport Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
