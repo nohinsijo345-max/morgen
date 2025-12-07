@@ -99,7 +99,12 @@ const ImageSettings = () => {
       console.log('💾 Saving to database:', updatedImages);
 
       // Save image paths to database
-      await axios.post(`${API_URL}/api/admin/images`, updatedImages);
+      const saveResponse = await axios.post(`${API_URL}/api/admin/images`, updatedImages);
+      console.log('✅ Save response:', saveResponse.data);
+      
+      // Update local state with new images
+      setImages(updatedImages);
+      setPreviews(updatedImages);
       
       alert('Images updated successfully!');
       setSelectedFiles({
@@ -107,10 +112,10 @@ const ImageSettings = () => {
         registerPage: null,
         forgotPasswordPage: null
       });
-      fetchImages();
     } catch (error) {
-      console.error('Failed to save images:', error);
-      alert('Failed to save images: ' + (error.response?.data?.message || error.message));
+      console.error('❌ Failed to save images:', error);
+      console.error('Error details:', error.response?.data);
+      alert('Failed to save images: ' + (error.response?.data?.error || error.message));
     } finally {
       setSaving(false);
     }
