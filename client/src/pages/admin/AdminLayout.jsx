@@ -6,7 +6,9 @@ import {
   Users, 
   LogOut,
   Menu,
-  X
+  X,
+  MessageSquare,
+  UserCog
 } from 'lucide-react';
 
 const AdminLayout = ({ children, activePage, onNavigate, onLogout }) => {
@@ -16,6 +18,8 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout }) => {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'images', label: 'Login Images', icon: Image },
     { id: 'users', label: 'Users', icon: Users },
+    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'profile-requests', label: 'Profile Requests', icon: UserCog },
   ];
 
   return (

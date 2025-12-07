@@ -62,7 +62,7 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex relative overflow-hidden bg-white">
       {/* Left Panel - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-8 lg:px-16 relative z-10">
+      <div className="w-full lg:w-1/2 flex items-start justify-center px-8 lg:px-16 py-8 relative z-10 overflow-y-auto">
         <AnimatePresence mode="wait">
           {step === 1 ? (
             <motion.div

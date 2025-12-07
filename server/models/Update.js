@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const UpdateSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  title: { type: String, default: 'Admin Update' },
   message: { type: String, required: true },
   type: { 
     type: String, 
@@ -14,7 +15,7 @@ const UpdateSchema = new mongoose.Schema({
     default: 'medium' 
   },
   isActive: { type: Boolean, default: true },
-  createdBy: { type: String, required: true },
+  createdBy: { type: String, default: 'admin' },
   createdAt: { type: Date, default: Date.now }
 });
 

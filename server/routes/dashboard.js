@@ -24,8 +24,11 @@ router.get('/farmer/:farmerId', async (req, res) => {
     // Get farmer's crops with harvest countdown
     const crops = await Crop.find({ farmerId }).sort({ harvestDate: 1 });
     
-    // Get recent updates
-    const updates = await Update.find({ isActive: true })
+    // Get recent updates for this specific farmer
+    const updates = await Update.find({ 
+      userId: farmer._id,
+      isActive: true 
+    })
       .sort({ createdAt: -1 })
       .limit(4);
     

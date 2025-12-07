@@ -66,6 +66,11 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
     }
 
+    // City validation - must contain at least one letter
+    if (city && !/[a-zA-Z]/.test(city)) {
+      return res.status(400).json({ error: "City name must contain at least one letter" });
+    }
+
     // Check if user already exists
     const existingUser = await User.findOne({ 
       $or: [{ phone }, ...(email ? [{ email }] : [])] 
@@ -244,6 +249,43 @@ router.put('/profile/:farmerId', async (req, res) => {
   } catch (err) {
     console.error('❌ Profile update error:', err);
     res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// CHANGE PASSWORD (for logged-in users)
+router.post('/change-password', async (req, res) => {
+  try {
+    const { farmerId, currentPin, newPin } = req.body;
+
+    if (!farmerId || !currentPin || !newPin) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (!/^\d{4}$/.test(newPin)) {
+      return res.status(400).json({ error: "New PIN must be exactly 4 digits" });
+    }
+
+    const user = await User.findOne({ farmerId: farmerId.toUpperCase() });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Verify current PIN
+    const isValidPin = await bcrypt.compare(currentPin, user.pin);
+    if (!isValidPin) {
+      return res.status(400).json({ error: "Current PIN is incorrect" });
+    }
+
+    // Hash and update new PIN
+    const hashedPin = await bcrypt.hash(newPin, 10);
+    user.pin = hashedPin;
+    await user.save();
+
+    console.log(`✅ Password changed for ${farmerId}`);
+    res.json({ message: 'Password changed successfully' });
+  } catch (err) {
+    console.error('Password change error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

@@ -5,6 +5,8 @@ import AdminLogin from "./pages/AdminLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import FarmerDashboard from "./pages/FarmerDashboard";
 import Admin from "./pages/Admin";
+import Updates from "./pages/Updates";
+import AccountCentre from "./pages/AccountCentre";
 
 export default function App() {
   const [farmerUser, setFarmerUser] = useState(null);
@@ -67,6 +69,14 @@ export default function App() {
         <Route 
           path="/dashboard" 
           element={farmerUser ? <FarmerDashboard user={farmerUser} onLogout={handleFarmerLogout} /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/updates" 
+          element={farmerUser ? <Updates /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/account" 
+          element={farmerUser ? <AccountCentre /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/admin" 

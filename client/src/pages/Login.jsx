@@ -52,10 +52,14 @@ const Login = ({ onLogin }) => {
     fetchLoginImage();
   }, []);
 
-  // Fetch next Farmer ID when signup opens
+  // Fetch next Farmer ID when signup opens and scroll to top
   useEffect(() => {
     if (isSignUp) {
       fetchNextFarmerId();
+      // Scroll to top of register form
+      if (registerFormRef.current) {
+        registerFormRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   }, [isSignUp]);
 
@@ -150,6 +154,13 @@ const Login = ({ onLogin }) => {
 
     if (signUpData.cropTypes.length === 0) {
       setError('Please add at least one crop type');
+      scrollToTop();
+      return;
+    }
+
+    // Validate city - must contain at least one letter
+    if (signUpData.city && !/[a-zA-Z]/.test(signUpData.city)) {
+      setError('City name must contain at least one letter (alphabetic or alphanumeric only)');
       scrollToTop();
       return;
     }
@@ -366,7 +377,7 @@ const Login = ({ onLogin }) => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 50 }}
                 transition={{ duration: 0.4, delay: 0.3 }}
-                className="w-full h-full flex items-center justify-center px-16 py-8 overflow-y-auto"
+                className="w-full h-full flex items-start justify-center px-16 py-8 overflow-y-auto"
                 ref={registerFormRef}
               >
                 <div className="w-full max-w-md">

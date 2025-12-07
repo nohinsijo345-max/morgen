@@ -197,15 +197,18 @@ router.post('/send-update', async (req, res) => {
     const Update = require('../models/Update');
     
     const update = new Update({
+      userId: userId, // Store the specific farmer's ID
       title: 'Admin Update',
       message,
-      targetUsers: [userId],
-      createdBy: 'admin'
+      createdBy: 'admin',
+      isActive: true
     });
     
     await update.save();
+    console.log(`✅ Update sent to user ${userId}`);
     res.json({ message: 'Update sent successfully', update });
   } catch (err) {
+    console.error('Failed to send update:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -237,6 +240,138 @@ router.post('/images', async (req, res) => {
       images: { loginPage, registerPage, forgotPasswordPage }
     });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all messages sent by admin
+router.get('/messages', async (req, res) => {
+  try {
+    const Update = require('../models/Update');
+    const messages = await Update.find()
+      .populate('userId', 'name farmerId email')
+      .sort({ createdAt: -1 });
+    res.json(messages);
+  } catch (err) {
+    console.error('Failed to fetch messages:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete a message
+router.delete('/messages/:messageId', async (req, res) => {
+  try {
+    const Update = require('../models/Update');
+    const { messageId } = req.params;
+    
+    const deletedMessage = await Update.findByIdAndDelete(messageId);
+    
+    if (!deletedMessage) {
+      return res.status(404).json({ error: 'Message not found' });
+    }
+    
+    console.log(`✅ Message deleted: ${messageId}`);
+    res.json({ message: 'Message deleted successfully', deletedMessage });
+  } catch (err) {
+    console.error('Failed to delete message:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all profile change requests
+router.get('/profile-requests', async (req, res) => {
+  try {
+    const ProfileChangeRequest = require('../models/ProfileChangeRequest');
+    const requests = await ProfileChangeRequest.find({ status: 'pending' })
+      .populate('userId', 'name farmerId email phone')
+      .sort({ requestedAt: -1 });
+    
+    // Format response to include farmer details
+    const formattedRequests = requests.map(req => ({
+      _id: req._id,
+      farmer: {
+        name: req.userId?.name,
+        farmerId: req.userId?.farmerId,
+        email: req.userId?.email,
+        phone: req.userId?.phone
+      },
+      changes: req.changes,
+      status: req.status,
+      requestedAt: req.requestedAt
+    }));
+    
+    res.json(formattedRequests);
+  } catch (err) {
+    console.error('Failed to fetch profile requests:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Approve profile change request
+router.post('/profile-requests/:requestId/approve', async (req, res) => {
+  try {
+    const ProfileChangeRequest = require('../models/ProfileChangeRequest');
+    const User = require('../models/User');
+    const { requestId } = req.params;
+    
+    const request = await ProfileChangeRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    
+    if (request.status !== 'pending') {
+      return res.status(400).json({ error: 'Request already processed' });
+    }
+
+    // Validate city if it's being changed
+    if (request.changes.city && !/[a-zA-Z]/.test(request.changes.city)) {
+      return res.status(400).json({ error: 'City name must contain at least one letter' });
+    }
+    
+    // Update user profile with approved changes
+    await User.findByIdAndUpdate(request.userId, {
+      $set: request.changes
+    });
+    
+    // Update request status
+    request.status = 'approved';
+    request.reviewedAt = new Date();
+    request.reviewedBy = 'admin';
+    await request.save();
+    
+    console.log(`✅ Profile change request approved for user ${request.userId}:`, request.changes);
+    res.json({ message: 'Profile change request approved successfully', request });
+  } catch (err) {
+    console.error('Failed to approve request:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Reject profile change request
+router.post('/profile-requests/:requestId/reject', async (req, res) => {
+  try {
+    const ProfileChangeRequest = require('../models/ProfileChangeRequest');
+    const { requestId } = req.params;
+    
+    const request = await ProfileChangeRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    
+    if (request.status !== 'pending') {
+      return res.status(400).json({ error: 'Request already processed' });
+    }
+    
+    // Update request status
+    request.status = 'rejected';
+    request.reviewedAt = new Date();
+    request.reviewedBy = 'admin';
+    await request.save();
+    
+    console.log(`✅ Profile change request rejected for user ${request.userId}`);
+    res.json({ message: 'Profile change request rejected', request });
+  } catch (err) {
+    console.error('Failed to reject request:', err);
     res.status(500).json({ error: err.message });
   }
 });
