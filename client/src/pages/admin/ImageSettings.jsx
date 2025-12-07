@@ -75,6 +75,9 @@ const ImageSettings = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
+      // Create a copy of current images
+      const updatedImages = { ...images };
+      
       // Upload files
       for (const [key, file] of Object.entries(selectedFiles)) {
         if (file) {
@@ -88,12 +91,15 @@ const ImageSettings = () => {
             },
           });
 
-          images[key] = response.data.imagePath;
+          updatedImages[key] = response.data.imagePath;
+          console.log(`✅ Uploaded ${key}:`, response.data.imagePath);
         }
       }
 
+      console.log('💾 Saving to database:', updatedImages);
+
       // Save image paths to database
-      await axios.post(`${API_URL}/api/admin/images`, images);
+      await axios.post(`${API_URL}/api/admin/images`, updatedImages);
       
       alert('Images updated successfully!');
       setSelectedFiles({
