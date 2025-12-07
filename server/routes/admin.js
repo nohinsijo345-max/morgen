@@ -422,7 +422,10 @@ router.post('/upload-image', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const imagePath = `/uploads/images/${req.file.filename}`;
+    // Use relative path that will work with the static file serving
+    const imagePath = `http://localhost:5050/uploads/images/${req.file.filename}`;
+    
+    console.log('📤 Image uploaded:', imagePath);
 
     res.json({ 
       success: true,
@@ -458,29 +461,34 @@ router.post('/images', async (req, res) => {
   try {
     const { loginPage, registerPage, forgotPasswordPage } = req.body;
 
+    console.log('💾 Saving images:', { loginPage, registerPage, forgotPasswordPage });
+
     // Update or create settings
     if (loginPage) {
-      await Settings.findOneAndUpdate(
+      const updated = await Settings.findOneAndUpdate(
         { key: 'loginPageImage' },
         { value: loginPage, updatedAt: new Date() },
-        { upsert: true }
+        { upsert: true, new: true }
       );
+      console.log('✅ Login image saved:', updated);
     }
 
     if (registerPage) {
-      await Settings.findOneAndUpdate(
+      const updated = await Settings.findOneAndUpdate(
         { key: 'registerPageImage' },
         { value: registerPage, updatedAt: new Date() },
-        { upsert: true }
+        { upsert: true, new: true }
       );
+      console.log('✅ Register image saved:', updated);
     }
 
     if (forgotPasswordPage) {
-      await Settings.findOneAndUpdate(
+      const updated = await Settings.findOneAndUpdate(
         { key: 'forgotPasswordPageImage' },
         { value: forgotPasswordPage, updatedAt: new Date() },
-        { upsert: true }
+        { upsert: true, new: true }
       );
+      console.log('✅ Forgot password image saved:', updated);
     }
 
     res.json({ success: true, message: 'Images updated successfully' });
