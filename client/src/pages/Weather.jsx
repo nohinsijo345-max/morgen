@@ -70,170 +70,77 @@ const RainEffect = () => (
   </div>
 );
 
-// Ultra Realistic Person for Weather Page
+// Ultra Realistic Person for Weather Page - Using Real Images
 const WeatherPerson = ({ condition, isNight }) => {
-  const getScene = () => {
-    if (isNight) return 'night';
+  const getCharacterScene = () => {
+    if (isNight) {
+      // Night scene - person with phone looking at stars, cinematic purple/blue
+      return {
+        image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&q=90',
+        alt: 'Person stargazing at night'
+      };
+    }
+    
     const cond = condition?.toLowerCase() || '';
-    if (cond.includes('rain')) return 'rainy';
-    if (cond.includes('cloud')) return 'cloudy';
-    if (cond.includes('snow')) return 'snowy';
-    return 'sunny';
+    if (cond.includes('rain')) {
+      // Rainy - person with umbrella
+      return {
+        image: 'https://images.unsplash.com/photo-1428908728789-d2de25dbd4e2?w=1200&q=90',
+        alt: 'Person with umbrella in rain'
+      };
+    }
+    if (cond.includes('cloud')) {
+      // Cloudy - person outdoors
+      return {
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=90',
+        alt: 'Person on cloudy day'
+      };
+    }
+    if (cond.includes('snow')) {
+      // Snowy - person in winter
+      return {
+        image: 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=1200&q=90',
+        alt: 'Person in snowy weather'
+      };
+    }
+    // Sunny - farmer working
+    return {
+      image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1200&q=90',
+      alt: 'Farmer working in sunny weather'
+    };
   };
 
-  const scene = getScene();
+  const scene = getCharacterScene();
 
   return (
     <motion.div 
-      className="w-full h-80 flex items-end justify-center"
+      className="w-full h-80 flex items-center justify-center relative overflow-hidden rounded-3xl"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.6 }}
     >
-      <svg viewBox="0 0 200 280" className="h-full drop-shadow-2xl">
-        {/* Ground */}
-        <ellipse cx="100" cy="275" rx="60" ry="8" fill="rgba(0,0,0,0.1)" />
-        
-        {scene === 'rainy' && (
-          <g>
-            {/* Large umbrella */}
-            <motion.g animate={{ rotate: [-1, 1, -1] }} transition={{ duration: 5, repeat: Infinity }} style={{ transformOrigin: '100px 80px' }}>
-              <path d="M100 30 L100 160" stroke="#1a365d" strokeWidth="5" strokeLinecap="round" />
-              <ellipse cx="100" cy="30" rx="70" ry="35" fill="#2c5282" />
-              <ellipse cx="100" cy="30" rx="65" ry="30" fill="#3182ce" />
-              <path d="M35 30 Q100 -15 165 30" fill="#4299e1" />
-            </motion.g>
-            {/* Person */}
-            <circle cx="100" cy="145" r="20" fill="#deb887" />
-            <path d="M80 138 Q100 125 120 138" fill="#4a3728" />
-            <circle cx="92" cy="143" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="143" r="3" fill="#2c3e50" />
-            <path d="M95 152 Q100 156 105 152" stroke="#8b7355" strokeWidth="2" fill="none" />
-            {/* Raincoat */}
-            <path d="M100 165 L100 230" stroke="#0d9488" strokeWidth="40" strokeLinecap="round" />
-            <path d="M70 175 L50 210" stroke="#0d9488" strokeWidth="14" strokeLinecap="round" />
-            <path d="M130 175 L145 155" stroke="#0d9488" strokeWidth="14" strokeLinecap="round" />
-            {/* Legs */}
-            <path d="M85 230 L80 268" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 230 L120 268" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            {/* Boots */}
-            <ellipse cx="80" cy="270" rx="14" ry="6" fill="#2c3e50" />
-            <ellipse cx="120" cy="270" rx="14" ry="6" fill="#2c3e50" />
-          </g>
-        )}
-
-        {scene === 'sunny' && (
-          <g>
-            {/* Farmer working */}
-            <circle cx="100" cy="120" r="22" fill="#deb887" />
-            {/* Straw hat */}
-            <ellipse cx="100" cy="105" rx="35" ry="10" fill="#d4a574" />
-            <path d="M75 105 Q100 80 125 105" fill="#c4956a" />
-            <ellipse cx="100" cy="105" rx="28" ry="7" fill="#e4b584" />
-            {/* Face */}
-            <circle cx="92" cy="118" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="118" r="3" fill="#2c3e50" />
-            <path d="M95 128 Q100 133 105 128" stroke="#8b7355" strokeWidth="2" fill="none" />
-            {/* Shirt */}
-            <path d="M100 142 L100 210" stroke="#3498db" strokeWidth="38" strokeLinecap="round" />
-            <path d="M85 145 L100 158 L115 145" stroke="#2980b9" strokeWidth="4" fill="none" />
-            {/* Arms - one holding tool */}
-            <motion.g animate={{ rotate: [0, -5, 0] }} transition={{ duration: 2, repeat: Infinity }} style={{ transformOrigin: '70px 160px' }}>
-              <path d="M70 160 L40 130" stroke="#deb887" strokeWidth="12" strokeLinecap="round" />
-              {/* Hoe/tool */}
-              <path d="M35 125 L25 115" stroke="#8b4513" strokeWidth="4" strokeLinecap="round" />
-              <path d="M20 110 L35 120" stroke="#6b7280" strokeWidth="6" strokeLinecap="round" />
-            </motion.g>
-            <path d="M130 160 L155 190" stroke="#deb887" strokeWidth="12" strokeLinecap="round" />
-            {/* Pants */}
-            <path d="M85 210 L80 265" stroke="#7f8c8d" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 210 L120 265" stroke="#7f8c8d" strokeWidth="16" strokeLinecap="round" />
-            {/* Work boots */}
-            <ellipse cx="80" cy="268" rx="14" ry="6" fill="#8b4513" />
-            <ellipse cx="120" cy="268" rx="14" ry="6" fill="#8b4513" />
-          </g>
-        )}
-
-        {scene === 'cloudy' && (
-          <g>
-            {/* Person walking with coffee */}
-            <circle cx="100" cy="125" r="20" fill="#deb887" />
-            <path d="M80 118 Q100 105 120 118" fill="#3d2314" />
-            <circle cx="92" cy="123" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="123" r="3" fill="#2c3e50" />
-            {/* Jacket */}
-            <path d="M100 145 L100 215" stroke="#34495e" strokeWidth="38" strokeLinecap="round" />
-            <line x1="100" y1="148" x2="100" y2="215" stroke="#2c3e50" strokeWidth="3" />
-            {/* Arms */}
-            <path d="M68 160 L55 195" stroke="#34495e" strokeWidth="14" strokeLinecap="round" />
-            <path d="M132 160 L150 180" stroke="#34495e" strokeWidth="14" strokeLinecap="round" />
-            {/* Coffee cup */}
-            <rect x="145" y="175" width="15" height="20" rx="3" fill="#ecf0f1" />
-            <rect x="145" y="175" width="15" height="5" rx="2" fill="#bdc3c7" />
-            {/* Pants */}
-            <path d="M85 215 L80 265" stroke="#bdc3c7" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 215 L120 265" stroke="#bdc3c7" strokeWidth="16" strokeLinecap="round" />
-            {/* Sneakers */}
-            <ellipse cx="80" cy="268" rx="14" ry="6" fill="#ecf0f1" />
-            <ellipse cx="120" cy="268" rx="14" ry="6" fill="#ecf0f1" />
-          </g>
-        )}
-
-        {scene === 'night' && (
-          <g>
-            {/* Person stargazing */}
-            <circle cx="100" cy="130" r="20" fill="#deb887" />
-            <path d="M80 123 Q100 108 120 123" fill="#3d2314" />
-            {/* Eyes looking up */}
-            <circle cx="92" cy="125" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="125" r="3" fill="#2c3e50" />
-            <ellipse cx="92" cy="124" rx="1" ry="2" fill="white" />
-            <ellipse cx="108" cy="124" rx="1" ry="2" fill="white" />
-            {/* Hoodie */}
-            <path d="M100 150 L100 220" stroke="#2c3e50" strokeWidth="40" strokeLinecap="round" />
-            <path d="M65 140 Q100 125 135 140" stroke="#34495e" strokeWidth="12" fill="none" />
-            {/* Arms relaxed */}
-            <path d="M65 165 L40 200" stroke="#2c3e50" strokeWidth="14" strokeLinecap="round" />
-            <path d="M135 165 L160 200" stroke="#2c3e50" strokeWidth="14" strokeLinecap="round" />
-            {/* Sweatpants */}
-            <path d="M85 220 L80 265" stroke="#34495e" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 220 L120 265" stroke="#34495e" strokeWidth="16" strokeLinecap="round" />
-            {/* Slippers */}
-            <ellipse cx="80" cy="268" rx="14" ry="6" fill="#5d4e37" />
-            <ellipse cx="120" cy="268" rx="14" ry="6" fill="#5d4e37" />
-          </g>
-        )}
-
-        {scene === 'snowy' && (
-          <g>
-            {/* Person bundled up */}
-            <circle cx="100" cy="120" r="20" fill="#deb887" />
-            {/* Winter hat */}
-            <path d="M75 115 Q100 85 125 115" fill="#e74c3c" />
-            <ellipse cx="100" cy="115" rx="28" ry="8" fill="#f5f5dc" />
-            <circle cx="100" cy="82" r="10" fill="#f5f5dc" />
-            {/* Scarf */}
-            <rect x="78" cy="135" width="44" height="18" rx="4" fill="#f39c12" />
-            {/* Eyes */}
-            <circle cx="92" cy="118" r="3" fill="#2c3e50" />
-            <circle cx="108" cy="118" r="3" fill="#2c3e50" />
-            {/* Puffy jacket */}
-            <path d="M100 153 L100 220" stroke="#3498db" strokeWidth="45" strokeLinecap="round" />
-            {/* Arms */}
-            <path d="M60 165 L30 200" stroke="#3498db" strokeWidth="18" strokeLinecap="round" />
-            <path d="M140 165 L170 200" stroke="#3498db" strokeWidth="18" strokeLinecap="round" />
-            {/* Gloves */}
-            <circle cx="25" cy="205" r="12" fill="#2c3e50" />
-            <circle cx="175" cy="205" r="12" fill="#2c3e50" />
-            {/* Pants */}
-            <path d="M85 220 L80 262" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            <path d="M115 220 L120 262" stroke="#5d4e37" strokeWidth="16" strokeLinecap="round" />
-            {/* Snow boots */}
-            <ellipse cx="80" cy="265" rx="16" ry="8" fill="#2c3e50" />
-            <ellipse cx="120" cy="265" rx="16" ry="8" fill="#2c3e50" />
-          </g>
-        )}
-      </svg>
+      {/* Realistic Character Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${scene.image})`,
+          filter: 'contrast(1.1) saturate(1.1) brightness(0.95)',
+        }}
+      />
+      {/* Cinematic gradient overlay */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, transparent 60%)',
+        }}
+      />
+      {/* Subtle vignette effect */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: 'radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.2) 100%)',
+        }}
+      />
     </motion.div>
   );
 };
