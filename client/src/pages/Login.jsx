@@ -10,7 +10,17 @@ const Login = ({ onLogin }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loginImage, setLoginImage] = useState('');
+  const defaultLoginImage = 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80';
+  const defaultRegisterImage = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80';
+  
+  // Initialize with cached images from localStorage or defaults
+  const [loginImage, setLoginImage] = useState(() => {
+    return localStorage.getItem('cachedLoginImage') || defaultLoginImage;
+  });
+  const [registerImage, setRegisterImage] = useState(() => {
+    return localStorage.getItem('cachedRegisterImage') || defaultRegisterImage;
+  });
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   
@@ -39,18 +49,34 @@ const Login = ({ onLogin }) => {
   const registerFormRef = useRef(null);
 
   useEffect(() => {
-    const fetchLoginImage = async () => {
+    const fetchImages = async () => {
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/settings/login-image`);
-        setLoginImage(response.data.imageUrl);
+        const response = await axios.get(`${API_URL}/api/admin/images`);
+        
+        const newLoginImage = response.data.loginPage || defaultLoginImage;
+        const newRegisterImage = response.data.registerPage || defaultRegisterImage;
+        
+        // Cache images in localStorage for instant load on next visit
+        localStorage.setItem('cachedLoginImage', newLoginImage);
+        localStorage.setItem('cachedRegisterImage', newRegisterImage);
+        
+        // Only update state if images changed
+        if (newLoginImage !== loginImage) {
+          setLoginImage(newLoginImage);
+        }
+        if (newRegisterImage !== registerImage) {
+          setRegisterImage(newRegisterImage);
+        }
+        
+        setImagesLoaded(true);
       } catch (err) {
-        // Black farming harvesting machine (photo-id: FJGZFxtQWko)
-        setLoginImage('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+        console.log('Using cached/default images');
+        setImagesLoaded(true);
       }
     };
-    fetchLoginImage();
-  }, []);
+    fetchImages();
+  }, []); // Empty deps - only run once on mount
 
   // Fetch next Farmer ID when signup opens and scroll to top
   useEffect(() => {
@@ -292,7 +318,7 @@ const Login = ({ onLogin }) => {
 
                 <div className="mb-10">
                   <h1 className="text-4xl font-bold text-[#082829] mb-2">Welcome Back</h1>
-                  <p className="text-[#082829]/60">Please enter your credentials to continue</p>
+                  <p className="text-[#082829]/70">Please enter your credentials to continue</p>
                 </div>
 
                 {error && (
@@ -310,7 +336,7 @@ const Login = ({ onLogin }) => {
                       onChange={(e) => setFarmerId(e.target.value)}
                       placeholder="e.g. MGN001"
                       required
-                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                      className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-[#082829] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
                     />
                   </div>
 
@@ -324,7 +350,7 @@ const Login = ({ onLogin }) => {
                         placeholder="Enter your PIN"
                         maxLength="4"
                         required
-                        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all pr-12"
+                        className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-[#082829] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all pr-12"
                       />
                       <button
                         type="button"
@@ -339,7 +365,7 @@ const Login = ({ onLogin }) => {
                   <div className="flex justify-end">
                     <a 
                       href="/forgot-password"
-                      className="text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                      className="text-sm font-medium text-emerald-600 hover:text-[#082829]"
                     >
                       Forgot Password?
                     </a>
@@ -348,7 +374,7 @@ const Login = ({ onLogin }) => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#082829] hover:bg-[#082829]/90 text-[#fbfbef] font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 transition-all"
+                    className="w-full bg-[#082829] hover:bg-[#082829]/90 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 transition-all"
                   >
                     {loading ? 'Signing in...' : 'Sign In'}
                   </button>
@@ -357,7 +383,7 @@ const Login = ({ onLogin }) => {
                 <div className="mt-8 text-center">
                   <p className="text-gray-600">
                     Don't have an account?{' '}
-                    <button onClick={() => setIsSignUp(true)} className="font-semibold text-emerald-600 hover:text-emerald-700">
+                    <button onClick={() => setIsSignUp(true)} className="font-semibold text-emerald-600 hover:text-[#082829]">
                       Sign Up
                     </button>
                   </p>
@@ -388,7 +414,7 @@ const Login = ({ onLogin }) => {
 
                   <div className="mb-10">
                     <h1 className="text-4xl font-bold text-[#082829] mb-2">Create Account</h1>
-                    <p className="text-[#082829]/60">Register here to get started</p>
+                    <p className="text-[#082829]/70">Register here to get started</p>
                   </div>
 
                   {/* Back Button - moved below title */}
@@ -411,14 +437,14 @@ const Login = ({ onLogin }) => {
                   <form onSubmit={handleSignUp} className="space-y-3.5">
                     {/* Full Name */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                      <label className="block text-sm font-medium text-[#082829] mb-2">Full Name</label>
                       <input
                         type="text"
                         value={signUpData.name}
                         onChange={(e) => setSignUpData({...signUpData, name: e.target.value})}
                         placeholder="Enter your full name"
                         required
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[#082829] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                       />
                     </div>
 
@@ -660,14 +686,11 @@ const Login = ({ onLogin }) => {
             <AnimatePresence mode="wait">
               <motion.img
                 key={isSignUp ? 'signup-image' : 'login-image'}
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 1 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                src={isSignUp 
-                  ? 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80'
-                  : loginImage
-                }
+                src={isSignUp ? registerImage : loginImage}
                 alt="Agriculture"
                 className="w-full h-full object-cover"
               />

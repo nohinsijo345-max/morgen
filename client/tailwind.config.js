@@ -8,6 +8,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Orkney', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
+        orkney: ['Orkney', 'sans-serif'],
+      },
       colors: {
         glassBase: "rgba(255,255,255,0.10)",
         glassBorder: "rgba(255,255,255,0.25)",

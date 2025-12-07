@@ -186,9 +186,9 @@ const Weather = () => {
             onClick={() => window.history.back()}
             className="p-3 bg-white/10 backdrop-blur-xl rounded-xl"
           >
-            <ArrowLeft className="w-5 h-5 text-white" />
+            <ArrowLeft className="w-5 h-5 text-[#fbfbef]" />
           </motion.button>
-          <div className="flex items-center gap-2 text-white/80">
+          <div className="flex items-center gap-2 text-[#fbfbef]/80">
             <MapPin className="w-4 h-4" />
             <span className="font-medium">{location}</span>
           </div>
@@ -204,14 +204,14 @@ const Weather = () => {
           transition={{ delay: 0.2 }}
           className="text-center mb-4"
         >
-          <div className="text-8xl font-extralight text-white mb-2">
+          <div className="text-8xl font-extralight text-[#fbfbef] mb-2">
             {weather?.temperature || 28}°
           </div>
-          <div className="text-2xl text-white/90 capitalize flex items-center justify-center gap-2">
+          <div className="text-2xl text-[#fbfbef]/90 capitalize flex items-center justify-center gap-2">
             {isNight ? <Moon className="w-6 h-6" /> : getWeatherIcon(condition, 'w-6 h-6')}
             {isNight ? 'Clear Night' : condition}
           </div>
-          <div className="text-white/60 mt-2">
+          <div className="text-[#fbfbef]/60 mt-2">
             H: {weather?.tempMax || weather?.temperature + 4}° L: {weather?.tempMin || weather?.temperature - 5}°
           </div>
         </motion.div>
@@ -223,7 +223,7 @@ const Weather = () => {
           transition={{ delay: 0.4 }}
           className="bg-white/10 backdrop-blur-xl rounded-3xl p-5 mb-4"
         >
-          <h3 className="text-white/80 text-sm font-medium mb-4">HOURLY FORECAST</h3>
+          <h3 className="text-[#fbfbef]/80 text-sm font-medium mb-4">HOURLY FORECAST</h3>
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {hourlyForecast.map((hour, index) => (
               <motion.div
@@ -233,13 +233,13 @@ const Weather = () => {
                 transition={{ delay: 0.5 + index * 0.03 }}
                 className="flex flex-col items-center min-w-[50px]"
               >
-                <span className="text-white/70 text-xs mb-2">{hour.time}</span>
+                <span className="text-[#fbfbef]/70 text-xs mb-2">{hour.time}</span>
                 {hour.isNight ? (
                   <Moon className="w-6 h-6 text-yellow-200 mb-2" />
                 ) : (
-                  getWeatherIcon(hour.condition, 'w-6 h-6 text-white')
+                  getWeatherIcon(hour.condition, 'w-6 h-6 text-[#fbfbef]')
                 )}
-                <span className="text-white font-medium">{hour.temp}°</span>
+                <span className="text-[#fbfbef] font-medium">{hour.temp}°</span>
               </motion.div>
             ))}
           </div>
@@ -252,7 +252,7 @@ const Weather = () => {
           transition={{ delay: 0.5 }}
           className="bg-white/10 backdrop-blur-xl rounded-3xl p-5 mb-4"
         >
-          <h3 className="text-white/80 text-sm font-medium mb-4">7-DAY FORECAST</h3>
+          <h3 className="text-[#fbfbef]/80 text-sm font-medium mb-4">7-DAY FORECAST</h3>
           <div className="space-y-3">
             {weeklyForecast.map((day, index) => (
               <motion.div
@@ -262,17 +262,17 @@ const Weather = () => {
                 transition={{ delay: 0.6 + index * 0.05 }}
                 className="flex items-center justify-between"
               >
-                <span className="text-white/80 w-16">{day.day}</span>
-                {getWeatherIcon(day.condition, 'w-5 h-5 text-white')}
+                <span className="text-[#fbfbef]/80 w-16">{day.day}</span>
+                {getWeatherIcon(day.condition, 'w-5 h-5 text-[#fbfbef]')}
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-medium">{day.high}°</span>
+                  <span className="text-[#fbfbef] font-medium">{day.high}°</span>
                   <div className="w-20 h-1 bg-white/20 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-blue-400 to-orange-400 rounded-full"
                       style={{ width: `${((day.high - day.low) / 15) * 100}%` }}
                     />
                   </div>
-                  <span className="text-white/60">{day.low}°</span>
+                  <span className="text-[#fbfbef]/60">{day.low}°</span>
                 </div>
               </motion.div>
             ))}
@@ -287,51 +287,51 @@ const Weather = () => {
           className="grid grid-cols-2 gap-4"
         >
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-white/60 text-sm mb-2">
+            <div className="flex items-center gap-2 text-[#fbfbef]/60 text-sm mb-2">
               <Wind className="w-4 h-4" />
               WIND
             </div>
-            <div className="text-white text-2xl font-light">{weather?.windSpeed || 12} km/h</div>
+            <div className="text-[#fbfbef] text-2xl font-light">{weather?.windSpeed || 12} km/h</div>
           </div>
           
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-white/60 text-sm mb-2">
+            <div className="flex items-center gap-2 text-[#fbfbef]/60 text-sm mb-2">
               <Droplets className="w-4 h-4" />
               HUMIDITY
             </div>
-            <div className="text-white text-2xl font-light">{weather?.humidity || 65}%</div>
+            <div className="text-[#fbfbef] text-2xl font-light">{weather?.humidity || 65}%</div>
           </div>
           
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-white/60 text-sm mb-2">
+            <div className="flex items-center gap-2 text-[#fbfbef]/60 text-sm mb-2">
               <Thermometer className="w-4 h-4" />
               FEELS LIKE
             </div>
-            <div className="text-white text-2xl font-light">{weather?.feelsLike || weather?.temperature - 1}°</div>
+            <div className="text-[#fbfbef] text-2xl font-light">{weather?.feelsLike || weather?.temperature - 1}°</div>
           </div>
           
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-white/60 text-sm mb-2">
+            <div className="flex items-center gap-2 text-[#fbfbef]/60 text-sm mb-2">
               <CloudRain className="w-4 h-4" />
               RAIN CHANCE
             </div>
-            <div className="text-white text-2xl font-light">{weather?.rainChance || 20}%</div>
+            <div className="text-[#fbfbef] text-2xl font-light">{weather?.rainChance || 20}%</div>
           </div>
 
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-white/60 text-sm mb-2">
+            <div className="flex items-center gap-2 text-[#fbfbef]/60 text-sm mb-2">
               <Sunrise className="w-4 h-4" />
               SUNRISE
             </div>
-            <div className="text-white text-2xl font-light">6:15 AM</div>
+            <div className="text-[#fbfbef] text-2xl font-light">6:15 AM</div>
           </div>
           
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4">
-            <div className="flex items-center gap-2 text-white/60 text-sm mb-2">
+            <div className="flex items-center gap-2 text-[#fbfbef]/60 text-sm mb-2">
               <Sunset className="w-4 h-4" />
               SUNSET
             </div>
-            <div className="text-white text-2xl font-light">6:45 PM</div>
+            <div className="text-[#fbfbef] text-2xl font-light">6:45 PM</div>
           </div>
         </motion.div>
       </div>

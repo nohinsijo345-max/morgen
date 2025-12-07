@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Shield, Lock, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -17,6 +17,14 @@ const AdminLogin = ({ onLogin }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Add admin-portal class to body to prevent Orkney font
+  useEffect(() => {
+    document.body.classList.add('admin-portal');
+    return () => {
+      document.body.classList.remove('admin-portal');
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();

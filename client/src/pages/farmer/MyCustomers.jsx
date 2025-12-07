@@ -26,7 +26,7 @@ const MyCustomers = () => {
                 <p className="text-[#082829]/70">Manage your customer relationships</p>
               </div>
             </div>
-            <button className="flex items-center gap-2 bg-[#082829] text-white px-4 py-2 rounded-xl hover:bg-[#082829]/90">
+            <button className="flex items-center gap-2 bg-[#082829] text-[#fbfbef] px-4 py-2 rounded-xl hover:bg-[#082829]/90">
               <Plus className="w-5 h-5" />
               Add Customer
             </button>

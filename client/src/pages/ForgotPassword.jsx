@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, ArrowLeft, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -14,6 +14,53 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [showNewPin, setShowNewPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
+  const defaultForgotPasswordImage = 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80';
+  
+  // Initialize with cached image from localStorage or default
+  const getCachedImage = () => {
+    const cached = localStorage.getItem('cachedForgotPasswordImage');
+    // If cached image exists and is not the default, use it
+    if (cached && cached !== defaultForgotPasswordImage) {
+      return cached;
+    }
+    return defaultForgotPasswordImage;
+  };
+  
+  const [forgotPasswordImage, setForgotPasswordImage] = useState(getCachedImage());
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchForgotPasswordImage = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+        const response = await axios.get(`${API_URL}/api/admin/images`);
+        
+        const newImage = response.data.forgotPasswordPage || defaultForgotPasswordImage;
+        
+        // Only update if the image actually changed
+        const currentCached = localStorage.getItem('cachedForgotPasswordImage');
+        if (newImage !== currentCached) {
+          // Preload the new image before updating
+          const img = new Image();
+          img.onload = () => {
+            localStorage.setItem('cachedForgotPasswordImage', newImage);
+            setForgotPasswordImage(newImage);
+            setImageLoaded(true);
+          };
+          img.onerror = () => {
+            setImageLoaded(true);
+          };
+          img.src = newImage;
+        } else {
+          setImageLoaded(true);
+        }
+      } catch (err) {
+        console.log('Using cached/default forgot password image');
+        setImageLoaded(true);
+      }
+    };
+    fetchForgotPasswordImage();
+  }, []); // Empty deps - only run once on mount
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -223,7 +270,7 @@ const ForgotPassword = () => {
                 transition={{ delay: 0.2, type: "spring" }}
                 className="w-24 h-24 mx-auto bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center mb-6"
               >
-                <CheckCircle className="w-14 h-14 text-white" strokeWidth={2.5} />
+                <CheckCircle className="w-14 h-14 text-[#fbfbef]" strokeWidth={2.5} />
               </motion.div>
 
               <h2 className="text-3xl font-bold text-[#082829] mb-3">Password Reset Successful!</h2>
@@ -246,15 +293,17 @@ const ForgotPassword = () => {
       <div className="hidden lg:block w-1/2 relative">
         <div className="relative w-full h-full overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50">
           <img
-            src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+            key={forgotPasswordImage}
+            src={forgotPasswordImage}
             alt="Agriculture"
             className="w-full h-full object-cover"
+            style={{ opacity: 1 }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
           
-          <div className="absolute bottom-8 left-8 right-8 text-white">
+          <div className="absolute bottom-8 left-8 right-8 text-[#fbfbef]">
             <h2 className="text-3xl font-bold mb-2">Secure Password Reset</h2>
-            <p className="text-white/90">
+            <p className="text-[#fbfbef]/90">
               Reset your password securely and get back to managing your farm
             </p>
           </div>

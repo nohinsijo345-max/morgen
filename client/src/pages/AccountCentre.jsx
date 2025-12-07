@@ -497,7 +497,7 @@ const AccountCentre = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleRequestApproval}
                 disabled={saving || !!pendingRequest}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-[#fbfbef] font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <Clock className="w-5 h-5" />
                 {pendingRequest ? 'Request Pending' : saving ? 'Submitting...' : 'Request Approval for Changes'}

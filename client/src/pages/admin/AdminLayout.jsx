@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -13,6 +13,14 @@ import {
 
 const AdminLayout = ({ children, activePage, onNavigate, onLogout }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Add admin-portal class to body to prevent Orkney font
+  useEffect(() => {
+    document.body.classList.add('admin-portal');
+    return () => {
+      document.body.classList.remove('admin-portal');
+    };
+  }, []);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },

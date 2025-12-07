@@ -88,7 +88,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative z-20 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl border-b border-[#082829]/10 shadow-lg"
+        className="relative z-20 bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl border-b border-[#082829]/20 shadow-lg"
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -99,7 +99,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-[#082829]">Morgen</h1>
-                <p className="text-xs text-[#082829]/60">Farmer Dashboard</p>
+                <p className="text-xs text-[#082829]/70">Farmer Dashboard</p>
               </div>
             </div>
 
@@ -107,13 +107,13 @@ const FarmerDashboard = ({ user, onLogout }) => {
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-semibold text-[#082829]">{dashboardData?.farmer?.name || user?.name || 'Farmer'}</p>
-                <p className="text-xs text-[#082829]/60">{dashboardData?.farmer?.email || user?.email || 'Loading...'}</p>
+                <p className="text-xs text-[#082829]/70">{dashboardData?.farmer?.email || user?.email || 'Loading...'}</p>
               </div>
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onLogout}
-                className="bg-[#082829] hover:bg-[#082829]/90 rounded-xl px-4 py-2 flex items-center gap-2 transition-all shadow-lg"
+                className="bg-[#082829] hover:bg-[#082829] rounded-xl px-4 py-2 flex items-center gap-2 transition-all shadow-lg"
               >
                 <LogOut className="w-4 h-4 text-[#fbfbef]" />
                 <span className="text-[#fbfbef] font-semibold text-sm">Logout</span>
@@ -133,15 +133,15 @@ const FarmerDashboard = ({ user, onLogout }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-5 border border-[#082829]/10 shadow-2xl relative overflow-hidden group h-fit self-start"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-5 border border-[#082829]/20 shadow-2xl relative overflow-hidden group h-fit self-start"
           >
             {/* Animated gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#082829]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#082829]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
             <div className="relative z-10">
               {/* Welcome Message at Top */}
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#082829] to-[#082829]/70 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#082829] to-[#082829] rounded-xl flex items-center justify-center shadow-lg">
                   <User className="w-7 h-7 text-[#fbfbef]" />
                 </div>
                 <div>
@@ -153,7 +153,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                   >
                     Hello, {dashboardData?.farmer?.name || 'Farmer'}
                   </motion.h2>
-                  <p className="text-[#082829]/60 text-sm">Welcome back to your dashboard</p>
+                  <p className="text-[#082829]/70 text-sm">Welcome back to your dashboard</p>
                 </div>
               </div>
               
@@ -163,7 +163,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                   whileHover={{ scale: 1.03, y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => window.location.href = '/account'}
-                  className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
+                  className="flex-1 bg-[#082829] hover:bg-[#082829] rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
                 >
                   <User className="w-4 h-4 text-[#fbfbef]" />
                   <span className="text-[#fbfbef] font-medium text-sm">Account</span>
@@ -173,7 +173,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                   whileHover={{ scale: 1.03, y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => window.location.href = '/my-customers'}
-                  className="flex-1 bg-[#082829] hover:bg-[#082829]/90 rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
+                  className="flex-1 bg-[#082829] hover:bg-[#082829] rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
                 >
                   <Users className="w-4 h-4 text-[#fbfbef]" />
                   <span className="text-[#fbfbef] font-medium text-sm">Customers</span>
@@ -195,7 +195,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/harvest-countdown'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             {/* Animated pulse effect */}
             <motion.div
@@ -275,7 +275,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/updates'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-6 relative z-10">
               <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg relative">
@@ -322,7 +322,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.01, y: -5 }}
             whileTap={{ scale: 0.99 }}
             onClick={() => window.location.href = '/leaderboard'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             {/* Animated shine effect */}
             <motion.div
@@ -368,7 +368,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/local-transport'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
               <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
@@ -390,7 +390,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/price-forecast'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
               <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
@@ -412,7 +412,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/live-bidding'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
               <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
@@ -434,7 +434,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/ai-doctor'}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/10 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
               <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#082829]/70 rounded-xl flex items-center justify-center shadow-lg relative">

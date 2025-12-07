@@ -43,7 +43,7 @@ export default function HarvestCountdown({ crop }) {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 to-indigo-700 p-8 text-white shadow-2xl"
+      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 to-indigo-700 p-8 text-[#fbfbef] shadow-2xl"
     >
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -58,7 +58,7 @@ export default function HarvestCountdown({ crop }) {
             </div>
             <div>
               <h3 className="text-2xl font-bold">{crop.name}</h3>
-              <p className="text-white/80 text-sm">Harvest Countdown</p>
+              <p className="text-[#fbfbef]/80 text-sm">Harvest Countdown</p>
             </div>
           </div>
           {daysLeft <= 3 && (
@@ -88,15 +88,15 @@ export default function HarvestCountdown({ crop }) {
         {/* Info Cards */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-            <Calendar className="w-5 h-5 mb-2 text-white/80" />
-            <div className="text-sm text-white/80">Harvest Date</div>
+            <Calendar className="w-5 h-5 mb-2 text-[#fbfbef]/80" />
+            <div className="text-sm text-[#fbfbef]/80">Harvest Date</div>
             <div className="font-semibold">
               {new Date(crop.harvestDate).toLocaleDateString()}
             </div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-            <TrendingUp className="w-5 h-5 mb-2 text-white/80" />
-            <div className="text-sm text-white/80">Expected Yield</div>
+            <TrendingUp className="w-5 h-5 mb-2 text-[#fbfbef]/80" />
+            <div className="text-sm text-[#fbfbef]/80">Expected Yield</div>
             <div className="font-semibold">{crop.quantity} {crop.unit}</div>
           </div>
         </div>

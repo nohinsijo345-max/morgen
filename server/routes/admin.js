@@ -213,36 +213,7 @@ router.post('/send-update', async (req, res) => {
   }
 });
 
-// Get image settings
-router.get('/images', async (req, res) => {
-  try {
-    // For now, return default images
-    // In production, store these in a Settings collection
-    res.json({
-      loginPage: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1200',
-      registerPage: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1200',
-      forgotPasswordPage: 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1200'
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Update image settings
-router.post('/images', async (req, res) => {
-  try {
-    const { loginPage, registerPage, forgotPasswordPage } = req.body;
-    
-    // In production, save to Settings collection
-    // For now, just return success
-    res.json({ 
-      message: 'Images updated successfully',
-      images: { loginPage, registerPage, forgotPasswordPage }
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Image settings routes moved below (after multer setup)
 
 // Get all messages sent by admin
 router.get('/messages', async (req, res) => {

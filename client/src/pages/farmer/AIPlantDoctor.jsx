@@ -49,7 +49,7 @@ export default function AIPlantDoctor() {
       >
         <div className="flex items-center gap-4 mb-8">
           <div className="p-4 bg-green-600 rounded-2xl">
-            <Camera className="w-8 h-8 text-white" />
+            <Camera className="w-8 h-8 text-[#fbfbef]" />
           </div>
           <div>
             <h2 className="text-3xl font-bold text-gray-800">AI Plant Doctor</h2>
@@ -103,7 +103,7 @@ export default function AIPlantDoctor() {
           <button
             onClick={analyzePlant}
             disabled={loading}
-            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-[#fbfbef] font-bold py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
