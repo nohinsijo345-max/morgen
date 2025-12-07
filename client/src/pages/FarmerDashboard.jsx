@@ -307,7 +307,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center pt-20 pb-12 text-[#082829]/70 relative z-10">
+              <div className="flex flex-col items-center justify-center text-center pt-28 pb-12 text-[#082829]/70 relative z-10">
                 <Bell className="w-16 h-16 text-[#082829]/20 mb-3" />
                 <p className="font-medium">No updates available</p>
               </div>
