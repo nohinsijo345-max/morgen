@@ -11,6 +11,9 @@ const PORT = process.env.PORT || 5050;
 app.use(cors());
 app.use(express.json());
 
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/crops', require('./routes/crops'));

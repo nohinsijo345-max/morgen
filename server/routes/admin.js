@@ -377,3 +377,118 @@ router.post('/profile-requests/:requestId/reject', async (req, res) => {
 });
 
 module.exports = router;
+
+
+// Image Settings Management
+const Settings = require('../models/Settings');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, '../uploads/images');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadsDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed!'), false);
+  }
+};
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB max
+  }
+});
+
+// Upload image
+router.post('/upload-image', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const imagePath = `/uploads/images/${req.file.filename}`;
+
+    res.json({ 
+      success: true,
+      message: 'Image uploaded successfully',
+      imagePath: imagePath
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'Failed to upload image: ' + error.message });
+  }
+});
+
+// Get all page images
+router.get('/images', async (req, res) => {
+  try {
+    const loginImage = await Settings.findOne({ key: 'loginPageImage' });
+    const registerImage = await Settings.findOne({ key: 'registerPageImage' });
+    const forgotPasswordImage = await Settings.findOne({ key: 'forgotPasswordPageImage' });
+
+    res.json({
+      loginPage: loginImage?.value || '',
+      registerPage: registerImage?.value || '',
+      forgotPasswordPage: forgotPasswordImage?.value || ''
+    });
+  } catch (error) {
+    console.error('Failed to fetch images:', error);
+    res.status(500).json({ error: 'Failed to fetch images' });
+  }
+});
+
+// Save page images
+router.post('/images', async (req, res) => {
+  try {
+    const { loginPage, registerPage, forgotPasswordPage } = req.body;
+
+    // Update or create settings
+    if (loginPage) {
+      await Settings.findOneAndUpdate(
+        { key: 'loginPageImage' },
+        { value: loginPage, updatedAt: new Date() },
+        { upsert: true }
+      );
+    }
+
+    if (registerPage) {
+      await Settings.findOneAndUpdate(
+        { key: 'registerPageImage' },
+        { value: registerPage, updatedAt: new Date() },
+        { upsert: true }
+      );
+    }
+
+    if (forgotPasswordPage) {
+      await Settings.findOneAndUpdate(
+        { key: 'forgotPasswordPageImage' },
+        { value: forgotPasswordPage, updatedAt: new Date() },
+        { upsert: true }
+      );
+    }
+
+    res.json({ success: true, message: 'Images updated successfully' });
+  } catch (error) {
+    console.error('Failed to save images:', error);
+    res.status(500).json({ error: 'Failed to save images' });
+  }
+});
