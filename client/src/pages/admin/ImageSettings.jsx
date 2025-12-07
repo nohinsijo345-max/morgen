@@ -71,12 +71,15 @@ const ImageSettings = () => {
   };
 
   const handleSave = async () => {
+    console.log('🚀 handleSave called');
+    console.log('Selected files:', selectedFiles);
     setSaving(true);
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
       // Create a copy of current images
       const updatedImages = { ...images };
+      console.log('Current images:', images);
       
       // Upload files
       for (const [key, file] of Object.entries(selectedFiles)) {
@@ -96,11 +99,13 @@ const ImageSettings = () => {
         }
       }
 
-      console.log('💾 Saving to database:', updatedImages);
+      console.log('💾 Attempting to save to database:', updatedImages);
+      console.log('API URL:', `${API_URL}/api/admin/images`);
 
       // Save image paths to database
       const saveResponse = await axios.post(`${API_URL}/api/admin/images`, updatedImages);
       console.log('✅ Save response:', saveResponse.data);
+      console.log('✅ Database save successful!');
       
       // Update local state with new images
       setImages(updatedImages);
