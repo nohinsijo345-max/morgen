@@ -1,5 +1,44 @@
 const router = require('express').Router();
 const User = require('../models/User');
+const Sale = require('../models/Sale');
+
+// Get top farmers by sales (for leaderboard card and page)
+router.get('/top', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    
+    // Aggregate sales data by farmer
+    const topFarmers = await Sale.aggregate([
+      {
+        $group: {
+          _id: '$farmerId',
+          name: { $first: '$farmerName' },
+          totalSales: { $sum: 1 },
+          totalRevenue: { $sum: '$totalAmount' },
+          avgRating: { $avg: '$rating' }
+        }
+      },
+      {
+        $sort: { totalSales: -1, totalRevenue: -1 }
+      },
+      {
+        $limit: limit
+      }
+    ]);
+
+    // Add rank to each farmer
+    const rankedFarmers = topFarmers.map((farmer, index) => ({
+      ...farmer,
+      rank: index + 1,
+      badge: index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : null
+    }));
+
+    res.json(rankedFarmers);
+  } catch (err) {
+    console.error('Leaderboard error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Get panchayat leaderboard
 router.get('/panchayat/:panchayat', async (req, res) => {

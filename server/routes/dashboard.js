@@ -127,9 +127,17 @@ async function getWeatherData(location) {
       
       const data = response.data;
       const weatherCondition = data.weather[0].main.toLowerCase();
+      const currentTime = Math.floor(Date.now() / 1000);
+      const isNight = currentTime < data.sys.sunrise || currentTime > data.sys.sunset;
+      
+      // Convert Unix timestamps to readable time
+      const formatTime = (timestamp) => {
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      };
       
       return {
-        location: data.name || location,
+        location: (data.name || location).toUpperCase(),
         temperature: Math.round(data.main.temp),
         condition: weatherCondition,
         humidity: data.main.humidity,
@@ -140,6 +148,12 @@ async function getWeatherData(location) {
         tempMin: Math.round(data.main.temp_min),
         description: data.weather[0].description,
         icon: data.weather[0].icon,
+        isNight: isNight,
+        sunrise: formatTime(data.sys.sunrise),
+        sunset: formatTime(data.sys.sunset),
+        visibility: data.visibility ? Math.round(data.visibility / 1000) : 10,
+        pressure: data.main.pressure,
+        uvIndex: 3, // OpenWeatherMap free tier doesn't include UV, use default
         lastUpdated: new Date()
       };
     }
@@ -167,7 +181,7 @@ async function getWeatherData(location) {
     const currentCondition = conditions[conditionIndex];
     
     const mockWeather = {
-      location: location || 'Your Location',
+      location: (location || 'Your Location').toUpperCase(),
       temperature: baseTemp + Math.floor(Math.random() * 3) - 1,
       condition: currentCondition,
       humidity: 60 + Math.floor(Math.random() * 25),
@@ -179,24 +193,37 @@ async function getWeatherData(location) {
       description: currentCondition,
       icon: isDay ? '01d' : '01n',
       isNight: isNight,
+      sunrise: '6:30 AM',
+      sunset: '6:45 PM',
+      visibility: 10,
+      pressure: 1013,
+      uvIndex: isDay ? 5 : 0,
       lastUpdated: new Date()
     };
     
     return mockWeather;
   } catch (error) {
     console.error('Weather API error:', error.message);
+    const hour = new Date().getHours();
+    const isNight = hour < 6 || hour >= 19;
     // Return default weather on error
     return {
-      location: location || 'Your Location',
+      location: (location || 'Your Location').toUpperCase(),
       temperature: 28,
-      condition: 'sunny',
+      condition: isNight ? 'clear' : 'sunny',
       humidity: 65,
       windSpeed: 12,
       rainChance: 20,
       feelsLike: 27,
       tempMax: 32,
       tempMin: 22,
-      description: 'Clear sky',
+      description: isNight ? 'Clear night' : 'Clear sky',
+      isNight: isNight,
+      sunrise: '6:30 AM',
+      sunset: '6:45 PM',
+      visibility: 10,
+      pressure: 1013,
+      uvIndex: isNight ? 0 : 5,
       lastUpdated: new Date()
     };
   }

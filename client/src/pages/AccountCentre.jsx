@@ -133,38 +133,50 @@ const AccountCentre = () => {
       return;
     }
 
-    // Build changes object with only modified fields
-    const changes = {};
-    if (name && name.trim() !== (user.name || '').trim()) changes.name = name.trim();
-    if (state && state !== (user.state || '')) changes.state = state;
-    if (district && district !== (user.district || '')) changes.district = district;
-    if (city && city.trim() !== (user.city || '').trim()) changes.city = city.trim();
-    if (landSize && parseFloat(landSize) !== (user.landSize || 0)) changes.landSize = parseFloat(landSize);
-    
-    // Compare crop types arrays
-    const userCropTypes = user.cropTypes || [];
-    const hasChangedCropTypes = selectedCropTypes.length !== userCropTypes.length || 
-      selectedCropTypes.some(crop => !userCropTypes.includes(crop));
-    if (hasChangedCropTypes && selectedCropTypes.length > 0) {
-      changes.cropTypes = selectedCropTypes;
-    }
-
-    // Check if there are any changes
-    if (Object.keys(changes).length === 0) {
-      setError('No changes detected. Please modify at least one field.');
-      return;
-    }
-
     setSaving(true);
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.post(`${API_URL}/api/profile/request-change`, {
-        farmerId: user.farmerId,
-        changes
-      });
       
-      setSuccess('Change request submitted! Waiting for admin approval.');
+      // Handle cropTypes separately - update immediately without approval
+      const userCropTypes = user.cropTypes || [];
+      const hasChangedCropTypes = selectedCropTypes.length !== userCropTypes.length || 
+        selectedCropTypes.some(crop => !userCropTypes.includes(crop));
+      
+      if (hasChangedCropTypes) {
+        await axios.put(`${API_URL}/api/auth/profile/${user.farmerId}`, {
+          cropTypes: selectedCropTypes
+        });
+      }
+
+      // Build changes object with only modified fields that require approval
+      const changes = {};
+      if (name && name.trim() !== (user.name || '').trim()) changes.name = name.trim();
+      if (state && state !== (user.state || '')) changes.state = state;
+      if (district && district !== (user.district || '')) changes.district = district;
+      if (city && city.trim() !== (user.city || '').trim()) changes.city = city.trim();
+      if (landSize && parseFloat(landSize) !== (user.landSize || 0)) changes.landSize = parseFloat(landSize);
+
+      // Check if there are any changes requiring approval
+      if (Object.keys(changes).length === 0 && !hasChangedCropTypes) {
+        setError('No changes detected. Please modify at least one field.');
+        setSaving(false);
+        return;
+      }
+
+      // Submit approval request only if there are changes requiring approval
+      if (Object.keys(changes).length > 0) {
+        await axios.post(`${API_URL}/api/profile/request-change`, {
+          farmerId: user.farmerId,
+          changes
+        });
+        setSuccess('Change request submitted! Crop types updated immediately.');
+      } else {
+        setSuccess('Crop types updated successfully!');
+      }
+      
+      // Refresh user data
+      await fetchUserData();
       checkPendingRequest();
       setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
@@ -452,6 +464,7 @@ const AccountCentre = () => {
                 <label className="block text-sm font-medium text-[#082829] mb-2 flex items-center gap-2">
                   <Wheat className="w-4 h-4" />
                   Crop Types
+                  <span className="text-xs text-green-600 font-normal ml-auto">(Updates Immediately)</span>
                 </label>
                 <div className="flex gap-2 mb-3">
                   <select

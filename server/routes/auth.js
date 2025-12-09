@@ -173,7 +173,8 @@ router.post('/login', async (req, res) => {
       name: user.name,
       farmerId: user.farmerId,
       email: user.email,
-      district: user.district
+      district: user.district,
+      cropTypes: user.cropTypes || []
     });
   } catch (err) {
     console.error("❌ Login error:", err);

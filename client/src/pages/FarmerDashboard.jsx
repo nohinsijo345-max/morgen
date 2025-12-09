@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import WeatherCard from '../components/WeatherCard';
+import LeaderboardCard from '../components/LeaderboardCard';
+import HarvestCountdownCard from '../components/HarvestCountdownCard';
+import PriceForecastCard from '../components/PriceForecastCard';
 
 const FarmerDashboard = ({ user, onLogout }) => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -48,7 +51,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fbfbef] flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-[#e1e2d0] flex flex-col items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -61,7 +64,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
 
   if (!dashboardData) {
     return (
-      <div className="min-h-screen bg-[#fbfbef] flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-[#e1e2d0] flex flex-col items-center justify-center">
         <p className="text-[#082829] text-xl">Failed to load dashboard data</p>
         <button 
           onClick={fetchDashboardData}
@@ -74,7 +77,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfbef]">
+    <div className="min-h-screen bg-[#e1e2d0]">
       {/* Animated Background Pattern */}
       <div className="fixed inset-0 pointer-events-none opacity-5">
         <div className="absolute inset-0" style={{
@@ -88,20 +91,27 @@ const FarmerDashboard = ({ user, onLogout }) => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative z-20 bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl border-b border-[#082829]/20 shadow-lg"
+        className="relative z-20 bg-gradient-to-br from-green-50/30 to-emerald-50/20 backdrop-blur-xl border-b border-green-200/20 shadow-lg"
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo/Brand */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-[#fbfbef] font-bold text-lg">M</span>
-              </div>
+            <motion.div 
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => window.location.reload()}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <img 
+                src="/src/assets/Morgen-logo-main.png" 
+                alt="Morgen Logo" 
+                className="h-10 w-auto object-contain rounded-xl"
+              />
               <div>
                 <h1 className="text-xl font-bold text-[#082829]">Morgen</h1>
                 <p className="text-xs text-[#082829]/70">Farmer Dashboard</p>
               </div>
-            </div>
+            </motion.div>
 
             {/* User Info & Logout */}
             <div className="flex items-center gap-4">
@@ -133,7 +143,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.01, transition: { duration: 0.3 } }}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-5 border border-[#082829]/20 shadow-2xl relative overflow-hidden group h-fit self-start"
+            className="bg-gradient-to-br from-green-50/30 to-emerald-50/20 backdrop-blur-xl rounded-3xl p-5 border border-green-200/20 shadow-2xl relative overflow-hidden group h-fit self-start"
           >
             {/* Animated gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#082829]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -183,89 +193,14 @@ const FarmerDashboard = ({ user, onLogout }) => {
           </motion.div>
 
           {/* Top Right - Weather Card */}
-          <div className="row-span-2">
+          <div className="row-span-2 h-[350px]">
             <WeatherCard weather={dashboardData?.weather} onClick={() => window.location.href = '/weather'} />
           </div>
 
           {/* Countdown Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ scale: 1.02, y: -5 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => window.location.href = '/harvest-countdown'}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
-          >
-            {/* Animated pulse effect */}
-            <motion.div
-              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.1, 0.3] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="absolute inset-0 bg-[#082829]/5 rounded-full blur-3xl"
-            />
-            <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
-                <Timer className="w-6 h-6 text-[#fbfbef]" />
-              </div>
-              <h2 className="text-xl font-bold text-[#082829]">Harvest Countdown</h2>
-            </div>
-            
-            {dashboardData?.crops && dashboardData.crops.length > 0 ? (
-              <div className="space-y-4 relative z-10">
-                {/* Main countdown - first crop */}
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.4, type: "spring" }}
-                  className="text-center bg-gradient-to-br from-[#082829]/10 to-[#082829]/5 rounded-2xl p-6 relative overflow-hidden"
-                >
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 opacity-10"
-                    style={{
-                      backgroundImage: 'conic-gradient(from 0deg, transparent, #082829, transparent)',
-                    }}
-                  />
-                  <div className="relative z-10">
-                    <motion.div 
-                      animate={{ scale: [1, 1.05, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="text-5xl font-bold text-[#082829] mb-2"
-                    >
-                      {calculateDaysLeft(dashboardData.crops[0].harvestDate)}
-                    </motion.div>
-                    <div className="text-sm text-[#082829]/60 mb-1">Days Left</div>
-                    <div className="text-[#082829] font-semibold">
-                      {dashboardData.crops[0].name}
-                    </div>
-                  </div>
-                </motion.div>
-                
-                {/* Next crops */}
-                {dashboardData.crops.slice(1, 3).map((crop, index) => (
-                  <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    whileHover={{ x: 5 }}
-                    className="flex justify-between items-center p-3 bg-[#082829]/5 rounded-xl"
-                  >
-                    <span className="text-[#082829] font-medium">{crop.name}</span>
-                    <span className="text-[#082829] font-bold">
-                      {calculateDaysLeft(crop.harvestDate)} days
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 relative z-10">
-                <Timer className="w-20 h-20 text-[#082829]/20 mx-auto mb-4" />
-                <p className="text-[#082829]/70 font-medium">No harvest scheduled</p>
-              </div>
-            )}
-          </motion.div>
+          <div className="h-[180px]">
+            <HarvestCountdownCard onClick={() => window.location.href = '/harvest-countdown'} />
+          </div>
 
           {/* Updates Card */}
           <motion.div
@@ -275,7 +210,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/updates'}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-green-50/30 to-emerald-50/20 backdrop-blur-xl rounded-3xl p-6 border border-green-200/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-6 relative z-10">
               <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg relative">
@@ -293,13 +228,13 @@ const FarmerDashboard = ({ user, onLogout }) => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 + index * 0.1 }}
-                    whileHover={{ x: 5, backgroundColor: 'rgba(8, 40, 41, 0.05)' }}
-                    className="border-l-4 border-[#082829] pl-4 py-2 rounded-r-xl transition-all"
+                    whileHover={{ x: 5, scale: 1.02 }}
+                    className="bg-[#cce0cc] border-l-4 border-[#a8c9a8] pl-4 py-3 rounded-xl transition-all shadow-md"
                   >
                     <div className="text-sm font-semibold text-[#082829] line-clamp-1">
                       {update.title}
                     </div>
-                    <div className="text-xs text-[#082829]/60 mt-1 flex items-center gap-2">
+                    <div className="text-xs text-[#082829]/70 mt-1 flex items-center gap-2">
                       <div className="w-1.5 h-1.5 bg-[#082829]/40 rounded-full" />
                       {new Date(update.createdAt).toLocaleDateString()}
                     </div>
@@ -315,50 +250,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
           </motion.div>
 
           {/* Leaderboard Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ scale: 1.01, y: -5 }}
-            whileTap={{ scale: 0.99 }}
-            onClick={() => window.location.href = '/leaderboard'}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
-          >
-            {/* Animated shine effect */}
-            <motion.div
-              animate={{ x: ['-100%', '200%'] }}
-              transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
-            />
-            
-            <div className="flex items-center gap-3 mb-6 relative z-10">
-              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
-                <Trophy className="w-6 h-6 text-[#fbfbef]" />
-              </div>
-              <h2 className="text-xl font-bold text-[#082829]">Leaderboard</h2>
-            </div>
-            
-            <div className="space-y-3 relative z-10">
-              {[1, 2, 3, 4, 5].map((rank) => (
-                <motion.div 
-                  key={rank}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + rank * 0.1 }}
-                  whileHover={{ x: 10, backgroundColor: 'rgba(8, 40, 41, 0.05)' }}
-                  className="flex items-center gap-4 p-3 rounded-xl transition-all"
-                >
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-lg bg-[#082829]/10 text-[#082829]">
-                    {rank}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-[#082829] font-semibold">Farmer {rank}</div>
-                    <div className="text-[#082829]/60 text-sm">₹{(50000 - rank * 5000).toLocaleString()}</div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          <LeaderboardCard onClick={() => window.location.href = '/leaderboard'} />
 
           {/* Local Transport Card */}
           <motion.div
@@ -368,10 +260,10 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/local-transport'}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-green-50/30 to-emerald-50/20 backdrop-blur-xl rounded-3xl p-6 border border-green-200/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#0a3a3c] rounded-xl flex items-center justify-center shadow-lg">
                 <Truck className="w-6 h-6 text-[#fbfbef]" />
               </div>
               <h2 className="text-xl font-bold text-[#082829]">Local Transport</h2>
@@ -383,26 +275,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
           </motion.div>
 
           {/* Price Forecast Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            whileHover={{ scale: 1.02, y: -5 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => window.location.href = '/price-forecast'}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
-          >
-            <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
-                <TrendingUp className="w-6 h-6 text-[#fbfbef]" />
-              </div>
-              <h2 className="text-xl font-bold text-[#082829]">Price Forecast</h2>
-            </div>
-            <div className="text-center py-6 relative z-10">
-              <TrendingUp className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
-              <p className="text-[#082829]/70 font-medium">Market price predictions</p>
-            </div>
-          </motion.div>
+          <PriceForecastCard onClick={() => window.location.href = '/price-forecast'} />
 
           {/* Live Bidding Card */}
           <motion.div
@@ -412,10 +285,10 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/live-bidding'}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-green-50/30 to-emerald-50/20 backdrop-blur-xl rounded-3xl p-6 border border-green-200/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="w-12 h-12 bg-[#082829] rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#0a3a3c] rounded-xl flex items-center justify-center shadow-lg">
                 <Gavel className="w-6 h-6 text-[#fbfbef]" />
               </div>
               <h2 className="text-xl font-bold text-[#082829]">Live Bidding</h2>
@@ -434,10 +307,10 @@ const FarmerDashboard = ({ user, onLogout }) => {
             whileHover={{ scale: 1.02, y: -5 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => window.location.href = '/ai-doctor'}
-            className="bg-gradient-to-br from-[#fbfbef]/40 to-[#fbfbef]/20 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl cursor-pointer relative overflow-hidden group"
+            className="bg-gradient-to-br from-green-50/30 to-emerald-50/20 backdrop-blur-xl rounded-3xl p-6 border border-green-200/20 shadow-2xl cursor-pointer relative overflow-hidden group"
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#082829]/70 rounded-xl flex items-center justify-center shadow-lg relative">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#0a3a3c] rounded-xl flex items-center justify-center shadow-lg">
                 <Stethoscope className="w-6 h-6 text-[#fbfbef]" />
               </div>
               <h2 className="text-xl font-bold text-[#082829]">AI Doctor</h2>
@@ -445,6 +318,28 @@ const FarmerDashboard = ({ user, onLogout }) => {
             <div className="text-center py-6 relative z-10">
               <Stethoscope className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
               <p className="text-[#082829]/70 font-medium">Crop health diagnosis</p>
+            </div>
+          </motion.div>
+
+          {/* Sell Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            whileHover={{ scale: 1.02, y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/sell'}
+            className="bg-gradient-to-br from-green-50/30 to-emerald-50/20 backdrop-blur-xl rounded-3xl p-6 border border-green-200/20 shadow-2xl cursor-pointer relative overflow-hidden group"
+          >
+            <div className="flex items-center gap-3 mb-4 relative z-10">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#0a3a3c] rounded-xl flex items-center justify-center shadow-lg">
+                <TrendingUp className="w-6 h-6 text-[#fbfbef]" />
+              </div>
+              <h2 className="text-xl font-bold text-[#082829]">Sell</h2>
+            </div>
+            <div className="text-center py-6 relative z-10">
+              <TrendingUp className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
+              <p className="text-[#082829]/70 font-medium">List your crops for sale</p>
             </div>
           </motion.div>
         </div>

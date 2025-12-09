@@ -26,6 +26,8 @@ app.use('/api/settings', require('./routes/settings'));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/updates', require('./routes/updates'));
+app.use('/api/harvest', require('./routes/harvest'));
+app.use('/api/price-forecast', require('./routes/priceForecast'));
 
 // Serve client in production if present
 const clientDist = path.join(__dirname, '..', 'client', 'dist');

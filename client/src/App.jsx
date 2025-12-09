@@ -8,6 +8,9 @@ import Admin from "./pages/Admin";
 import Updates from "./pages/Updates";
 import AccountCentre from "./pages/AccountCentre";
 import Weather from "./pages/Weather";
+import Leaderboard from "./pages/Leaderboard";
+import HarvestCountdown from "./pages/farmer/HarvestCountdown";
+import PriceForecast from "./pages/farmer/PriceForecast";
 
 export default function App() {
   const [farmerUser, setFarmerUser] = useState(null);
@@ -82,6 +85,18 @@ export default function App() {
         <Route 
           path="/weather" 
           element={farmerUser ? <Weather /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/leaderboard" 
+          element={farmerUser ? <Leaderboard /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/harvest-countdown" 
+          element={farmerUser ? <HarvestCountdown /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/price-forecast" 
+          element={farmerUser ? <PriceForecast /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/admin" 
