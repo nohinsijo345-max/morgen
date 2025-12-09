@@ -10,7 +10,8 @@ import {
   Gavel, 
   Stethoscope,
   Bell,
-  LogOut
+  LogOut,
+  ShoppingBag
 } from 'lucide-react';
 import axios from 'axios';
 import WeatherCard from '../components/WeatherCard';
@@ -333,12 +334,12 @@ const FarmerDashboard = ({ user, onLogout }) => {
           >
             <div className="flex items-center gap-3 mb-4 relative z-10">
               <div className="w-12 h-12 bg-gradient-to-br from-[#082829] to-[#0a3a3c] rounded-xl flex items-center justify-center shadow-lg">
-                <TrendingUp className="w-6 h-6 text-[#fbfbef]" />
+                <ShoppingBag className="w-6 h-6 text-[#fbfbef]" />
               </div>
               <h2 className="text-xl font-bold text-[#082829]">Sell</h2>
             </div>
             <div className="text-center py-6 relative z-10">
-              <TrendingUp className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
+              <ShoppingBag className="w-16 h-16 text-[#082829]/20 mx-auto mb-3" />
               <p className="text-[#082829]/70 font-medium">List your crops for sale</p>
             </div>
           </motion.div>
