@@ -222,15 +222,6 @@ const TransportManagement = () => {
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-[#2C5F7C]">Vehicles</h2>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleAdd('vehicle')}
-                className="bg-[#5B9FBF] text-white px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-[#4A8CAF] transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Add Vehicle
-              </motion.button>
             </div>
 
             <div className="overflow-x-auto">
@@ -241,7 +232,6 @@ const TransportManagement = () => {
                     <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Type</th>
                     <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Price Options</th>
                     <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Status</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -257,22 +247,6 @@ const TransportManagement = () => {
                           {vehicle.availability ? 'Available' : 'Unavailable'}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleEdit(vehicle, 'vehicle')}
-                            className="p-1 text-[#5B9FBF] hover:bg-[#5B9FBF]/10 rounded"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(vehicle._id, 'vehicles')}
-                            className="p-1 text-red-500 hover:bg-red-50 rounded"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -286,15 +260,6 @@ const TransportManagement = () => {
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-[#2C5F7C]">Drivers</h2>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleAdd('driver')}
-                className="bg-[#5B9FBF] text-white px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-[#4A8CAF] transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Add Driver
-              </motion.button>
             </div>
 
             <div className="overflow-x-auto">
@@ -306,7 +271,6 @@ const TransportManagement = () => {
                     <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Phone</th>
                     <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Vehicle Type</th>
                     <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Status</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -322,22 +286,6 @@ const TransportManagement = () => {
                         }`}>
                           {driver.isActive ? 'Active' : 'Inactive'}
                         </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleEdit(driver, 'driver')}
-                            className="p-1 text-[#5B9FBF] hover:bg-[#5B9FBF]/10 rounded"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(driver._id, 'drivers')}
-                            className="p-1 text-red-500 hover:bg-red-50 rounded"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
                       </td>
                     </tr>
                   ))}
@@ -430,6 +378,92 @@ const TransportManagement = () => {
           </div>
         )}
       </motion.div>
+
+      {/* Modal for Add/Edit */}
+      {showModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-[#2C5F7C]">
+                {selectedItem ? 'Edit' : 'Add'} {modalType}
+              </h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Edit className="w-8 h-8 text-blue-600" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                {modalType === 'vehicle' ? 'Vehicle' : modalType === 'driver' ? 'Driver' : 'Item'} Management
+              </h4>
+              <p className="text-gray-600 mb-6">
+                {selectedItem ? 'Edit functionality' : 'Add functionality'} will be implemented in the next update.
+                This feature requires detailed form handling for {modalType} data.
+              </p>
+              
+              {selectedItem && (
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
+                  <h5 className="font-medium text-gray-900 mb-2">Current {modalType} details:</h5>
+                  <div className="text-sm text-gray-600 space-y-1">
+                    {modalType === 'vehicle' && (
+                      <>
+                        <div>Name: {selectedItem.name}</div>
+                        <div>Type: {selectedItem.type}</div>
+                        <div>Status: {selectedItem.availability ? 'Available' : 'Unavailable'}</div>
+                      </>
+                    )}
+                    {modalType === 'driver' && (
+                      <>
+                        <div>Name: {selectedItem.name}</div>
+                        <div>ID: {selectedItem.driverId}</div>
+                        <div>Phone: {selectedItem.phone}</div>
+                        <div>Vehicle Type: {selectedItem.vehicleType}</div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowModal(false)}
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Close
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  alert(`${selectedItem ? 'Edit' : 'Add'} ${modalType} functionality will be implemented soon!`);
+                  setShowModal(false);
+                }}
+                className="flex-1 px-6 py-3 bg-[#5B9FBF] hover:bg-[#4A8CAF] text-white rounded-xl transition-colors"
+              >
+                {selectedItem ? 'Save Changes' : 'Add ' + modalType}
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 };

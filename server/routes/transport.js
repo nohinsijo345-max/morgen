@@ -622,7 +622,7 @@ router.post('/check-overdue', async (req, res) => {
   }
 });
 
-// Assign driver to booking (Admin Driver accepts order)
+// Assign driver to booking (Admin assigns driver to order)
 router.patch('/bookings/:id/assign-driver', async (req, res) => {
   try {
     const { driverId } = req.body;
@@ -636,19 +636,9 @@ router.patch('/bookings/:id/assign-driver', async (req, res) => {
       return res.status(404).json({ error: 'Booking not found' });
     }
     
-    // Update first tracking step to accepted
-    if (booking.trackingSteps.length > 0) {
-      booking.trackingSteps[0].status = 'completed';
-      booking.trackingSteps[0].timestamp = new Date();
-      
-      if (booking.trackingSteps.length > 1) {
-        booking.trackingSteps[1].status = 'current';
-      }
-      
-      booking.status = 'confirmed';
-      await booking.save();
-    }
-
+    // Don't change tracking steps - just assign the driver
+    // The order remains in 'confirmed' status until admin accepts it
+    
     // Send notification to the assigned driver
     const Update = require('../models/Update');
     const Driver = require('../models/Driver');
@@ -658,13 +648,13 @@ router.patch('/bookings/:id/assign-driver', async (req, res) => {
       const driverUpdate = new Update({
         userId: driver._id,
         title: 'New Order Assignment',
-        message: `You have been assigned a new transport order ${booking.bookingId}. Please review and accept/reject the order.`,
+        message: `You have been assigned a new transport order ${booking.bookingId}. Please review the order details.`,
         category: 'transport',
         isActive: true,
         metadata: {
           bookingId: booking.bookingId,
           orderId: booking._id,
-          actionRequired: 'accept_reject'
+          actionRequired: 'review'
         }
       });
       await driverUpdate.save();
@@ -672,6 +662,7 @@ router.patch('/bookings/:id/assign-driver', async (req, res) => {
     
     res.json({ message: 'Driver assigned successfully', booking });
   } catch (error) {
+    console.error('Error assigning driver:', error);
     res.status(500).json({ error: 'Failed to assign driver' });
   }
 });
@@ -735,11 +726,33 @@ router.get('/bookings/details/:bookingId', async (req, res) => {
 router.patch('/bookings/:bookingId/admin-accept', async (req, res) => {
   try {
     const { bookingId } = req.params;
+    console.log(`🔍 Admin accepting order: ${bookingId}`);
+    
     const booking = await Booking.findOne({ bookingId });
     
     if (!booking) {
+      console.log(`❌ Booking not found: ${bookingId}`);
       return res.status(404).json({ error: 'Booking not found' });
     }
+
+    console.log(`📋 Order ${bookingId} current state:`);
+    console.log(`   Status: ${booking.status}`);
+    console.log(`   Driver: ${booking.driverId || 'NOT ASSIGNED'}`);
+    console.log(`   Farmer: ${booking.farmerName}`);
+
+    // Check if order is in confirmed status
+    if (booking.status !== 'confirmed') {
+      console.log(`❌ Order status is ${booking.status}, not confirmed`);
+      return res.status(400).json({ error: `Order must be in confirmed status to accept. Current status: ${booking.status}` });
+    }
+
+    // Check if driver is assigned
+    if (!booking.driverId) {
+      console.log(`❌ No driver assigned to order ${bookingId}`);
+      return res.status(400).json({ error: 'Please assign a driver before accepting the order' });
+    }
+
+    console.log(`✅ Order ${bookingId} validation passed, proceeding with acceptance`);
 
     // Update tracking steps
     const acceptedStep = booking.trackingSteps.find(s => s.step === 'order_accepted');
@@ -775,6 +788,7 @@ router.patch('/bookings/:bookingId/admin-accept', async (req, res) => {
 
     res.json({ message: 'Order accepted successfully', booking });
   } catch (error) {
+    console.error('Error accepting order:', error);
     res.status(500).json({ error: 'Failed to accept order' });
   }
 });

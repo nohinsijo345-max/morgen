@@ -84,13 +84,29 @@ const TransportBooking = () => {
   const handleInputChange = (field, value) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
-      setBookingData(prev => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value
+      setBookingData(prev => {
+        const newData = {
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: value
+          }
+        };
+
+        // Auto-populate delivery address when pickup address changes
+        if (parent === 'fromLocation' && (child === 'state' || child === 'district')) {
+          // Only auto-populate if delivery fields are empty
+          if (!prev.toLocation.state && !prev.toLocation.district) {
+            newData.toLocation = {
+              ...prev.toLocation,
+              state: child === 'state' ? value : prev.fromLocation.state,
+              district: child === 'district' ? value : prev.fromLocation.district
+            };
+          }
         }
-      }));
+
+        return newData;
+      });
     } else {
       setBookingData(prev => ({
         ...prev,
@@ -311,9 +327,28 @@ const TransportBooking = () => {
           transition={{ delay: 0.2 }}
           className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-amber-200/50"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <MapPin className="w-5 h-5 text-red-600" />
-            <h3 className="text-lg font-semibold text-amber-900">Destination</h3>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <MapPin className="w-5 h-5 text-red-600" />
+              <h3 className="text-lg font-semibold text-amber-900">Destination</h3>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setBookingData(prev => ({
+                  ...prev,
+                  toLocation: {
+                    ...prev.toLocation,
+                    state: prev.fromLocation.state,
+                    district: prev.fromLocation.district
+                  }
+                }));
+              }}
+              className="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-sm transition-colors"
+            >
+              Copy from Pickup
+            </motion.button>
           </div>
           
           <div className="grid grid-cols-2 gap-4 mb-4">

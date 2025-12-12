@@ -140,11 +140,21 @@ router.put('/vehicles/:id', async (req, res) => {
 // Get driver's bookings
 router.get('/bookings/:driverId', async (req, res) => {
   try {
-    const bookings = await Booking.find({ driverId: req.params.driverId })
+    const { driverId } = req.params;
+    console.log(`🔍 Fetching bookings for driver: ${driverId}`);
+    
+    const bookings = await Booking.find({ driverId })
       .populate('vehicleId')
       .sort({ createdAt: -1 });
+    
+    console.log(`📦 Found ${bookings.length} bookings for driver ${driverId}`);
+    bookings.forEach(booking => {
+      console.log(`   - ${booking.bookingId}: ${booking.status} (${booking.farmerName})`);
+    });
+    
     res.json(bookings);
   } catch (error) {
+    console.error(`❌ Error fetching bookings for driver ${req.params.driverId}:`, error);
     res.status(500).json({ error: 'Failed to fetch bookings' });
   }
 });
@@ -311,9 +321,24 @@ router.patch('/orders/:bookingId/accept', async (req, res) => {
     const { bookingId } = req.params;
     const { driverId } = req.body;
     
-    const booking = await Booking.findOne({ bookingId, driverId });
+    console.log(`🔍 Driver ${driverId} attempting to accept order ${bookingId}`);
+    
+    const booking = await Booking.findOne({ bookingId });
     if (!booking) {
-      return res.status(404).json({ error: 'Booking not found or not assigned to you' });
+      console.log(`❌ Booking ${bookingId} not found`);
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    // Check if booking is assigned to this driver
+    if (booking.driverId !== driverId) {
+      console.log(`❌ Booking ${bookingId} not assigned to driver ${driverId}, assigned to: ${booking.driverId}`);
+      return res.status(403).json({ error: 'Booking not assigned to you' });
+    }
+
+    // Check if booking is in correct status
+    if (booking.status !== 'confirmed') {
+      console.log(`❌ Booking ${bookingId} status is ${booking.status}, expected 'confirmed'`);
+      return res.status(400).json({ error: `Cannot accept order with status: ${booking.status}` });
     }
 
     booking.status = 'order_processing';
@@ -327,6 +352,7 @@ router.patch('/orders/:bookingId/accept', async (req, res) => {
     }
 
     await booking.save();
+    console.log(`✅ Order ${bookingId} accepted successfully by driver ${driverId}`);
 
     // Notify farmer
     const Update = require('../models/Update');
@@ -344,6 +370,7 @@ router.patch('/orders/:bookingId/accept', async (req, res) => {
 
     res.json({ message: 'Order accepted successfully', booking });
   } catch (error) {
+    console.error(`❌ Error accepting order ${req.params.bookingId}:`, error);
     res.status(500).json({ error: 'Failed to accept order' });
   }
 });
@@ -354,9 +381,24 @@ router.patch('/orders/:bookingId/reject', async (req, res) => {
     const { bookingId } = req.params;
     const { driverId, reason } = req.body;
     
-    const booking = await Booking.findOne({ bookingId, driverId });
+    console.log(`🔍 Driver ${driverId} attempting to reject order ${bookingId} with reason: ${reason}`);
+    
+    const booking = await Booking.findOne({ bookingId });
     if (!booking) {
-      return res.status(404).json({ error: 'Booking not found or not assigned to you' });
+      console.log(`❌ Booking ${bookingId} not found`);
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    // Check if booking is assigned to this driver
+    if (booking.driverId !== driverId) {
+      console.log(`❌ Booking ${bookingId} not assigned to driver ${driverId}, assigned to: ${booking.driverId}`);
+      return res.status(403).json({ error: 'Booking not assigned to you' });
+    }
+
+    // Check if booking is in correct status
+    if (booking.status !== 'confirmed') {
+      console.log(`❌ Booking ${bookingId} status is ${booking.status}, expected 'confirmed'`);
+      return res.status(400).json({ error: `Cannot reject order with status: ${booking.status}` });
     }
 
     booking.status = 'cancelled';
@@ -365,6 +407,7 @@ router.patch('/orders/:bookingId/reject', async (req, res) => {
     booking.cancelledAt = new Date();
     
     await booking.save();
+    console.log(`✅ Order ${bookingId} rejected successfully by driver ${driverId}`);
 
     // Notify farmer
     const Update = require('../models/Update');
@@ -382,6 +425,7 @@ router.patch('/orders/:bookingId/reject', async (req, res) => {
 
     res.json({ message: 'Order rejected successfully', booking });
   } catch (error) {
+    console.error(`❌ Error rejecting order ${req.params.bookingId}:`, error);
     res.status(500).json({ error: 'Failed to reject order' });
   }
 });

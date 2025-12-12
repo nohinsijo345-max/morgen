@@ -3,18 +3,12 @@ import { motion } from 'framer-motion';
 import { 
   ArrowLeft,
   Package,
-  Calendar,
   IndianRupee,
   MapPin,
   User,
-  Clock,
   CheckCircle,
   XCircle,
   Eye,
-  Truck,
-  Phone,
-  Navigation,
-  AlertCircle,
   Bell
 } from 'lucide-react';
 import axios from 'axios';
@@ -25,7 +19,7 @@ const DriverOrderDetails = ({ user, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+
 
   useEffect(() => {
     fetchOrders();
@@ -46,7 +40,6 @@ const DriverOrderDetails = ({ user, onBack }) => {
 
   const fetchNotifications = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       // This would need to be implemented to fetch driver notifications
       // For now, we'll simulate notifications
       setNotifications([]);
@@ -58,16 +51,21 @@ const DriverOrderDetails = ({ user, onBack }) => {
   const handleAcceptOrder = async (bookingId) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.patch(`${API_URL}/api/driver/orders/${bookingId}/accept`, {
+      console.log(`🔄 Attempting to accept order ${bookingId} for driver ${user.driverId}`);
+      
+      const response = await axios.patch(`${API_URL}/api/driver/orders/${bookingId}/accept`, {
         driverId: user.driverId
       });
       
+      console.log('✅ Order accepted successfully:', response.data);
       alert('Order accepted successfully!');
       fetchOrders(); // Refresh the list
       setShowDetailsModal(false);
     } catch (error) {
-      console.error('Failed to accept order:', error);
-      alert('Failed to accept order');
+      console.error('❌ Failed to accept order:', error);
+      console.error('Error response:', error.response?.data);
+      const errorMessage = error.response?.data?.error || 'Failed to accept order. Please try again.';
+      alert(errorMessage);
     }
   };
 
@@ -77,17 +75,22 @@ const DriverOrderDetails = ({ user, onBack }) => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.patch(`${API_URL}/api/driver/orders/${bookingId}/reject`, {
+      console.log(`🔄 Attempting to reject order ${bookingId} for driver ${user.driverId}`);
+      
+      const response = await axios.patch(`${API_URL}/api/driver/orders/${bookingId}/reject`, {
         driverId: user.driverId,
         reason
       });
       
+      console.log('✅ Order rejected successfully:', response.data);
       alert('Order rejected successfully!');
       fetchOrders(); // Refresh the list
       setShowDetailsModal(false);
     } catch (error) {
-      console.error('Failed to reject order:', error);
-      alert('Failed to reject order');
+      console.error('❌ Failed to reject order:', error);
+      console.error('Error response:', error.response?.data);
+      const errorMessage = error.response?.data?.error || 'Failed to reject order. Please try again.';
+      alert(errorMessage);
     }
   };
 
@@ -187,7 +190,7 @@ const DriverOrderDetails = ({ user, onBack }) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setShowNotificationsModal(true)}
+                onClick={() => {/* Future notification functionality */}}
                 className="p-3 bg-amber-100 hover:bg-amber-200 rounded-xl transition-colors relative"
               >
                 <Bell className="w-5 h-5 text-amber-700" />

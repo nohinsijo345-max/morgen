@@ -8,7 +8,8 @@ import {
   User,
   CheckCircle,
   Eye,
-  Truck
+  Truck,
+  AlertCircle
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -54,14 +55,36 @@ const OrderDetailsManagement = () => {
   const handleAcceptOrder = async (bookingId) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.patch(`${API_URL}/api/transport/bookings/${bookingId}/admin-accept`);
+      
+      console.log(`🔍 Frontend: Attempting to accept order ${bookingId}`);
+      console.log(`📋 Current selectedOrder state:`, {
+        id: selectedOrder?._id,
+        bookingId: selectedOrder?.bookingId,
+        status: selectedOrder?.status,
+        driverId: selectedOrder?.driverId
+      });
+      
+      const response = await axios.patch(`${API_URL}/api/transport/bookings/${bookingId}/admin-accept`);
       
       alert('Order accepted successfully!');
-      fetchOrders(); // Refresh the list
+      
+      // Update the selected order status immediately
+      if (selectedOrder && selectedOrder.bookingId === bookingId) {
+        setSelectedOrder({
+          ...selectedOrder,
+          status: 'order_accepted'
+        });
+      }
+      
+      // Refresh the orders list
+      await fetchOrders();
       setShowDetailsModal(false);
     } catch (error) {
       console.error('Failed to accept order:', error);
-      alert('Failed to accept order');
+      console.error('Error details:', error.response?.data);
+      
+      const errorMessage = error.response?.data?.error || 'Failed to accept order. Please ensure the order has a driver assigned.';
+      alert(`Error: ${errorMessage}`);
     }
   };
 
@@ -74,14 +97,27 @@ const OrderDetailsManagement = () => {
     setAssigningDriver(true);
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.patch(`${API_URL}/api/transport/bookings/${orderId}/assign-driver`, {
+      const response = await axios.patch(`${API_URL}/api/transport/bookings/${orderId}/assign-driver`, {
         driverId: selectedDriverId
       });
       
       alert('Driver assigned successfully!');
-      fetchOrders(); // Refresh the list
+      
+      // Refresh the orders list first
+      await fetchOrders();
+      
+      // Update the selected order with the latest data from the response or refetch
+      if (selectedOrder && selectedOrder._id === orderId) {
+        // Fetch the updated order from the refreshed orders list
+        const updatedOrders = await axios.get(`${API_URL}/api/admin/transport/bookings`);
+        const updatedOrder = updatedOrders.data.find(order => order._id === orderId);
+        
+        if (updatedOrder) {
+          setSelectedOrder(updatedOrder);
+        }
+      }
+      
       setSelectedDriverId('');
-      setShowDetailsModal(false);
     } catch (error) {
       console.error('Failed to assign driver:', error);
       alert('Failed to assign driver');
@@ -207,8 +243,17 @@ const OrderDetailsManagement = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setSelectedOrder(order);
+                    onClick={async () => {
+                      // Refresh order data before showing modal
+                      try {
+                        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+                        const response = await axios.get(`${API_URL}/api/admin/transport/bookings`);
+                        const freshOrder = response.data.find(o => o._id === order._id);
+                        setSelectedOrder(freshOrder || order);
+                      } catch (error) {
+                        console.error('Failed to refresh order data:', error);
+                        setSelectedOrder(order);
+                      }
                       setShowDetailsModal(true);
                     }}
                     className="bg-[#D4E7F0] hover:bg-[#B8D8E8] text-[#2C5F7C] p-2 rounded-lg transition-colors"
@@ -266,8 +311,17 @@ const OrderDetailsManagement = () => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        setSelectedOrder(order);
+                      onClick={async () => {
+                        // Refresh order data before showing modal
+                        try {
+                          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+                          const response = await axios.get(`${API_URL}/api/admin/transport/bookings`);
+                          const freshOrder = response.data.find(o => o._id === order._id);
+                          setSelectedOrder(freshOrder || order);
+                        } catch (error) {
+                          console.error('Failed to refresh order data:', error);
+                          setSelectedOrder(order);
+                        }
                         setShowDetailsModal(true);
                       }}
                       className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2"
@@ -277,7 +331,7 @@ const OrderDetailsManagement = () => {
                     </motion.button>
                   )}
                   
-                  {order.status === 'confirmed' && (
+                  {order.status === 'confirmed' && order.driverId && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -289,11 +343,26 @@ const OrderDetailsManagement = () => {
                     </motion.button>
                   )}
                   
+                  {order.status === 'confirmed' && !order.driverId && (
+                    <div className="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg text-sm border border-orange-200">
+                      Assign driver first
+                    </div>
+                  )}
+                  
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => {
-                      setSelectedOrder(order);
+                    onClick={async () => {
+                      // Refresh order data before showing modal
+                      try {
+                        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+                        const response = await axios.get(`${API_URL}/api/admin/transport/bookings`);
+                        const freshOrder = response.data.find(o => o._id === order._id);
+                        setSelectedOrder(freshOrder || order);
+                      } catch (error) {
+                        console.error('Failed to refresh order data:', error);
+                        setSelectedOrder(order);
+                      }
                       setShowDetailsModal(true);
                     }}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
@@ -466,7 +535,7 @@ const OrderDetailsManagement = () => {
                 </div>
 
                 {/* Driver Assignment Section */}
-                {!selectedOrder.driverId && (
+                {!selectedOrder.driverId && selectedOrder.status === 'confirmed' && (
                   <div className="border-t border-purple-200 pt-4">
                     <h5 className="font-medium text-purple-900 mb-3">Assign Driver</h5>
                     <div className="flex gap-3">
@@ -506,6 +575,21 @@ const OrderDetailsManagement = () => {
                           </>
                         )}
                       </motion.button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Admin Restrictions Notice */}
+                {selectedOrder.status !== 'confirmed' && selectedOrder.status !== 'pending' && (
+                  <div className="border-t border-purple-200 pt-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex items-center gap-2 text-blue-800">
+                        <AlertCircle className="w-4 h-4" />
+                        <span className="font-medium text-sm">Driver Portal Control</span>
+                      </div>
+                      <p className="text-blue-700 text-xs mt-1">
+                        This order is now managed by the driver portal. All tracking updates must be done by the assigned driver.
+                      </p>
                     </div>
                   </div>
                 )}
@@ -551,7 +635,7 @@ const OrderDetailsManagement = () => {
                 Close
               </motion.button>
               
-              {!selectedOrder.driverId && selectedDriverId && (
+              {!selectedOrder.driverId && selectedDriverId && selectedOrder.status === 'confirmed' && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -577,7 +661,7 @@ const OrderDetailsManagement = () => {
                 </motion.button>
               )}
               
-              {selectedOrder.status === 'confirmed' && (
+              {selectedOrder.status === 'confirmed' && selectedOrder.driverId && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -587,6 +671,12 @@ const OrderDetailsManagement = () => {
                   <CheckCircle className="w-4 h-4" />
                   Accept Order
                 </motion.button>
+              )}
+              
+              {selectedOrder.status === 'confirmed' && !selectedOrder.driverId && (
+                <div className="flex-1 px-6 py-3 bg-orange-100 text-orange-800 rounded-xl border border-orange-200 flex items-center justify-center">
+                  Please assign a driver first
+                </div>
               )}
             </div>
           </motion.div>
