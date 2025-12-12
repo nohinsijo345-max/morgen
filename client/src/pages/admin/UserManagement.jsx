@@ -223,7 +223,7 @@ const UserManagement = () => {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Email</th>
                 {activeSection === 'farmers' && (
                   <>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">District</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Location</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Land Size</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Crops</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Subsidy</th>
@@ -259,7 +259,14 @@ const UserManagement = () => {
                   <td className="px-6 py-4 text-sm text-[#4A7C99]">{user.email || 'N/A'}</td>
                   {activeSection === 'farmers' && (
                     <>
-                      <td className="px-6 py-4 text-sm text-[#4A7C99]">{user.district || 'N/A'}</td>
+                      <td className="px-6 py-4 text-sm text-[#4A7C99]">
+                        <div>
+                          <div>{user.city || 'N/A'}, {user.district || 'N/A'}</div>
+                          {user.pinCode && (
+                            <div className="text-xs text-[#4A7C99]/70">PIN: {user.pinCode}</div>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-sm text-[#4A7C99]">
                         {user.landSize ? `${user.landSize} acres` : 'N/A'}
                       </td>

@@ -9,6 +9,11 @@ const UpdateSchema = new mongoose.Schema({
     enum: ['government', 'weather', 'market', 'general'], 
     default: 'government' 
   },
+  category: {
+    type: String,
+    enum: ['general', 'profile', 'transport', 'weather', 'market', 'government', 'auction', 'support'],
+    default: 'general'
+  },
   priority: { 
     type: String, 
     enum: ['low', 'medium', 'high', 'urgent'], 

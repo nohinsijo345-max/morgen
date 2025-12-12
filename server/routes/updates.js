@@ -25,4 +25,23 @@ router.post('/create', async (req, res) => {
   }
 });
 
+// Delete update (farmer can delete their own updates)
+router.delete('/:updateId', async (req, res) => {
+  try {
+    const { updateId } = req.params;
+    
+    const deletedUpdate = await Update.findByIdAndDelete(updateId);
+    
+    if (!deletedUpdate) {
+      return res.status(404).json({ error: 'Update not found' });
+    }
+    
+    console.log(`✅ Update deleted: ${updateId}`);
+    res.json({ message: 'Update deleted successfully', deletedUpdate });
+  } catch (error) {
+    console.error('Failed to delete update:', error);
+    res.status(500).json({ error: 'Failed to delete update' });
+  }
+});
+
 module.exports = router;

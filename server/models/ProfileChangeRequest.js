@@ -12,8 +12,9 @@ const ProfileChangeRequestSchema = new mongoose.Schema({
     state: { type: String },
     district: { type: String },
     city: { type: String },
-    landSize: { type: Number },
-    cropTypes: [{ type: String }]
+    pinCode: { type: String },
+    landSize: { type: Number }
+    // cropTypes removed - handled separately in Account Centre
   },
   status: { 
     type: String, 
@@ -25,5 +26,7 @@ const ProfileChangeRequestSchema = new mongoose.Schema({
   reviewedBy: { type: String },
   reviewNotes: { type: String }
 });
+
+// No pre-save middleware needed
 
 module.exports = mongoose.model('ProfileChangeRequest', ProfileChangeRequestSchema);

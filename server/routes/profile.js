@@ -43,6 +43,16 @@ router.post('/request-change', async (req, res) => {
       return res.status(400).json({ error: 'No changes provided' });
     }
 
+    // Remove cropTypes completely - they are handled separately in Account Centre
+    if (changes.cropTypes !== undefined) {
+      delete changes.cropTypes;
+    }
+
+    // Check if there are still changes after filtering
+    if (Object.keys(changes).length === 0) {
+      return res.status(400).json({ error: 'No valid changes provided' });
+    }
+
     // City validation - must contain at least one letter
     if (changes.city && !/[a-zA-Z]/.test(changes.city)) {
       return res.status(400).json({ error: 'City name must contain at least one letter' });
@@ -58,13 +68,21 @@ router.post('/request-change', async (req, res) => {
       return res.status(400).json({ error: 'You already have a pending change request' });
     }
 
+    console.log(`🔍 Received changes for ${farmerId}:`, JSON.stringify(changes, null, 2));
+    console.log(`🔍 Changes object keys:`, Object.keys(changes));
+    console.log(`🔍 Changes pinCode:`, changes.pinCode);
+
     const changeRequest = new ProfileChangeRequest({
       userId: user._id,
       changes
     });
 
+    console.log(`🔍 Before save - changeRequest.changes:`, JSON.stringify(changeRequest.changes, null, 2));
+    
     await changeRequest.save();
-    console.log(`✅ Profile change request submitted for ${farmerId}:`, changes);
+    
+    console.log(`🔍 After save - changeRequest.changes:`, JSON.stringify(changeRequest.changes, null, 2));
+    console.log(`✅ Profile change request submitted for ${farmerId}`);
     
     res.status(201).json({ 
       message: 'Change request submitted successfully',

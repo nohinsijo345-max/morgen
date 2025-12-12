@@ -5,9 +5,24 @@ import UserManagement from './admin/UserManagement';
 import ImageSettings from './admin/ImageSettings';
 import MessagesManagement from './admin/MessagesManagement';
 import ProfileRequests from './admin/ProfileRequests';
+import TransportManagement from './admin/TransportManagement';
+import CustomerSupportManagement from './admin/CustomerSupportManagement';
+import AdminModuleSelector from './admin/AdminModuleSelector';
+import DriverAdmin from './admin/driver/DriverAdmin';
 
 const Admin = ({ onLogout }) => {
+  const [selectedModule, setSelectedModule] = useState(null);
   const [activePage, setActivePage] = useState('dashboard');
+
+  const handleModuleSelect = (moduleId) => {
+    setSelectedModule(moduleId);
+    setActivePage('dashboard'); // Reset to dashboard when switching modules
+  };
+
+  const handleBackToModules = () => {
+    setSelectedModule(null);
+    setActivePage('dashboard');
+  };
 
   const renderPage = () => {
     switch (activePage) {
@@ -21,20 +36,46 @@ const Admin = ({ onLogout }) => {
         return <MessagesManagement />;
       case 'profile-requests':
         return <ProfileRequests />;
+      case 'transport':
+        return <TransportManagement />;
+      case 'customer-support':
+        return <CustomerSupportManagement />;
       default:
         return <AdminDashboard />;
     }
   };
 
-  return (
-    <AdminLayout
-      activePage={activePage}
-      onNavigate={setActivePage}
-      onLogout={onLogout}
-    >
-      {renderPage()}
-    </AdminLayout>
-  );
+  // Show module selector if no module is selected
+  if (!selectedModule) {
+    return <AdminModuleSelector onModuleSelect={handleModuleSelect} />;
+  }
+
+  // Show Driver Admin module
+  if (selectedModule === 'driver') {
+    return (
+      <DriverAdmin 
+        onLogout={onLogout} 
+        onBack={handleBackToModules}
+      />
+    );
+  }
+
+  // Show Farmer Admin module (current admin panel)
+  if (selectedModule === 'farmer') {
+    return (
+      <AdminLayout
+        activePage={activePage}
+        onNavigate={setActivePage}
+        onLogout={onLogout}
+        onBack={handleBackToModules}
+      >
+        {renderPage()}
+      </AdminLayout>
+    );
+  }
+
+  // Fallback to module selector
+  return <AdminModuleSelector onModuleSelect={handleModuleSelect} />;
 };
 
 export default Admin;

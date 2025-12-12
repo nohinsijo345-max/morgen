@@ -19,6 +19,8 @@ const ProfileRequests = () => {
   const [processing, setProcessing] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [rejectReason, setRejectReason] = useState('');
+  const [showRejectModal, setShowRejectModal] = useState(null);
 
   useEffect(() => {
     fetchRequests();
@@ -63,9 +65,13 @@ const ProfileRequests = () => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.post(`${API_URL}/api/admin/profile-requests/${requestId}/reject`);
+      await axios.post(`${API_URL}/api/admin/profile-requests/${requestId}/reject`, {
+        reason: rejectReason
+      });
       
       setSuccess('Profile change request rejected');
+      setShowRejectModal(null);
+      setRejectReason('');
       fetchRequests();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -161,6 +167,23 @@ const ProfileRequests = () => {
                         Requested: {new Date(request.requestedAt).toLocaleDateString()}
                       </span>
                     </div>
+                    {/* Request Summary */}
+                    <div className="mt-2 p-2 bg-blue-50 rounded-lg">
+                      <p className="text-xs font-medium text-blue-700">
+                        Requesting changes to: {Object.keys(request.changes || {}).filter(field => {
+                          // Filter out empty cropTypes arrays
+                          if (field === 'cropTypes' && Array.isArray(request.changes[field]) && request.changes[field].length === 0) {
+                            return false;
+                          }
+                          return true;
+                        }).map(field => {
+                          if (field === 'pinCode') return 'PIN Code';
+                          if (field === 'landSize') return 'Land Size';
+                          if (field === 'cropTypes') return 'Crop Types';
+                          return field.charAt(0).toUpperCase() + field.slice(1);
+                        }).join(', ') || 'No changes specified'}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -212,6 +235,16 @@ const ProfileRequests = () => {
                   </div>
                 )}
 
+                {request.changes.pinCode && (
+                  <div className="bg-white/30 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <MapPin className="w-4 h-4 text-[#4A7C99]" />
+                      <span className="text-sm font-medium text-[#4A7C99]">PIN Code</span>
+                    </div>
+                    <div className="text-[#2C5F7C] font-semibold">{request.changes.pinCode}</div>
+                  </div>
+                )}
+
                 {request.changes.landSize && (
                   <div className="bg-white/30 rounded-xl p-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -258,7 +291,7 @@ const ProfileRequests = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => handleReject(request._id)}
+                  onClick={() => setShowRejectModal(request._id)}
                   disabled={processing === request._id}
                   className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -268,6 +301,58 @@ const ProfileRequests = () => {
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {showRejectModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                <XCircle className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Reject Request</h3>
+                <p className="text-sm text-gray-600">Provide a reason for rejection</p>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reason for Rejection
+              </label>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Please provide a reason for rejecting this request..."
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 h-24 resize-none"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowRejectModal(null);
+                  setRejectReason('');
+                }}
+                className="flex-1 px-6 py-3 border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleReject(showRejectModal)}
+                disabled={!rejectReason.trim() || processing}
+                className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {processing ? 'Rejecting...' : 'Reject Request'}
+              </button>
+            </div>
+          </motion.div>
         </div>
       )}
     </div>

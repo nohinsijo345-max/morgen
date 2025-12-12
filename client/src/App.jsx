@@ -11,22 +11,36 @@ import Weather from "./pages/Weather";
 import Leaderboard from "./pages/Leaderboard";
 import HarvestCountdown from "./pages/farmer/HarvestCountdown";
 import PriceForecast from "./pages/farmer/PriceForecast";
+import LocalTransport from "./pages/farmer/LocalTransport";
+import VehicleDetails from "./pages/farmer/VehicleDetails";
+import TransportBooking from "./pages/farmer/TransportBooking";
+import OrderTracking from "./pages/farmer/OrderTracking";
+import OrderHistory from "./pages/farmer/OrderHistory";
+import CustomerSupport from "./pages/farmer/CustomerSupport";
+import DriverLogin from "./pages/DriverLogin";
+import DriverDashboard from "./pages/DriverDashboard";
+import DriverOrderDetails from "./pages/DriverOrderDetails";
 
 export default function App() {
   const [farmerUser, setFarmerUser] = useState(null);
   const [adminUser, setAdminUser] = useState(null);
+  const [driverUser, setDriverUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load both farmer and admin sessions separately
+    // Load farmer, admin, and driver sessions separately
     const savedFarmer = localStorage.getItem('farmerUser');
     const savedAdmin = localStorage.getItem('adminUser');
+    const savedDriver = localStorage.getItem('driverUser');
     
     if (savedFarmer) {
       setFarmerUser(JSON.parse(savedFarmer));
     }
     if (savedAdmin) {
       setAdminUser(JSON.parse(savedAdmin));
+    }
+    if (savedDriver) {
+      setDriverUser(JSON.parse(savedDriver));
     }
     setLoading(false);
   }, []);
@@ -41,6 +55,11 @@ export default function App() {
     localStorage.setItem('adminUser', JSON.stringify(userData));
   };
 
+  const handleDriverLogin = (userData) => {
+    setDriverUser(userData);
+    localStorage.setItem('driverUser', JSON.stringify(userData));
+  };
+
   const handleFarmerLogout = () => {
     setFarmerUser(null);
     localStorage.removeItem('farmerUser');
@@ -49,6 +68,11 @@ export default function App() {
   const handleAdminLogout = () => {
     setAdminUser(null);
     localStorage.removeItem('adminUser');
+  };
+
+  const handleDriverLogout = () => {
+    setDriverUser(null);
+    localStorage.removeItem('driverUser');
   };
 
   if (loading) {
@@ -99,14 +123,51 @@ export default function App() {
           element={farmerUser ? <PriceForecast /> : <Navigate to="/login" />} 
         />
         <Route 
+          path="/local-transport" 
+          element={farmerUser ? <LocalTransport /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/local-transport/vehicle/:vehicleId" 
+          element={farmerUser ? <VehicleDetails /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/local-transport/booking/:vehicleId" 
+          element={farmerUser ? <TransportBooking /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/order-tracking" 
+          element={farmerUser ? <OrderTracking /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/order-history" 
+          element={farmerUser ? <OrderHistory /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/customer-support" 
+          element={farmerUser ? <CustomerSupport /> : <Navigate to="/login" />} 
+        />
+        <Route 
           path="/admin" 
           element={adminUser ? <Admin onLogout={handleAdminLogout} /> : <Navigate to="/admin-login" />} 
+        />
+        <Route 
+          path="/driver-login" 
+          element={driverUser ? <Navigate to="/driver-dashboard" /> : <DriverLogin onLogin={handleDriverLogin} />} 
+        />
+        <Route 
+          path="/driver-dashboard" 
+          element={driverUser ? <DriverDashboard user={driverUser} onLogout={handleDriverLogout} /> : <Navigate to="/driver-login" />} 
+        />
+        <Route 
+          path="/driver-orders" 
+          element={driverUser ? <DriverOrderDetails user={driverUser} onBack={() => window.history.back()} /> : <Navigate to="/driver-login" />} 
         />
         <Route 
           path="/" 
           element={
             farmerUser ? <Navigate to="/dashboard" /> : 
             adminUser ? <Navigate to="/admin" /> : 
+            driverUser ? <Navigate to="/driver-dashboard" /> :
             <Navigate to="/login" />
           } 
         />

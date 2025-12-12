@@ -61,11 +61,48 @@ CropSchema.index({ location: '2dsphere' });
 CropSchema.pre('save', function(next) {
   if (this.harvestDate) {
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset to start of day for accurate calculation
+    
     const harvest = new Date(this.harvestDate);
+    harvest.setHours(0, 0, 0, 0); // Reset to start of day
+    
     this.daysToHarvest = Math.ceil((harvest - today) / (1000 * 60 * 60 * 24));
   }
   this.updatedAt = new Date();
   next();
 });
+
+// Virtual field to get real-time days to harvest
+CropSchema.virtual('currentDaysToHarvest').get(function() {
+  if (!this.harvestDate) return null;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const harvest = new Date(this.harvestDate);
+  harvest.setHours(0, 0, 0, 0);
+  
+  return Math.ceil((harvest - today) / (1000 * 60 * 60 * 24));
+});
+
+// Method to update countdown
+CropSchema.methods.updateCountdown = function() {
+  if (this.harvestDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const harvest = new Date(this.harvestDate);
+    harvest.setHours(0, 0, 0, 0);
+    
+    const newDaysLeft = Math.ceil((harvest - today) / (1000 * 60 * 60 * 24));
+    const changed = this.daysToHarvest !== newDaysLeft;
+    
+    this.daysToHarvest = newDaysLeft;
+    this.updatedAt = new Date();
+    
+    return { changed, daysLeft: newDaysLeft };
+  }
+  return { changed: false, daysLeft: null };
+};
 
 module.exports = mongoose.model('Crop', CropSchema, 'Crops');

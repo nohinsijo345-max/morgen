@@ -9,6 +9,9 @@ const PriceForecastCard = ({ onClick }) => {
 
   useEffect(() => {
     fetchForecasts();
+    // Auto-refresh every 5 minutes for updated price forecasts
+    const interval = setInterval(fetchForecasts, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchForecasts = async () => {
@@ -17,8 +20,11 @@ const PriceForecastCard = ({ onClick }) => {
       if (farmerUser) {
         const userData = JSON.parse(farmerUser);
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/price-forecast/forecast/${userData.farmerId}`);
+        // Add cache-busting parameter to ensure fresh data
+        const timestamp = new Date().getTime();
+        const response = await axios.get(`${API_URL}/api/price-forecast/forecast/${userData.farmerId}?t=${timestamp}`);
         setForecasts(response.data.forecasts || []);
+        console.log('Price forecasts refreshed:', new Date().toLocaleTimeString());
       }
     } catch (error) {
       console.error('Failed to fetch price forecasts:', error);

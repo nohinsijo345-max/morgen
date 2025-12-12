@@ -34,6 +34,7 @@ const Login = ({ onLogin }) => {
     state: '',
     district: '',
     city: '',
+    pinCode: '',
     panchayat: '',
     landSize: '',
     cropTypes: [],
@@ -203,6 +204,7 @@ const Login = ({ onLogin }) => {
         state: signUpData.state,
         district: signUpData.district,
         city: signUpData.city,
+        pinCode: signUpData.pinCode,
         panchayat: signUpData.panchayat,
         landSize: parseFloat(signUpData.landSize) || 0,
         cropTypes: signUpData.cropTypes,
@@ -230,6 +232,7 @@ const Login = ({ onLogin }) => {
           state: '',
           district: '',
           city: '',
+          pinCode: '',
           panchayat: '',
           landSize: '',
           cropTypes: [],
@@ -528,6 +531,18 @@ const Login = ({ onLogin }) => {
                           value={signUpData.city}
                           onChange={(e) => setSignUpData({...signUpData, city: e.target.value})}
                           placeholder="Enter city"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#082829]"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">PIN Code</label>
+                        <input
+                          type="text"
+                          value={signUpData.pinCode}
+                          onChange={(e) => setSignUpData({...signUpData, pinCode: e.target.value.replace(/\D/g, '').slice(0, 6)})}
+                          maxLength="6"
+                          placeholder="6-digit PIN code"
                           className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#082829]"
                         />
                       </div>

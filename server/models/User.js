@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
   state: { type: String },
   district: { type: String },
   city: { type: String },
+  pinCode: { type: String },
   panchayat: { type: String },
   
   // Farmer specific

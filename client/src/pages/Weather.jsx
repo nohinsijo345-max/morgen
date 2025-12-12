@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { 
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
   ArrowLeft, MapPin, Wind, Droplets, Sunrise, Sunset,
-  Eye, Gauge, Umbrella, Thermometer
+  Eye, Gauge, RefreshCw, Thermometer, CloudRain, Leaf, Sun,
+  AlertTriangle, Cloud, Moon, Waves, Activity, TrendingUp,
+  TrendingDown, Clock, Calendar, Sprout, Bug, Tractor
 } from 'lucide-react';
 import axios from 'axios';
+import { WeatherIcon, SmallWeatherIcon } from '../components/PremiumWeatherElements';
 
 // Determine if it's currently night time
 const useTimeOfDay = () => {
@@ -25,343 +28,186 @@ const useTimeOfDay = () => {
   return isNight;
 };
 
-// Get theme colors based on time
-const getThemeColors = (isNight) => {
+// Premium minimal theme colors - changes based on time of day
+const getThemeColors = (isNight, condition) => {
+  const cond = condition?.toLowerCase() || '';
+  
+  // Night theme - deep elegant dark
   if (isNight) {
     return {
-      gradient: 'from-[#0f0c29] via-[#302b63] to-[#24243e]',
+      gradient: 'from-indigo-950 via-slate-900 to-slate-950',
       textPrimary: 'text-white',
-      textSecondary: 'text-white/70',
-      textMuted: 'text-white/50',
+      textSecondary: 'text-slate-300',
+      textMuted: 'text-slate-400',
       cardBg: 'bg-white/5',
-      border: 'border-white/10',
+      cardBorder: 'border-white/10',
+      accent: 'text-blue-400',
     };
   }
+  
+  // Rainy theme - soft grays
+  if (cond.includes('rain') || cond.includes('drizzle') || cond.includes('storm')) {
+    return {
+      gradient: 'from-slate-700 via-slate-600 to-slate-700',
+      textPrimary: 'text-white',
+      textSecondary: 'text-slate-200',
+      textMuted: 'text-slate-300',
+      cardBg: 'bg-white/10',
+      cardBorder: 'border-white/20',
+      accent: 'text-blue-300',
+    };
+  }
+  
+  // Cloudy theme - neutral elegance
+  if (cond.includes('cloud') || cond.includes('overcast') || cond.includes('mist') || cond.includes('fog')) {
+    return {
+      gradient: 'from-slate-500 via-slate-400 to-slate-500',
+      textPrimary: 'text-white',
+      textSecondary: 'text-slate-100',
+      textMuted: 'text-slate-200',
+      cardBg: 'bg-white/15',
+      cardBorder: 'border-white/25',
+      accent: 'text-slate-100',
+    };
+  }
+  
+  // Default sunny theme - warm sky gradient
   return {
-    gradient: 'from-[#56CCF2] via-[#2F80ED] to-[#1a5fb4]',
+    gradient: 'from-sky-500 via-blue-400 to-sky-500',
     textPrimary: 'text-white',
-    textSecondary: 'text-white/90',
-    textMuted: 'text-white/70',
+    textSecondary: 'text-sky-100',
+    textMuted: 'text-sky-200',
     cardBg: 'bg-white/15',
-    border: 'border-white/20',
+    cardBorder: 'border-white/25',
+    accent: 'text-yellow-300',
   };
 };
-
-
-// Premium 3D Sun with enhanced graphics
-const PremiumSun = () => (
-  <motion.div 
-    className="relative w-44 h-44"
-    initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
-    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-    transition={{ delay: 0.3, type: 'spring', stiffness: 80 }}
-  >
-    {/* Multiple glow layers */}
-    <motion.div 
-      className="absolute inset-0 rounded-full blur-2xl"
-      style={{ background: 'radial-gradient(circle, rgba(255,200,50,0.6) 0%, transparent 60%)' }}
-      animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    <motion.div 
-      className="absolute inset-0 rounded-full blur-xl"
-      style={{ background: 'radial-gradient(circle, rgba(255,165,0,0.5) 0%, transparent 50%)' }}
-      animate={{ scale: [1.1, 1.4, 1.1] }}
-      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    
-    {/* Animated sun rays */}
-    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 200 200">
-      <defs>
-        <linearGradient id="pageRayGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#FFD700" stopOpacity="0" />
-          <stop offset="40%" stopColor="#FFA500" stopOpacity="1" />
-          <stop offset="100%" stopColor="#FF6B00" stopOpacity="0" />
-        </linearGradient>
-        <filter id="pageRayGlow">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-      </defs>
-      {[...Array(12)].map((_, i) => (
-        <motion.line
-          key={i}
-          x1="100" y1="100" x2="100" y2="15"
-          stroke="url(#pageRayGrad)"
-          strokeWidth="6"
-          strokeLinecap="round"
-          filter="url(#pageRayGlow)"
-          transform={`rotate(${i * 30} 100 100)`}
-          animate={{ opacity: [0.4, 1, 0.4], strokeWidth: [5, 8, 5] }}
-          transition={{ duration: 2, repeat: Infinity, delay: i * 0.08 }}
-        />
-      ))}
-    </svg>
-    
-    {/* Main sun body */}
-    <motion.div 
-      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full"
-      style={{
-        background: 'radial-gradient(circle at 30% 30%, #FFF5CC 0%, #FFE066 20%, #FFD700 40%, #FFA500 70%, #FF8C00 100%)'
-      }}
-      animate={{ scale: [1, 1.08, 1] }}
-      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-    />
-  </motion.div>
-);
-
-// Premium Moon for night time
-const PremiumMoon = () => (
-  <motion.div 
-    className="relative w-44 h-44"
-    initial={{ opacity: 0, scale: 0.5 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ delay: 0.3, type: 'spring' }}
-  >
-    <motion.div 
-      className="absolute inset-0 rounded-full blur-2xl"
-      style={{ background: 'radial-gradient(circle, rgba(200,220,255,0.5) 0%, transparent 60%)' }}
-      animate={{ scale: [1, 1.2, 1] }}
-      transition={{ duration: 4, repeat: Infinity }}
-    />
-    
-    <svg className="w-full h-full" viewBox="0 0 100 100">
-      <defs>
-        <radialGradient id="pageMoonGrad" cx="30%" cy="30%">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="50%" stopColor="#E8E8F0" />
-          <stop offset="100%" stopColor="#C8C8D8" />
-        </radialGradient>
-        <filter id="pageMoonGlow">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
-      </defs>
-      <circle cx="50" cy="50" r="38" fill="url(#pageMoonGrad)" filter="url(#pageMoonGlow)" />
-      <circle cx="38" cy="38" r="7" fill="#D0D0D8" opacity="0.5" />
-      <circle cx="62" cy="55" r="5" fill="#D0D0D8" opacity="0.4" />
-      <circle cx="45" cy="62" r="4" fill="#D0D0D8" opacity="0.3" />
-    </svg>
-  </motion.div>
-);
-
-
-// Premium 3D Cloud
-const PremiumCloud = ({ isRaining = false, isNight = false }) => {
-  const cloudColor = isNight ? '#8090A0' : '#FFFFFF';
-  const shadowColor = isNight ? '#505060' : '#B0B0B0';
-  
-  return (
-    <motion.div 
-      className="relative w-52 h-36"
-      initial={{ opacity: 0, x: -30 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.3, type: 'spring' }}
-    >
-      <svg className="w-full h-full" viewBox="0 0 200 130">
-        <defs>
-          <linearGradient id={`pageCloudGrad${isNight ? 'N' : 'D'}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={cloudColor} />
-            <stop offset="60%" stopColor={isNight ? '#707080' : '#F0F0F0'} />
-            <stop offset="100%" stopColor={shadowColor} />
-          </linearGradient>
-        </defs>
-        
-        <g>
-          <ellipse cx="100" cy="70" rx="62" ry="36" fill={`url(#pageCloudGrad${isNight ? 'N' : 'D'})`} />
-          <ellipse cx="48" cy="76" rx="42" ry="30" fill={`url(#pageCloudGrad${isNight ? 'N' : 'D'})`} />
-          <ellipse cx="152" cy="76" rx="38" ry="27" fill={`url(#pageCloudGrad${isNight ? 'N' : 'D'})`} />
-          <ellipse cx="72" cy="48" rx="38" ry="28" fill={cloudColor} />
-          <ellipse cx="128" cy="50" rx="35" ry="26" fill={cloudColor} />
-        </g>
-        
-        <ellipse cx="68" cy="42" rx="22" ry="14" fill="rgba(255,255,255,0.9)" />
-        <ellipse cx="118" cy="46" rx="18" ry="12" fill="rgba(255,255,255,0.7)" />
-      </svg>
-      
-      {isRaining && (
-        <div className="absolute bottom-0 left-1/4 w-1/2 h-20 overflow-hidden">
-          {[...Array(10)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1.5 rounded-full"
-              style={{ 
-                left: `${i * 11}%`,
-                height: '18px',
-                background: 'linear-gradient(to bottom, rgba(100,180,255,1), rgba(100,180,255,0.2))'
-              }}
-              animate={{ y: [0, 60], opacity: [1, 0] }}
-              transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.07, ease: 'easeIn' }}
-            />
-          ))}
-        </div>
-      )}
-    </motion.div>
-  );
-};
-
-// Weather Icon Selector
-const WeatherIcon = ({ condition, isNight = false }) => {
-  const cond = condition?.toLowerCase() || '';
-  if (cond.includes('rain') || cond.includes('drizzle')) return <PremiumCloud isRaining={true} isNight={isNight} />;
-  if (cond.includes('cloud') || cond.includes('overcast')) return <PremiumCloud isRaining={false} isNight={isNight} />;
-  if (isNight) return <PremiumMoon />;
-  return <PremiumSun />;
-};
-
-// Small Weather Icon for forecasts
-const SmallWeatherIcon = ({ condition, isNight = false }) => {
-  const cond = condition?.toLowerCase() || '';
-  
-  if (cond.includes('rain')) {
-    return (
-      <svg className="w-8 h-8" viewBox="0 0 40 40">
-        <ellipse cx="20" cy="14" rx="12" ry="8" fill={isNight ? '#8090A0' : '#94A3B8'} />
-        <ellipse cx="11" cy="16" rx="8" ry="6" fill={isNight ? '#8090A0' : '#94A3B8'} />
-        <ellipse cx="29" cy="16" rx="7" ry="5" fill={isNight ? '#8090A0' : '#94A3B8'} />
-        {[0, 1, 2].map(i => (
-          <motion.line key={i} x1={12 + i * 8} y1="25" x2={10 + i * 8} y2="33"
-            stroke="#60A5FA" strokeWidth="2.5" strokeLinecap="round"
-            animate={{ y: [0, 5], opacity: [1, 0] }}
-            transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.15 }}
-          />
-        ))}
-      </svg>
-    );
-  }
-  
-  if (cond.includes('cloud')) {
-    return (
-      <svg className="w-8 h-8" viewBox="0 0 40 40">
-        <ellipse cx="20" cy="18" rx="12" ry="8" fill={isNight ? '#8090A0' : '#94A3B8'} />
-        <ellipse cx="11" cy="20" rx="8" ry="6" fill={isNight ? '#8090A0' : '#94A3B8'} />
-        <ellipse cx="29" cy="20" rx="7" ry="5" fill={isNight ? '#8090A0' : '#94A3B8'} />
-        <ellipse cx="18" cy="14" rx="6" ry="4" fill={isNight ? '#A0A8B0' : '#CBD5E1'} />
-      </svg>
-    );
-  }
-  
-  if (isNight) {
-    return (
-      <svg className="w-8 h-8" viewBox="0 0 40 40">
-        <defs>
-          <radialGradient id="smallMoon" cx="30%" cy="30%">
-            <stop offset="0%" stopColor="#FFFFFF" />
-            <stop offset="100%" stopColor="#D0D0E0" />
-          </radialGradient>
-        </defs>
-        <circle cx="20" cy="20" r="11" fill="url(#smallMoon)" />
-        <circle cx="15" cy="16" r="2.5" fill="#C0C0D0" opacity="0.5" />
-      </svg>
-    );
-  }
-  
-  return (
-    <svg className="w-8 h-8" viewBox="0 0 40 40">
-      <defs>
-        <radialGradient id="smallSunGrad">
-          <stop offset="0%" stopColor="#FDE047" />
-          <stop offset="100%" stopColor="#F59E0B" />
-        </radialGradient>
-      </defs>
-      {[...Array(8)].map((_, i) => (
-        <motion.line key={i} x1="20" y1="20" x2="20" y2="5"
-          stroke="#FBBF24" strokeWidth="2.5" strokeLinecap="round"
-          transform={`rotate(${i * 45} 20 20)`}
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
-        />
-      ))}
-      <circle cx="20" cy="20" r="9" fill="url(#smallSunGrad)" />
-    </svg>
-  );
-};
-
-
-// Animated Stars Background (night only)
-const StarsBackground = () => {
-  const stars = useMemo(() => 
-    Array.from({ length: 60 }, (_, i) => ({
-      id: i,
-      left: (i * 17 + 7) % 100,
-      top: (i * 13 + 5) % 70,
-      size: (i % 3) + 1,
-      delay: (i % 6) * 0.3,
-      duration: 2 + (i % 4),
-    })), []
-  );
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {stars.map((star) => (
-        <motion.div
-          key={star.id}
-          className="absolute rounded-full bg-white"
-          style={{ width: star.size, height: star.size, left: `${star.left}%`, top: `${star.top}%` }}
-          animate={{ opacity: [0.2, 0.9, 0.2] }}
-          transition={{ duration: star.duration, repeat: Infinity, delay: star.delay }}
-        />
-      ))}
-    </div>
-  );
-};
-
-// Animated Clouds Background (day only)
-const CloudsBackground = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-    <motion.div
-      className="absolute top-20 -left-40 w-80 h-40 bg-white/50 rounded-full blur-3xl"
-      animate={{ x: [0, 200, 0] }}
-      transition={{ duration: 120, repeat: Infinity, ease: 'linear' }}
-    />
-    <motion.div
-      className="absolute top-40 -right-20 w-60 h-30 bg-white/40 rounded-full blur-2xl"
-      animate={{ x: [0, -150, 0] }}
-      transition={{ duration: 90, repeat: Infinity, ease: 'linear' }}
-    />
-    <motion.div
-      className="absolute bottom-40 left-1/4 w-40 h-20 bg-white/30 rounded-full blur-xl"
-      animate={{ x: [0, 100, 0] }}
-      transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-    />
-  </div>
-);
 
 const Weather = () => {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [location, setLocation] = useState('');
   const [activeTab, setActiveTab] = useState('hourly');
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [nextRefresh, setNextRefresh] = useState(300); // 5 minutes in seconds
   const localIsNight = useTimeOfDay();
 
   useEffect(() => {
     fetchWeatherData();
+    
+    // Auto-refresh every 3 minutes for more frequent updates
+    const refreshInterval = setInterval(() => {
+      console.log('Auto-refreshing weather data...');
+      fetchWeatherData();
+      setNextRefresh(180);
+    }, 3 * 60 * 1000); // 3 minutes
+    
+    // Countdown timer
+    const countdownInterval = setInterval(() => {
+      setNextRefresh(prev => prev > 0 ? prev - 1 : 180);
+    }, 1000);
+    
+    return () => {
+      clearInterval(refreshInterval);
+      clearInterval(countdownInterval);
+    };
   }, []);
 
-  const fetchWeatherData = async () => {
+  const fetchWeatherData = async (isManualRefresh = false) => {
+    if (isManualRefresh) {
+      setRefreshing(true);
+      setNextRefresh(180);
+    }
+    
     try {
       const farmerUser = localStorage.getItem('farmerUser');
       if (farmerUser) {
         const userData = JSON.parse(farmerUser);
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/dashboard/farmer/${userData.farmerId}`);
+        
+        // Add cache-busting parameter to ensure fresh data
+        const timestamp = new Date().getTime();
+        const response = await axios.get(`${API_URL}/api/dashboard/farmer/${userData.farmerId}?t=${timestamp}`);
+        
         setWeather(response.data.weather);
-        setLocation((response.data.farmer?.district || 'Your Location').toUpperCase());
+        setLastUpdated(new Date());
+        
+        // Enhanced location display with PIN code if available
+        const farmer = response.data.farmer;
+        let locationDisplay = farmer?.district || 'Your Location';
+        if (farmer?.city && farmer?.pinCode) {
+          locationDisplay = `${farmer.city} (${farmer.pinCode})`;
+        } else if (farmer?.city) {
+          locationDisplay = `${farmer.city}, ${farmer.district}`;
+        }
+        setLocation(locationDisplay.toUpperCase());
+        
+        console.log('Weather data refreshed:', {
+          location: locationDisplay,
+          temperature: response.data.weather?.temperature,
+          condition: response.data.weather?.condition,
+          lastUpdated: response.data.weather?.lastUpdated,
+          isLiveData: response.data.weather?.isLiveData,
+          isManualRefresh
+        });
       }
     } catch (error) {
       console.error('Failed to fetch weather:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  // Format countdown timer
+  const formatCountdown = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Get farming advice based on weather
+  const getFarmingAdvice = () => {
+    if (!weather) return [];
+    const advice = [];
+    const cond = weather.condition?.toLowerCase() || '';
+    const temp = weather.temperature || 25;
+    const humidity = weather.humidity || 60;
+    
+    // Temperature-based advice
+    if (temp > 35) {
+      advice.push({ icon: Thermometer, text: 'High heat - irrigate crops early morning or evening', type: 'warning' });
+    } else if (temp < 15) {
+      advice.push({ icon: Thermometer, text: 'Cool weather - protect sensitive crops from frost', type: 'info' });
+    } else {
+      advice.push({ icon: Thermometer, text: 'Good temperature for most farming activities', type: 'success' });
+    }
+    
+    // Rain-based advice
+    if (cond.includes('rain') || cond.includes('drizzle')) {
+      advice.push({ icon: CloudRain, text: 'Rain expected - avoid spraying pesticides today', type: 'warning' });
+      advice.push({ icon: Leaf, text: 'Good time for transplanting seedlings', type: 'success' });
+    } else if (humidity > 80) {
+      advice.push({ icon: Droplets, text: 'High humidity - watch for fungal diseases', type: 'warning' });
+    }
+    
+    // Sunny day advice
+    if (cond.includes('sunny') || cond.includes('clear')) {
+      advice.push({ icon: Sun, text: 'Clear skies - ideal for harvesting and drying crops', type: 'success' });
+    }
+    
+    return advice;
+  };
+
   const isNight = weather?.isNight ?? localIsNight;
-  const theme = getThemeColors(isNight);
+  const condition = weather?.condition || 'sunny';
+  const theme = getThemeColors(isNight, condition);
 
   const generateHourlyForecast = () => {
     if (!weather) return [];
     const currentHour = new Date().getHours();
-    return Array.from({ length: 6 }, (_, i) => {
+    return Array.from({ length: 5 }, (_, i) => {
       const hour = (currentHour + i) % 24;
       const hourIsNight = hour < 6 || hour >= 19;
       return {
@@ -376,17 +222,15 @@ const Weather = () => {
 
   const generateWeeklyForecast = () => {
     if (!weather) return [];
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const today = new Date();
     const conditions = ['sunny', 'cloudy', 'rainy', 'sunny', 'cloudy', 'sunny', 'rainy'];
     
-    return Array.from({ length: 7 }, (_, i) => {
+    return Array.from({ length: 5 }, (_, i) => {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       return {
-        day: days[date.getDay()],
-        date: `${months[date.getMonth()]} ${String(date.getDate()).padStart(2, '0')}`,
+        day: i === 0 ? 'Today' : days[date.getDay()],
         temp: weather.temperature + Math.round(Math.sin(i) * 3),
         condition: conditions[i]
       };
@@ -395,11 +239,11 @@ const Weather = () => {
 
   if (loading) {
     return (
-      <div className={`min-h-screen bg-gradient-to-b ${theme.gradient} flex items-center justify-center`}>
+      <div className={`min-h-screen bg-gradient-to-br ${theme.gradient} flex items-center justify-center`}>
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-14 h-14 border-3 border-white/20 border-t-white rounded-full"
+          className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full"
         />
       </div>
     );
@@ -407,202 +251,744 @@ const Weather = () => {
 
   const hourlyForecast = generateHourlyForecast();
   const weeklyForecast = generateWeeklyForecast();
-  const condition = weather?.condition || 'sunny';
 
+
+  const farmingAdvice = getFarmingAdvice();
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${theme.gradient} relative`}>
-      {isNight ? <StarsBackground /> : <CloudsBackground />}
-
+    <div className={`min-h-screen bg-gradient-to-br ${theme.gradient}`}>
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-20 flex items-center justify-between px-6 pt-6"
+        className="flex items-center justify-between p-6"
       >
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => window.history.back()}
-          className={`w-12 h-12 flex items-center justify-center ${theme.cardBg} backdrop-blur-xl rounded-2xl border ${theme.border}`}
+          className={`w-11 h-11 flex items-center justify-center ${theme.cardBg} backdrop-blur-xl rounded-2xl border ${theme.cardBorder} shadow-lg`}
         >
-          <ArrowLeft className="w-5 h-5 text-white/90" />
+          <ArrowLeft className={`w-5 h-5 ${theme.textPrimary}`} />
         </motion.button>
         
-        <div className="flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-white/80" />
-          <span className={`text-sm font-semibold ${theme.textSecondary} tracking-wide`}>{location}</span>
-        </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => fetchWeatherData(true)}
+          disabled={refreshing}
+          className={`w-11 h-11 flex items-center justify-center ${theme.cardBg} backdrop-blur-xl rounded-2xl border ${theme.cardBorder} shadow-lg ${refreshing ? 'opacity-50' : ''}`}
+        >
+          <RefreshCw className={`w-5 h-5 ${theme.textPrimary} ${refreshing ? 'animate-spin' : ''}`} />
+        </motion.button>
       </motion.header>
 
-      {/* Main Weather Display */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="relative z-10 text-center pt-6 pb-4"
-      >
-        <h1 className={`text-2xl font-semibold ${theme.textPrimary} mb-2 tracking-wider`}>{location}</h1>
-        
-        <motion.div 
-          className={`text-[130px] font-extralight ${theme.textPrimary} leading-none mb-4`}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3, type: 'spring' }}
-        >
-          {weather?.temperature || 28}°
-        </motion.div>
-
-        <p className={`${theme.textSecondary} text-lg capitalize mb-6`}>{weather?.description || condition}</p>
-
-        <div className="flex justify-center mb-6">
-          <WeatherIcon condition={condition} isNight={isNight} />
-        </div>
-      </motion.section>
-
-      {/* Tabs */}
-      <div className="relative z-10 flex justify-center gap-3 mb-6">
-        {['hourly', 'weekly'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-7 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${
-              activeTab === tab 
-                ? `${theme.cardBg} ${theme.textPrimary} backdrop-blur-xl border ${theme.border}` 
-                : `${theme.textMuted} hover:${theme.textSecondary}`
-            }`}
-          >
-            {tab === 'hourly' ? 'Hourly Forecast' : 'Weekly Forecast'}
-          </button>
-        ))}
-      </div>
-
-      {/* Hourly Forecast */}
-      {activeTab === 'hourly' && (
+      {/* Main Content */}
+      <div className="px-6 pb-6">
+        {/* Location & Temperature */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 px-6 mb-8"
+          transition={{ delay: 0.1 }}
+          className="text-center mb-8"
         >
-          <div className="flex justify-between items-center">
-            {hourlyForecast.map((hour, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-                className={`flex flex-col items-center py-4 px-4 rounded-2xl transition-all ${
-                  hour.isNow ? `${theme.cardBg} backdrop-blur-xl border ${theme.border}` : ''
-                }`}
-              >
-                <span className={`text-xs mb-3 font-medium ${hour.isNow ? theme.textPrimary : theme.textMuted}`}>
-                  {hour.time}
-                </span>
-                <SmallWeatherIcon condition={hour.condition} isNight={hour.isNight} />
-                <span className={`text-sm mt-3 font-semibold ${hour.isNow ? theme.textPrimary : theme.textSecondary}`}>
-                  {hour.temp}°
-                </span>
-              </motion.div>
-            ))}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <MapPin className={`w-4 h-4 ${theme.textSecondary}`} />
+            <span className={`text-sm font-medium ${theme.textSecondary} tracking-wide`}>
+              {location}
+            </span>
+          </div>
+          
+          {/* Weather Icon */}
+          <div className="flex justify-center mb-4">
+            <WeatherIcon condition={condition} size="normal" isNight={isNight} />
+          </div>
+          
+          <motion.div 
+            className={`text-7xl font-thin ${theme.textPrimary} mb-2`}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+          >
+            {weather?.temperature || 28}°
+          </motion.div>
+
+          <p className={`${theme.textSecondary} text-lg font-light capitalize mb-3`}>
+            {weather?.description || condition}
+          </p>
+          
+          {/* Live Data Indicator & Last Updated */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center gap-2">
+              <div className={`w-1.5 h-1.5 rounded-full ${weather?.isLiveData ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`} />
+              <span className={`text-xs ${theme.textMuted} font-medium`}>
+                {weather?.isLiveData ? 'Live Weather Data' : 'Simulated Data'}
+              </span>
+            </div>
+            {lastUpdated && (
+              <span className={`text-xs ${theme.textMuted}`}>
+                Updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
           </div>
         </motion.div>
-      )}
 
-      {/* Weekly Forecast */}
-      {activeTab === 'weekly' && (
+        {/* Forecast Tabs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 px-6 mb-8"
+          transition={{ delay: 0.3 }}
+          className="flex justify-center gap-1 mb-6"
         >
-          <div className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-6 border ${theme.border}`}>
-            <h3 className={`${theme.textMuted} text-xs font-semibold tracking-widest mb-5`}>NEXT FORECAST</h3>
-            <div className="space-y-5">
-              {weeklyForecast.slice(0, 5).map((day, index) => (
+          {['hourly', 'weekly'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-6 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 ${
+                activeTab === tab 
+                  ? `${theme.cardBg} ${theme.textPrimary} backdrop-blur-xl border ${theme.cardBorder} shadow-lg` 
+                  : `${theme.textMuted} hover:${theme.textSecondary}`
+              }`}
+            >
+              {tab === 'hourly' ? 'Hourly' : '5-Day'}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Hourly Forecast */}
+        {activeTab === 'hourly' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+          >
+            <div className="flex justify-between items-center">
+              {hourlyForecast.map((hour, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  className={`flex flex-col items-center py-3 px-2 rounded-2xl transition-all flex-1 ${
+                    hour.isNow ? `bg-white/10 border ${theme.cardBorder}` : ''
+                  }`}
+                >
+                  <span className={`text-xs mb-2 font-medium ${hour.isNow ? theme.textPrimary : theme.textMuted}`}>
+                    {hour.time}
+                  </span>
+                  <SmallWeatherIcon condition={hour.condition} isNight={hour.isNight} size="normal" />
+                  <span className={`text-sm mt-2 font-semibold ${hour.isNow ? theme.textPrimary : theme.textSecondary}`}>
+                    {hour.temp}°
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Weekly Forecast */}
+        {activeTab === 'weekly' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+          >
+            <div className="space-y-4">
+              {weeklyForecast.map((day, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.08 * index }}
-                  className="flex items-center justify-between"
+                  transition={{ delay: 0.1 * index }}
+                  className="flex items-center justify-between py-2"
                 >
-                  <div className="w-28">
-                    <span className={`${theme.textPrimary} font-semibold text-sm`}>{day.day}</span>
-                    <span className={`${theme.textMuted} text-xs block`}>{day.date}</span>
-                  </div>
-                  <div className="flex items-center gap-5">
-                    <span className={`${theme.textPrimary} text-2xl font-light`}>{day.temp}°</span>
-                    <SmallWeatherIcon condition={day.condition} isNight={false} />
+                  <span className={`${theme.textPrimary} font-medium text-sm w-16`}>{day.day}</span>
+                  <div className="flex items-center gap-3">
+                    <SmallWeatherIcon condition={day.condition} isNight={false} size="normal" />
+                    <span className={`${theme.textPrimary} text-lg font-light w-12 text-right`}>{day.temp}°</span>
                   </div>
                 </motion.div>
               ))}
             </div>
+          </motion.div>
+        )}
+
+
+        {/* Weather Details */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+        >
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { icon: Wind, label: 'Wind', value: `${weather?.windSpeed || 12} km/h`, sub: weather?.windDirection || 'Light breeze' },
+              { icon: Droplets, label: 'Humidity', value: `${weather?.humidity || 65}%`, sub: weather?.humidity > 70 ? 'High' : 'Comfortable' },
+              { icon: Eye, label: 'Visibility', value: `${weather?.visibility || 10} km`, sub: weather?.visibility > 8 ? 'Clear' : 'Hazy' },
+              { icon: Gauge, label: 'Pressure', value: `${weather?.pressure || 1013} hPa`, sub: 'Normal' },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 + index * 0.1 }}
+                className="flex items-center gap-3 p-3 rounded-2xl bg-white/5"
+              >
+                <div className={`w-10 h-10 rounded-xl ${theme.cardBg} flex items-center justify-center border ${theme.cardBorder}`}>
+                  <item.icon className={`w-5 h-5 ${theme.accent}`} />
+                </div>
+                <div className="flex-1">
+                  <div className={`text-xs ${theme.textMuted} font-medium mb-0.5`}>{item.label}</div>
+                  <div className={`${theme.textPrimary} font-semibold`}>{item.value}</div>
+                  <div className={`text-xs ${theme.textMuted}`}>{item.sub}</div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
-      )}
 
-
-      {/* Weather Details Grid */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="relative z-10 px-6 pb-10"
-      >
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { icon: Thermometer, label: 'UV INDEX', value: weather?.uvIndex || '3', sub: weather?.uvIndex > 5 ? 'High' : 'Moderate' },
-            { icon: Umbrella, label: 'RAIN CHANCE', value: `${weather?.rainChance || 20}%`, sub: weather?.rainChance > 50 ? 'Likely' : 'Low' },
-            { icon: Eye, label: 'VISIBILITY', value: `${weather?.visibility || 10} km`, sub: weather?.visibility > 8 ? 'Clear' : 'Hazy' },
-            { icon: Gauge, label: 'PRESSURE', value: `${weather?.pressure || 1013} hPa`, sub: 'Normal' },
-            { icon: Droplets, label: 'HUMIDITY', value: `${weather?.humidity || 65}%`, sub: weather?.humidity > 70 ? 'Humid' : 'Comfortable' },
-            { icon: Wind, label: 'WIND', value: `${weather?.windSpeed || 12} km/h`, sub: weather?.windSpeed > 20 ? 'Breezy' : 'Light' },
-          ].map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6 + index * 0.05 }}
-              className={`${theme.cardBg} backdrop-blur-xl rounded-2xl p-4 border ${theme.border}`}
-            >
-              <div className={`flex items-center gap-1.5 ${theme.textMuted} text-[10px] tracking-wider mb-2`}>
-                <item.icon className="w-3.5 h-3.5" />
-                {item.label}
+        {/* Sun Times */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+        >
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5">
+              <div className={`w-10 h-10 rounded-xl ${theme.cardBg} flex items-center justify-center border ${theme.cardBorder}`}>
+                <Sunrise className="w-5 h-5 text-orange-400" />
               </div>
-              <div className={`${theme.textPrimary} text-xl font-light`}>{item.value}</div>
-              <div className={`${theme.textMuted} text-[10px]`}>{item.sub}</div>
-            </motion.div>
-          ))}
-        </div>
+              <div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-0.5`}>Sunrise</div>
+                <div className={`${theme.textPrimary} font-semibold`}>{weather?.sunrise || '6:30 AM'}</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5">
+              <div className={`w-10 h-10 rounded-xl ${theme.cardBg} flex items-center justify-center border ${theme.cardBorder}`}>
+                <Sunset className="w-5 h-5 text-purple-400" />
+              </div>
+              <div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-0.5`}>Sunset</div>
+                <div className={`${theme.textPrimary} font-semibold`}>{weather?.sunset || '6:45 PM'}</div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
-        {/* Sunrise/Sunset */}
-        <div className="grid grid-cols-2 gap-3 mt-3">
+        {/* Farming Advice Section */}
+        {farmingAdvice.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.9 }}
-            className={`${theme.cardBg} backdrop-blur-xl rounded-2xl p-4 border ${theme.border}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
           >
-            <div className={`flex items-center gap-2 ${theme.textMuted} text-[10px] tracking-wider mb-2`}>
-              <Sunrise className="w-4 h-4 text-orange-400" />
-              SUNRISE
+            <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+              <Leaf className="w-5 h-5 text-green-400" />
+              Farming Advice
+            </h3>
+            <div className="space-y-3">
+              {farmingAdvice.map((advice, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8 + index * 0.1 }}
+                  className={`flex items-start gap-3 p-3 rounded-2xl ${
+                    advice.type === 'warning' ? 'bg-yellow-500/10' : 
+                    advice.type === 'success' ? 'bg-green-500/10' : 'bg-blue-500/10'
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    advice.type === 'warning' ? 'bg-yellow-500/20' : 
+                    advice.type === 'success' ? 'bg-green-500/20' : 'bg-blue-500/20'
+                  }`}>
+                    <advice.icon className={`w-4 h-4 ${
+                      advice.type === 'warning' ? 'text-yellow-400' : 
+                      advice.type === 'success' ? 'text-green-400' : 'text-blue-400'
+                    }`} />
+                  </div>
+                  <p className={`${theme.textSecondary} text-sm leading-relaxed`}>{advice.text}</p>
+                </motion.div>
+              ))}
             </div>
-            <div className={`${theme.textPrimary} text-xl font-light`}>{weather?.sunrise || '6:30 AM'}</div>
           </motion.div>
+        )}
+
+        {/* Additional Farming Details */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+        >
+          <h3 className={`${theme.textPrimary} font-semibold mb-4`}>Crop Conditions</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Soil Moisture</div>
+              <div className={`${theme.textPrimary} font-semibold`}>
+                {weather?.humidity > 70 ? 'High' : weather?.humidity > 40 ? 'Moderate' : 'Low'}
+              </div>
+              <div className="mt-2 h-2 bg-white/10 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-400 rounded-full transition-all"
+                  style={{ width: `${Math.min(weather?.humidity || 60, 100)}%` }}
+                />
+              </div>
+            </div>
+            
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>UV Index</div>
+              <div className={`${theme.textPrimary} font-semibold`}>
+                {weather?.uvIndex || (isNight ? 0 : Math.round(weather?.temperature / 5) || 5)}
+              </div>
+              <div className={`text-xs ${theme.textMuted} mt-1`}>
+                {isNight ? 'None' : (weather?.temperature > 30 ? 'High - Use protection' : 'Moderate')}
+              </div>
+            </div>
+            
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Feels Like</div>
+              <div className={`${theme.textPrimary} font-semibold`}>
+                {weather?.feelsLike || weather?.temperature || 28}°C
+              </div>
+              <div className={`text-xs ${theme.textMuted} mt-1`}>
+                {(weather?.feelsLike || weather?.temperature) > 35 ? 'Very Hot' : 
+                 (weather?.feelsLike || weather?.temperature) > 28 ? 'Warm' : 'Comfortable'}
+              </div>
+            </div>
+            
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Rain Chance</div>
+              <div className={`${theme.textPrimary} font-semibold`}>
+                {weather?.rainChance || (weather?.condition?.toLowerCase().includes('rain') ? '80%' : '10%')}
+              </div>
+              <div className={`text-xs ${theme.textMuted} mt-1`}>
+                {weather?.condition?.toLowerCase().includes('rain') ? 'Rain expected' : 'Low probability'}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Best Times for Farming Activities */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+        >
+          <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+            <Clock className="w-5 h-5 text-blue-400" />
+            Best Times Today
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                  <Droplets className="w-4 h-4 text-green-400" />
+                </div>
+                <span className={`${theme.textSecondary} text-sm`}>Irrigation</span>
+              </div>
+              <span className={`${theme.textPrimary} font-medium text-sm`}>
+                {weather?.temperature > 30 ? '6:00 AM - 8:00 AM' : '7:00 AM - 10:00 AM'}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                  <Sun className="w-4 h-4 text-yellow-400" />
+                </div>
+                <span className={`${theme.textSecondary} text-sm`}>Harvesting</span>
+              </div>
+              <span className={`${theme.textPrimary} font-medium text-sm`}>
+                {weather?.condition?.toLowerCase().includes('rain') ? 'Not recommended' : '9:00 AM - 4:00 PM'}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                  <Leaf className="w-4 h-4 text-purple-400" />
+                </div>
+                <span className={`${theme.textSecondary} text-sm`}>Spraying</span>
+              </div>
+              <span className={`${theme.textPrimary} font-medium text-sm`}>
+                {weather?.windSpeed > 15 || weather?.condition?.toLowerCase().includes('rain') 
+                  ? 'Not recommended' 
+                  : '6:00 AM - 9:00 AM'}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                  <Tractor className="w-4 h-4 text-orange-400" />
+                </div>
+                <span className={`${theme.textSecondary} text-sm`}>Field Work</span>
+              </div>
+              <span className={`${theme.textPrimary} font-medium text-sm`}>
+                {weather?.temperature > 35 ? '6:00 AM - 10:00 AM' : '8:00 AM - 5:00 PM'}
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+                  <Sprout className="w-4 h-4 text-cyan-400" />
+                </div>
+                <span className={`${theme.textSecondary} text-sm`}>Transplanting</span>
+              </div>
+              <span className={`${theme.textPrimary} font-medium text-sm`}>
+                {weather?.condition?.toLowerCase().includes('rain') ? 'Ideal conditions' : 
+                 weather?.humidity > 70 ? '4:00 PM - 6:00 PM' : 'Evening preferred'}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Air Quality Index */}
+        {weather?.aqi && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.95 }}
-            className={`${theme.cardBg} backdrop-blur-xl rounded-2xl p-4 border ${theme.border}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
+            className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
           >
-            <div className={`flex items-center gap-2 ${theme.textMuted} text-[10px] tracking-wider mb-2`}>
-              <Sunset className="w-4 h-4 text-purple-400" />
-              SUNSET
+            <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+              <Activity className="w-5 h-5 text-green-400" />
+              Air Quality Index
+            </h3>
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`${theme.textSecondary} text-sm`}>Overall AQI</span>
+                <span className={`font-bold text-lg ${
+                  weather.aqi.usEpaIndex <= 2 ? 'text-green-400' :
+                  weather.aqi.usEpaIndex <= 3 ? 'text-yellow-400' :
+                  weather.aqi.usEpaIndex <= 4 ? 'text-orange-400' : 'text-red-400'
+                }`}>
+                  {weather.aqi.usEpaIndex <= 2 ? 'Good' :
+                   weather.aqi.usEpaIndex <= 3 ? 'Moderate' :
+                   weather.aqi.usEpaIndex <= 4 ? 'Unhealthy' : 'Very Unhealthy'}
+                </span>
+              </div>
+              <div className="h-3 bg-white/10 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full rounded-full transition-all ${
+                    weather.aqi.usEpaIndex <= 2 ? 'bg-green-400' :
+                    weather.aqi.usEpaIndex <= 3 ? 'bg-yellow-400' :
+                    weather.aqi.usEpaIndex <= 4 ? 'bg-orange-400' : 'bg-red-400'
+                  }`}
+                  style={{ width: `${Math.min((weather.aqi.usEpaIndex / 6) * 100, 100)}%` }}
+                />
+              </div>
             </div>
-            <div className={`${theme.textPrimary} text-xl font-light`}>{weather?.sunset || '6:45 PM'}</div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-2 rounded-xl bg-white/5 text-center">
+                <div className={`text-xs ${theme.textMuted} mb-1`}>PM2.5</div>
+                <div className={`${theme.textPrimary} font-semibold text-sm`}>
+                  {weather.aqi.pm2_5?.toFixed(1) || '--'}
+                </div>
+              </div>
+              <div className="p-2 rounded-xl bg-white/5 text-center">
+                <div className={`text-xs ${theme.textMuted} mb-1`}>PM10</div>
+                <div className={`${theme.textPrimary} font-semibold text-sm`}>
+                  {weather.aqi.pm10?.toFixed(1) || '--'}
+                </div>
+              </div>
+              <div className="p-2 rounded-xl bg-white/5 text-center">
+                <div className={`text-xs ${theme.textMuted} mb-1`}>O₃</div>
+                <div className={`${theme.textPrimary} font-semibold text-sm`}>
+                  {weather.aqi.o3?.toFixed(1) || '--'}
+                </div>
+              </div>
+            </div>
           </motion.div>
-        </div>
-      </motion.div>
+        )}
+
+        {/* Agriculture Specific Data */}
+        {weather?.agriculture && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
+            className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+          >
+            <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+              <Sprout className="w-5 h-5 text-green-400" />
+              Today's Agriculture Summary
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 rounded-2xl bg-white/5">
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Avg Temperature</div>
+                <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.avgTemp}°C</div>
+              </div>
+              <div className="p-3 rounded-2xl bg-white/5">
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Max Wind</div>
+                <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.maxWind} km/h</div>
+              </div>
+              <div className="p-3 rounded-2xl bg-white/5">
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Total Precipitation</div>
+                <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.totalPrecipitation} mm</div>
+              </div>
+              <div className="p-3 rounded-2xl bg-white/5">
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Avg Humidity</div>
+                <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.avgHumidity}%</div>
+              </div>
+            </div>
+            
+            {/* Rain/Snow Prediction */}
+            <div className="mt-4 flex gap-3">
+              <div className={`flex-1 p-3 rounded-2xl ${weather.agriculture.willItRain ? 'bg-blue-500/20' : 'bg-white/5'}`}>
+                <div className="flex items-center gap-2">
+                  <CloudRain className={`w-5 h-5 ${weather.agriculture.willItRain ? 'text-blue-400' : theme.textMuted}`} />
+                  <span className={`text-sm font-medium ${weather.agriculture.willItRain ? 'text-blue-400' : theme.textMuted}`}>
+                    {weather.agriculture.willItRain ? 'Rain Expected' : 'No Rain Expected'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Hourly Forecast Detail */}
+        {weather?.hourlyForecast && weather.hourlyForecast.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.3 }}
+            className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+          >
+            <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+              <Clock className="w-5 h-5 text-purple-400" />
+              Next 6 Hours (Live)
+            </h3>
+            <div className="space-y-3">
+              {weather.hourlyForecast.map((hour, index) => {
+                const hourTime = new Date(hour.time);
+                const timeStr = hourTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 1.4 + index * 0.05 }}
+                    className="flex items-center justify-between p-3 rounded-2xl bg-white/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={`${theme.textPrimary} font-medium text-sm w-16`}>{timeStr}</span>
+                      <SmallWeatherIcon condition={hour.condition} isNight={hourTime.getHours() < 6 || hourTime.getHours() >= 19} size="tiny" />
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <Droplets className="w-3 h-3 text-blue-400" />
+                        <span className={`${theme.textMuted} text-xs`}>{hour.chanceOfRain}%</span>
+                      </div>
+                      <span className={`${theme.textPrimary} font-semibold`}>{hour.temp}°</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Weather Alerts */}
+        <AnimatePresence>
+          {weather?.alerts && weather.alerts.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ delay: 1.4 }}
+              className="bg-red-500/20 backdrop-blur-xl rounded-3xl p-5 border border-red-500/30 shadow-xl mb-6"
+            >
+              <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-400" />
+                Weather Alerts
+              </h3>
+              <div className="space-y-3">
+                {weather.alerts.map((alert, index) => (
+                  <div key={index} className="p-3 rounded-2xl bg-red-500/10 border border-red-500/20">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-white font-medium text-sm">{alert.headline || alert.event}</p>
+                        {alert.description && (
+                          <p className="text-red-200 text-xs mt-1 line-clamp-2">{alert.description}</p>
+                        )}
+                        {alert.instruction && (
+                          <p className="text-yellow-300 text-xs mt-2 font-medium">{alert.instruction}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Pest & Disease Risk */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.5 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+        >
+          <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+            <Bug className="w-5 h-5 text-orange-400" />
+            Pest & Disease Risk
+          </h3>
+          <div className="space-y-3">
+            {/* Fungal Disease Risk */}
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`${theme.textSecondary} text-sm`}>Fungal Disease Risk</span>
+                <span className={`font-semibold text-sm ${
+                  weather?.humidity > 80 ? 'text-red-400' :
+                  weather?.humidity > 65 ? 'text-yellow-400' : 'text-green-400'
+                }`}>
+                  {weather?.humidity > 80 ? 'High' : weather?.humidity > 65 ? 'Moderate' : 'Low'}
+                </span>
+              </div>
+              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full rounded-full transition-all ${
+                    weather?.humidity > 80 ? 'bg-red-400' :
+                    weather?.humidity > 65 ? 'bg-yellow-400' : 'bg-green-400'
+                  }`}
+                  style={{ width: `${Math.min(weather?.humidity || 50, 100)}%` }}
+                />
+              </div>
+              <p className={`text-xs ${theme.textMuted} mt-2`}>
+                {weather?.humidity > 80 ? 'Apply fungicide preventively. Ensure good air circulation.' :
+                 weather?.humidity > 65 ? 'Monitor crops closely for early signs of disease.' :
+                 'Conditions unfavorable for fungal growth.'}
+              </p>
+            </div>
+            
+            {/* Pest Activity */}
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className="flex items-center justify-between mb-2">
+                <span className={`${theme.textSecondary} text-sm`}>Pest Activity Level</span>
+                <span className={`font-semibold text-sm ${
+                  weather?.temperature > 30 && weather?.humidity > 60 ? 'text-red-400' :
+                  weather?.temperature > 25 ? 'text-yellow-400' : 'text-green-400'
+                }`}>
+                  {weather?.temperature > 30 && weather?.humidity > 60 ? 'High' :
+                   weather?.temperature > 25 ? 'Moderate' : 'Low'}
+                </span>
+              </div>
+              <p className={`text-xs ${theme.textMuted}`}>
+                {weather?.temperature > 30 && weather?.humidity > 60 
+                  ? 'Warm humid conditions favor pest breeding. Scout fields regularly.'
+                  : weather?.temperature > 25 
+                  ? 'Normal pest activity expected. Continue regular monitoring.'
+                  : 'Cool conditions reduce pest activity.'}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Moon Phase & Astronomical Data */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.6 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+        >
+          <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+            <Moon className="w-5 h-5 text-indigo-400" />
+            Moon & Astronomy
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moon Phase</div>
+              <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonPhase || 'New Moon'}</div>
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moonrise</div>
+              <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonrise || '7:30 PM'}</div>
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moonset</div>
+              <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonset || '6:00 AM'}</div>
+            </div>
+            <div className="p-3 rounded-2xl bg-white/5">
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Dew Point</div>
+              <div className={`${theme.textPrimary} font-semibold`}>{weather?.dewPoint || 20}°C</div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Temperature Range */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.7 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
+        >
+          <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
+            <Thermometer className="w-5 h-5 text-red-400" />
+            Temperature Range
+          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <TrendingDown className="w-4 h-4 text-blue-400" />
+              <span className={`${theme.textSecondary} text-sm`}>Min</span>
+              <span className={`${theme.textPrimary} font-bold text-lg`}>{weather?.tempMin || 22}°</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-red-400" />
+              <span className={`${theme.textSecondary} text-sm`}>Max</span>
+              <span className={`${theme.textPrimary} font-bold text-lg`}>{weather?.tempMax || 32}°</span>
+            </div>
+          </div>
+          <div className="relative h-4 bg-gradient-to-r from-blue-500 via-yellow-500 to-red-500 rounded-full overflow-hidden">
+            <div 
+              className="absolute top-0 h-full w-1 bg-white rounded-full shadow-lg"
+              style={{ 
+                left: `${Math.min(Math.max(((weather?.temperature || 28) - (weather?.tempMin || 22)) / ((weather?.tempMax || 32) - (weather?.tempMin || 22)) * 100, 0), 100)}%` 
+              }}
+            />
+          </div>
+          <div className="flex justify-between mt-2">
+            <span className={`text-xs ${theme.textMuted}`}>{weather?.tempMin || 22}°C</span>
+            <span className={`text-xs ${theme.textPrimary} font-medium`}>Current: {weather?.temperature || 28}°C</span>
+            <span className={`text-xs ${theme.textMuted}`}>{weather?.tempMax || 32}°C</span>
+          </div>
+        </motion.div>
+
+        {/* Auto-Refresh Indicator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.8 }}
+          className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-4 border ${theme.cardBorder} shadow-xl`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl ${theme.cardBg} flex items-center justify-center border ${theme.cardBorder}`}>
+                <RefreshCw className={`w-5 h-5 ${theme.accent} ${refreshing ? 'animate-spin' : ''}`} />
+              </div>
+              <div>
+                <div className={`${theme.textPrimary} font-medium text-sm`}>Auto-Refresh</div>
+                <div className={`text-xs ${theme.textMuted}`}>
+                  {lastUpdated ? `Last: ${lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Updating...'}
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className={`${theme.textPrimary} font-bold text-lg`}>{formatCountdown(nextRefresh)}</div>
+              <div className={`text-xs ${theme.textMuted}`}>Next refresh</div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 };

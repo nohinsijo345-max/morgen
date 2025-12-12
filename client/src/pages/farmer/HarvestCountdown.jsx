@@ -24,7 +24,8 @@ const HarvestCountdown = () => {
   useEffect(() => {
     fetchCountdowns();
     fetchPresetCrops();
-    const interval = setInterval(fetchCountdowns, 60000);
+    // Update every 30 seconds for real-time countdown
+    const interval = setInterval(fetchCountdowns, 30000);
     return () => clearInterval(interval);
   }, []);
 

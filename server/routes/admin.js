@@ -3,6 +3,10 @@ const Crop = require('../models/Crop');
 const Alert = require('../models/Alert');
 const Scheme = require('../models/Scheme');
 const Auction = require('../models/Auction');
+const Vehicle = require('../models/Vehicle');
+const Driver = require('../models/Driver');
+const Booking = require('../models/Booking');
+const bcrypt = require('bcrypt');
 
 // Set MSP for a crop category
 router.post('/msp/set', async (req, res) => {
@@ -14,6 +18,28 @@ router.post('/msp/set', async (req, res) => {
       { category },
       { $set: { msp } }
     );
+    
+    // Notify all farmers who grow this crop category
+    const Update = require('../models/Update');
+    const User = require('../models/User');
+    
+    const farmers = await User.find({ 
+      role: 'farmer',
+      cropTypes: { $in: [category] }
+    });
+    
+    for (const farmer of farmers) {
+      const update = new Update({
+        userId: farmer._id,
+        title: 'MSP Updated',
+        message: `The Minimum Support Price for ${category} has been updated to ₹${msp}. This new rate is now effective for all your ${category} crops.`,
+        category: 'market',
+        isActive: true
+      });
+      await update.save();
+    }
+    
+    console.log(`✅ MSP notification sent to ${farmers.length} farmers growing ${category}`);
     
     res.json({ message: `MSP set to ₹${msp} for ${category}`, category, msp });
   } catch (err) {
@@ -114,7 +140,7 @@ router.get('/schemes', async (req, res) => {
 router.post('/scheme/:schemeId/application/:applicationId', async (req, res) => {
   try {
     const { schemeId, applicationId } = req.params;
-    const { status } = req.body; // 'approved' or 'rejected'
+    const { status, reason } = req.body; // 'approved' or 'rejected'
     
     const scheme = await Scheme.findById(schemeId);
     if (!scheme) {
@@ -127,7 +153,26 @@ router.post('/scheme/:schemeId/application/:applicationId', async (req, res) => 
     }
     
     application.status = status;
+    if (reason) application.reviewNotes = reason;
     await scheme.save();
+    
+    // Send notification to farmer
+    const Update = require('../models/Update');
+    const User = require('../models/User');
+    
+    const farmer = await User.findOne({ farmerId: application.farmerId });
+    if (farmer) {
+      const update = new Update({
+        userId: farmer._id,
+        title: `Scheme Application ${status === 'approved' ? 'Approved' : 'Rejected'}`,
+        message: status === 'approved' 
+          ? `Your application for "${scheme.title}" has been approved! You will receive further instructions on how to proceed.`
+          : `Your application for "${scheme.title}" has been rejected. ${reason ? `Reason: ${reason}` : 'Please contact support for more information.'}`,
+        category: 'government',
+        isActive: true
+      });
+      await update.save();
+    }
     
     res.json({ message: `Application ${status}`, application });
   } catch (err) {
@@ -283,9 +328,10 @@ router.post('/profile-requests/:requestId/approve', async (req, res) => {
   try {
     const ProfileChangeRequest = require('../models/ProfileChangeRequest');
     const User = require('../models/User');
+    const Update = require('../models/Update');
     const { requestId } = req.params;
     
-    const request = await ProfileChangeRequest.findById(requestId);
+    const request = await ProfileChangeRequest.findById(requestId).populate('userId');
     if (!request) {
       return res.status(404).json({ error: 'Request not found' });
     }
@@ -300,8 +346,21 @@ router.post('/profile-requests/:requestId/approve', async (req, res) => {
     }
     
     // Update user profile with approved changes
+    console.log(`🔍 About to update user profile with changes:`, JSON.stringify(request.changes, null, 2));
+    
+    // Only update fields that have actual values (not null/undefined/empty)
+    const fieldsToUpdate = {};
+    Object.keys(request.changes).forEach(field => {
+      const value = request.changes[field];
+      if (value !== null && value !== undefined && value !== '') {
+        fieldsToUpdate[field] = value;
+      }
+    });
+    
+    console.log(`🔍 Filtered fields to update:`, JSON.stringify(fieldsToUpdate, null, 2));
+    
     await User.findByIdAndUpdate(request.userId, {
-      $set: request.changes
+      $set: fieldsToUpdate
     });
     
     // Update request status
@@ -310,7 +369,50 @@ router.post('/profile-requests/:requestId/approve', async (req, res) => {
     request.reviewedBy = 'admin';
     await request.save();
     
-    console.log(`✅ Profile change request approved for user ${request.userId}:`, request.changes);
+    // Send notification to farmer - only show originally requested fields
+    // Get the original changes from the request (before any modifications)
+    const originalChanges = { ...request.changes };
+    
+    // Filter out empty or undefined values that weren't actually requested
+    const actuallyChangedFields = Object.keys(originalChanges).filter(field => {
+      const value = originalChanges[field];
+      
+      // Filter out empty cropTypes arrays
+      if (field === 'cropTypes' && Array.isArray(value) && value.length === 0) {
+        return false;
+      }
+      
+      // Filter out null, undefined, or empty string values that weren't intentionally set
+      if (value === null || value === undefined || value === '') {
+        return false;
+      }
+      
+      return true;
+    });
+    
+    const changesList = actuallyChangedFields.map(field => {
+      if (field === 'pinCode') return 'PIN Code';
+      if (field === 'landSize') return 'Land Size';
+      if (field === 'cropTypes') return 'Crop Types';
+      return field.charAt(0).toUpperCase() + field.slice(1);
+    }).join(', ');
+    
+    console.log(`🔍 Original changes:`, JSON.stringify(originalChanges, null, 2));
+    console.log(`🔍 Actually changed fields:`, actuallyChangedFields);
+    console.log(`🔍 Notification will show:`, changesList);
+    
+    const update = new Update({
+      userId: request.userId._id,
+      title: 'Profile Changes Approved',
+      message: `Your profile change request has been approved! Updated fields: ${changesList}. Your profile information has been updated successfully.`,
+      category: 'profile',
+      isActive: true
+    });
+    await update.save();
+    
+    console.log(`✅ Profile change request approved for user ${request.userId._id}:`, request.changes);
+    console.log(`📢 Notification sent to farmer about approval`);
+    
     res.json({ message: 'Profile change request approved successfully', request });
   } catch (err) {
     console.error('Failed to approve request:', err);
@@ -322,9 +424,11 @@ router.post('/profile-requests/:requestId/approve', async (req, res) => {
 router.post('/profile-requests/:requestId/reject', async (req, res) => {
   try {
     const ProfileChangeRequest = require('../models/ProfileChangeRequest');
+    const Update = require('../models/Update');
     const { requestId } = req.params;
+    const { reason } = req.body;
     
-    const request = await ProfileChangeRequest.findById(requestId);
+    const request = await ProfileChangeRequest.findById(requestId).populate('userId');
     if (!request) {
       return res.status(404).json({ error: 'Request not found' });
     }
@@ -337,9 +441,22 @@ router.post('/profile-requests/:requestId/reject', async (req, res) => {
     request.status = 'rejected';
     request.reviewedAt = new Date();
     request.reviewedBy = 'admin';
+    request.reviewNotes = reason || 'Request rejected by admin';
     await request.save();
     
-    console.log(`✅ Profile change request rejected for user ${request.userId}`);
+    // Send notification to farmer
+    const update = new Update({
+      userId: request.userId._id,
+      title: 'Profile Changes Rejected',
+      message: `Your profile change request has been rejected. ${reason ? `Reason: ${reason}` : 'Please contact support if you have questions.'} You can submit a new request with corrected information.`,
+      category: 'profile',
+      isActive: true
+    });
+    await update.save();
+    
+    console.log(`✅ Profile change request rejected for user ${request.userId._id}`);
+    console.log(`📢 Notification sent to farmer about rejection`);
+    
     res.json({ message: 'Profile change request rejected', request });
   } catch (err) {
     console.error('Failed to reject request:', err);
@@ -466,6 +583,370 @@ router.post('/images', async (req, res) => {
   } catch (error) {
     console.error('Failed to save images:', error);
     res.status(500).json({ error: 'Failed to save images' });
+  }
+});
+
+// ============================================
+// TRANSPORT MANAGEMENT ROUTES
+// ============================================
+
+// Get all vehicles
+router.get('/transport/vehicles', async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find().sort({ createdAt: -1 });
+    res.json(vehicles);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch vehicles' });
+  }
+});
+
+// Create vehicle
+router.post('/transport/vehicles', async (req, res) => {
+  try {
+    const vehicle = new Vehicle(req.body);
+    await vehicle.save();
+    res.status(201).json({ message: 'Vehicle created successfully', vehicle });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create vehicle' });
+  }
+});
+
+// Update vehicle
+router.put('/transport/vehicles/:id', async (req, res) => {
+  try {
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!vehicle) {
+      return res.status(404).json({ error: 'Vehicle not found' });
+    }
+    res.json({ message: 'Vehicle updated successfully', vehicle });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update vehicle' });
+  }
+});
+
+// Delete vehicle
+router.delete('/transport/vehicles/:id', async (req, res) => {
+  try {
+    const vehicle = await Vehicle.findByIdAndDelete(req.params.id);
+    if (!vehicle) {
+      return res.status(404).json({ error: 'Vehicle not found' });
+    }
+    res.json({ message: 'Vehicle deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete vehicle' });
+  }
+});
+
+// Get all drivers
+router.get('/transport/drivers', async (req, res) => {
+  try {
+    const drivers = await Driver.find().select('-password').sort({ createdAt: -1 });
+    res.json(drivers);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch drivers' });
+  }
+});
+
+// Create driver
+router.post('/transport/drivers', async (req, res) => {
+  try {
+    const { password, ...driverData } = req.body;
+    
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    const driver = new Driver({
+      ...driverData,
+      password: hashedPassword
+    });
+    
+    await driver.save();
+    
+    // Return driver without password
+    const { password: _, ...driverResponse } = driver.toObject();
+    res.status(201).json({ message: 'Driver created successfully', driver: driverResponse });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create driver' });
+  }
+});
+
+// Update driver
+router.put('/transport/drivers/:id', async (req, res) => {
+  try {
+    const { password, ...updateData } = req.body;
+    
+    // If password is being updated, hash it
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+    
+    const driver = await Driver.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    ).select('-password');
+    
+    if (!driver) {
+      return res.status(404).json({ error: 'Driver not found' });
+    }
+    
+    res.json({ message: 'Driver updated successfully', driver });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update driver' });
+  }
+});
+
+// Delete driver
+router.delete('/transport/drivers/:id', async (req, res) => {
+  try {
+    const driver = await Driver.findByIdAndDelete(req.params.id);
+    if (!driver) {
+      return res.status(404).json({ error: 'Driver not found' });
+    }
+    
+    // Unassign all vehicles from this driver
+    await Vehicle.updateMany(
+      { driverId: driver.driverId },
+      { $unset: { driverId: 1, assignedAt: 1 } }
+    );
+    
+    res.json({ message: 'Driver deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete driver' });
+  }
+});
+
+// Assign vehicle to driver
+router.post('/transport/assign-vehicle', async (req, res) => {
+  try {
+    const { vehicleId, driverId } = req.body;
+    
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      vehicleId,
+      { 
+        driverId,
+        assignedAt: new Date()
+      },
+      { new: true }
+    );
+    
+    if (!vehicle) {
+      return res.status(404).json({ error: 'Vehicle not found' });
+    }
+    
+    // Notify driver about vehicle assignment
+    const Update = require('../models/Update');
+    const Driver = require('../models/Driver');
+    
+    const driver = await Driver.findOne({ driverId });
+    if (driver) {
+      const update = new Update({
+        userId: driver._id,
+        title: 'Vehicle Assigned',
+        message: `A ${vehicle.type} (${vehicle.model}) has been assigned to you. Vehicle ID: ${vehicle.vehicleNumber}. You can now accept bookings for this vehicle.`,
+        category: 'transport',
+        isActive: true
+      });
+      await update.save();
+    }
+    
+    res.json({ message: 'Vehicle assigned successfully', vehicle });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to assign vehicle' });
+  }
+});
+
+// Unassign vehicle from driver
+router.post('/transport/unassign-vehicle', async (req, res) => {
+  try {
+    const { vehicleId } = req.body;
+    
+    // Get vehicle info before unassigning
+    const vehicle = await Vehicle.findById(vehicleId);
+    if (!vehicle) {
+      return res.status(404).json({ error: 'Vehicle not found' });
+    }
+    
+    const previousDriverId = vehicle.driverId;
+    
+    const updatedVehicle = await Vehicle.findByIdAndUpdate(
+      vehicleId,
+      { 
+        $unset: { driverId: 1, assignedAt: 1 }
+      },
+      { new: true }
+    );
+    
+    // Notify driver about vehicle unassignment
+    if (previousDriverId) {
+      const Update = require('../models/Update');
+      const Driver = require('../models/Driver');
+      
+      const driver = await Driver.findOne({ driverId: previousDriverId });
+      if (driver) {
+        const update = new Update({
+          userId: driver._id,
+          title: 'Vehicle Unassigned',
+          message: `The ${vehicle.type} (${vehicle.model}) has been unassigned from you. Vehicle ID: ${vehicle.vehicleNumber}. Please contact admin if you have questions.`,
+          category: 'transport',
+          isActive: true
+        });
+        await update.save();
+      }
+    }
+    
+    res.json({ message: 'Vehicle unassigned successfully', vehicle: updatedVehicle });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to unassign vehicle' });
+  }
+});
+
+// Get available vehicles for assignment
+router.get('/transport/available-vehicles', async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find({ 
+      $or: [
+        { driverId: { $exists: false } },
+        { driverId: null }
+      ]
+    });
+    res.json(vehicles);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch available vehicles' });
+  }
+});
+
+// Get all bookings
+router.get('/transport/bookings', async (req, res) => {
+  try {
+    const bookings = await Booking.find()
+      .populate('vehicleId')
+      .sort({ createdAt: -1 });
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+});
+
+// Update booking status
+router.patch('/transport/bookings/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const booking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).populate('vehicleId');
+    
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+    
+    res.json({ message: 'Booking status updated', booking });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update booking status' });
+  }
+});
+
+// Transport dashboard stats
+router.get('/transport/stats', async (req, res) => {
+  try {
+    const totalVehicles = await Vehicle.countDocuments();
+    const activeVehicles = await Vehicle.countDocuments({ availability: true });
+    const totalDrivers = await Driver.countDocuments();
+    const activeDrivers = await Driver.countDocuments({ isActive: true });
+    const totalBookings = await Booking.countDocuments();
+    const pendingBookings = await Booking.countDocuments({ status: 'pending' });
+    const completedBookings = await Booking.countDocuments({ status: 'completed' });
+    
+    // Calculate total revenue
+    const revenueResult = await Booking.aggregate([
+      { $match: { status: 'completed' } },
+      { $group: { _id: null, totalRevenue: { $sum: '$finalAmount' } } }
+    ]);
+    const totalRevenue = revenueResult[0]?.totalRevenue || 0;
+    
+    res.json({
+      totalVehicles,
+      activeVehicles,
+      totalDrivers,
+      activeDrivers,
+      totalBookings,
+      pendingBookings,
+      completedBookings,
+      totalRevenue
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch transport stats' });
+  }
+});
+
+// ============================================
+// CUSTOMER SUPPORT MANAGEMENT ROUTES
+// ============================================
+
+const CustomerSupport = require('../models/CustomerSupport');
+
+// Get all support tickets (for admin)
+router.get('/support/tickets', async (req, res) => {
+  try {
+    const tickets = await CustomerSupport.find()
+      .sort({ updatedAt: -1 });
+    res.json(tickets);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch support tickets' });
+  }
+});
+
+// Reply to support ticket
+router.post('/support/tickets/:ticketId/reply', async (req, res) => {
+  try {
+    const { message } = req.body;
+    const ticket = await CustomerSupport.findOne({ ticketId: req.params.ticketId });
+    
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    ticket.messages.push({
+      sender: 'admin',
+      message,
+      timestamp: new Date()
+    });
+    
+    ticket.status = 'in-progress';
+    await ticket.save();
+    
+    res.json({ message: 'Reply sent successfully', ticket });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send reply' });
+  }
+});
+
+// Update ticket status
+router.patch('/support/tickets/:ticketId/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const ticket = await CustomerSupport.findOneAndUpdate(
+      { ticketId: req.params.ticketId },
+      { 
+        status,
+        resolvedAt: status === 'resolved' ? new Date() : undefined
+      },
+      { new: true }
+    );
+    
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    res.json({ message: 'Ticket status updated', ticket });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update ticket status' });
   }
 });
 

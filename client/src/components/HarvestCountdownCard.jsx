@@ -9,7 +9,8 @@ const HarvestCountdownCard = ({ onClick }) => {
 
   useEffect(() => {
     fetchCountdowns();
-    const interval = setInterval(fetchCountdowns, 60000); // Update every minute
+    // Update every 30 seconds for real-time countdown
+    const interval = setInterval(fetchCountdowns, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -19,8 +20,11 @@ const HarvestCountdownCard = ({ onClick }) => {
       if (farmerUser) {
         const userData = JSON.parse(farmerUser);
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/harvest/countdowns/${userData.farmerId}`);
+        // Add cache-busting parameter to ensure fresh data
+        const timestamp = new Date().getTime();
+        const response = await axios.get(`${API_URL}/api/harvest/countdowns/${userData.farmerId}?t=${timestamp}`);
         setCountdowns(response.data);
+        console.log('Harvest countdowns refreshed:', new Date().toLocaleTimeString());
       }
     } catch (error) {
       console.error('Failed to fetch countdowns:', error);

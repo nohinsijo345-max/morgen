@@ -39,7 +39,7 @@ router.get('/next-farmer-id', async (req, res) => {
 // REGISTER API
 router.post('/register', async (req, res) => {
   try {
-    const { name, role, pin, phone, email, state, district, city, panchayat, landSize, cropTypes, subsidyRequested } = req.body;
+    const { name, role, pin, phone, email, state, district, city, pinCode, panchayat, landSize, cropTypes, subsidyRequested } = req.body;
 
     // Validation
     if (!name || !pin || !phone) {
@@ -101,6 +101,7 @@ router.post('/register', async (req, res) => {
       state,
       district,
       city,
+      pinCode,
       panchayat,
       landSize: landSize || 0,
       cropTypes: cropTypes || [],
@@ -127,6 +128,7 @@ router.post('/register', async (req, res) => {
       state: savedUser.state,
       district: savedUser.district,
       city: savedUser.city,
+      pinCode: savedUser.pinCode,
       panchayat: savedUser.panchayat,
       landSize: savedUser.landSize,
       cropTypes: savedUser.cropTypes
@@ -173,7 +175,13 @@ router.post('/login', async (req, res) => {
       name: user.name,
       farmerId: user.farmerId,
       email: user.email,
+      phone: user.phone,
+      state: user.state,
       district: user.district,
+      city: user.city,
+      pinCode: user.pinCode,
+      panchayat: user.panchayat,
+      landSize: user.landSize,
       cropTypes: user.cropTypes || []
     });
   } catch (err) {

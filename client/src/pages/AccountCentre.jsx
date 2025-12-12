@@ -36,6 +36,7 @@ const AccountCentre = () => {
   const [state, setState] = useState('');
   const [district, setDistrict] = useState('');
   const [city, setCity] = useState('');
+  const [pinCode, setPinCode] = useState('');
   const [landSize, setLandSize] = useState('');
   const [selectedCropTypes, setSelectedCropTypes] = useState([]);
   
@@ -76,6 +77,7 @@ const AccountCentre = () => {
         setState(response.data.state || '');
         setDistrict(response.data.district || '');
         setCity(response.data.city || '');
+        setPinCode(response.data.pinCode || '');
         setLandSize(response.data.landSize || '');
         setSelectedCropTypes(response.data.cropTypes || []);
       }
@@ -155,7 +157,10 @@ const AccountCentre = () => {
       if (state && state !== (user.state || '')) changes.state = state;
       if (district && district !== (user.district || '')) changes.district = district;
       if (city && city.trim() !== (user.city || '').trim()) changes.city = city.trim();
+      if (pinCode && pinCode.trim() !== (user.pinCode || '').trim()) changes.pinCode = pinCode.trim();
       if (landSize && parseFloat(landSize) !== (user.landSize || 0)) changes.landSize = parseFloat(landSize);
+      
+      // DO NOT include cropTypes in approval requests - they are handled separately
 
       // Check if there are any changes requiring approval
       if (Object.keys(changes).length === 0 && !hasChangedCropTypes) {
@@ -434,15 +439,29 @@ const AccountCentre = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-[#082829] mb-2">City</label>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  disabled={!!pendingRequest}
-                  className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#082829] mb-2">City</label>
+                  <input
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    disabled={!!pendingRequest}
+                    className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-[#082829] mb-2">PIN Code</label>
+                  <input
+                    type="text"
+                    value={pinCode}
+                    onChange={(e) => setPinCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    maxLength="6"
+                    placeholder="6-digit PIN code"
+                    disabled={!!pendingRequest}
+                    className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                  />
+                </div>
               </div>
 
               <div>
@@ -518,11 +537,40 @@ const AccountCentre = () => {
             </div>
           </motion.div>
 
-          {/* Section 3: Password Reset */}
+          {/* Section 3: Customer Support */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-8 border border-[#082829]/10 shadow-2xl"
+          >
+            <h2 className="text-2xl font-bold text-[#082829] mb-6 flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#082829] rounded-xl flex items-center justify-center">
+                <Phone className="w-5 h-5 text-[#fbfbef]" />
+              </div>
+              Customer Support
+            </h2>
+
+            <p className="text-[#082829]/70 mb-6">
+              Need help? Our support team is here to assist you with any questions or issues about transport, weather, crops, or technical problems.
+            </p>
+
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => window.location.href = '/customer-support'}
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <Phone className="w-5 h-5" />
+              Contact Support Team
+            </motion.button>
+          </motion.div>
+
+          {/* Section 4: Password Reset */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
             className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-8 border border-[#082829]/10 shadow-2xl"
           >
             <h2 className="text-2xl font-bold text-[#082829] mb-6 flex items-center gap-3">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -8,11 +8,26 @@ import {
   Menu,
   X,
   MessageSquare,
-  UserCog
+  UserCog,
+  Clock,
+  AlertTriangle,
+  Truck,
+  Headphones,
+  ArrowLeft
 } from 'lucide-react';
 
-const AdminLayout = ({ children, activePage, onNavigate, onLogout }) => {
+const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
+  const [timeoutCountdown, setTimeoutCountdown] = useState(0);
+  const timeoutRef = useRef(null);
+  const warningTimeoutRef = useRef(null);
+  const countdownRef = useRef(null);
+  const lastActivityRef = useRef(Date.now());
+  
+  // Session timeout settings (in milliseconds)
+  const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+  const WARNING_TIME = 5 * 60 * 1000; // Show warning 5 minutes before timeout
 
   // Add admin-portal class to body to prevent Orkney font
   useEffect(() => {
@@ -22,12 +37,131 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout }) => {
     };
   }, []);
 
+  // Reset session timeout on user activity
+  const resetTimeout = () => {
+    lastActivityRef.current = Date.now();
+    
+    // Clear existing timeouts
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    
+    // Hide warning if showing
+    setShowTimeoutWarning(false);
+    
+    // Set warning timeout (25 minutes)
+    warningTimeoutRef.current = setTimeout(() => {
+      setShowTimeoutWarning(true);
+      setTimeoutCountdown(300); // 5 minutes in seconds
+      
+      // Start countdown
+      countdownRef.current = setInterval(() => {
+        setTimeoutCountdown(prev => {
+          if (prev <= 1) {
+            handleLogout();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }, SESSION_TIMEOUT - WARNING_TIME);
+    
+    // Set logout timeout (30 minutes)
+    timeoutRef.current = setTimeout(() => {
+      handleLogout();
+    }, SESSION_TIMEOUT);
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    // Clear all timeouts
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+    
+    // Clear admin session
+    localStorage.removeItem('adminUser');
+    sessionStorage.removeItem('adminUser');
+    
+    // Call parent logout function
+    onLogout();
+  };
+
+  // Extend session
+  const extendSession = () => {
+    resetTimeout();
+  };
+
+  // Track user activity
+  useEffect(() => {
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    const handleActivity = () => {
+      if (Date.now() - lastActivityRef.current > 60000) { // Only reset if more than 1 minute since last activity
+        resetTimeout();
+      }
+    };
+
+    // Add event listeners
+    events.forEach(event => {
+      document.addEventListener(event, handleActivity, true);
+    });
+
+    // Initialize timeout
+    resetTimeout();
+
+    // Cleanup
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleActivity, true);
+      });
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
+      if (countdownRef.current) clearInterval(countdownRef.current);
+    };
+  }, []);
+
+  // Handle page close/refresh
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      handleLogout();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Page is hidden, start a shorter timeout
+        setTimeout(() => {
+          if (document.hidden) {
+            handleLogout();
+          }
+        }, 5 * 60 * 1000); // 5 minutes when tab is hidden
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  // Format countdown time
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'images', label: 'Login Images', icon: Image },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'messages', label: 'Messages', icon: MessageSquare },
     { id: 'profile-requests', label: 'Profile Requests', icon: UserCog },
+    { id: 'transport', label: 'Transport', icon: Truck },
+    { id: 'customer-support', label: 'Customer Support', icon: Headphones },
   ];
 
   return (
@@ -72,6 +206,17 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout }) => {
                   <Menu className="w-6 h-6 text-[#082829]" />
                 )}
               </button>
+
+              {onBack && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onBack}
+                  className="p-2 hover:bg-[#082829]/5 rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5 text-[#082829]" />
+                </motion.button>
+              )}
               
               <div className="flex items-center gap-3">
                 <img src="/admin-logo.png" alt="Morgen Admin" className="h-10 w-auto rounded-xl shadow-lg" />
@@ -145,6 +290,70 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout }) => {
           </motion.div>
         </main>
       </div>
+
+      {/* Session Timeout Warning Modal */}
+      <AnimatePresence>
+        {showTimeoutWarning && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-red-200"
+            >
+              <div className="text-center">
+                <div className="mx-auto flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+                  <AlertTriangle className="w-8 h-8 text-red-600" />
+                </div>
+                
+                <h3 className="text-xl font-bold text-[#2C5F7C] mb-2">
+                  Session Timeout Warning
+                </h3>
+                
+                <p className="text-[#4A7C99] mb-4">
+                  Your admin session will expire in:
+                </p>
+                
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <Clock className="w-5 h-5 text-red-600" />
+                  <span className="text-2xl font-bold text-red-600">
+                    {formatTime(timeoutCountdown)}
+                  </span>
+                </div>
+                
+                <p className="text-sm text-[#4A7C99] mb-6">
+                  Click "Stay Logged In" to extend your session, or you will be automatically logged out for security.
+                </p>
+                
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleLogout}
+                    className="flex-1 px-4 py-2 border border-[#5B9FBF] text-[#5B9FBF] rounded-xl hover:bg-[#5B9FBF]/5 transition-colors"
+                  >
+                    Logout Now
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={extendSession}
+                    className="flex-1 px-4 py-2 bg-[#5B9FBF] text-white rounded-xl hover:bg-[#4A8CAF] transition-colors"
+                  >
+                    Stay Logged In
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

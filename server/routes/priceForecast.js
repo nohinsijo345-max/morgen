@@ -191,10 +191,13 @@ router.get('/forecast/:farmerId', async (req, res) => {
       })
     );
 
+    console.log(`📊 Generated fresh price forecasts for farmer ${farmerId} at ${new Date().toLocaleTimeString()}`);
+    
     res.json({
       farmerId,
       forecasts,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
+      refreshedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('Price forecast error:', error);

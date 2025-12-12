@@ -1,0 +1,257 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useParams } from 'react-router-dom';
+import { 
+  ArrowLeft, 
+  Truck, 
+  Car, 
+  Bike, 
+  Bus,
+  IndianRupee,
+  Users,
+  Package,
+  Clock,
+  Shield
+} from 'lucide-react';
+import axios from 'axios';
+
+const VehicleDetails = () => {
+  const { vehicleId } = useParams();
+  const [vehicle, setVehicle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  useEffect(() => {
+    fetchVehicleDetails();
+  }, [vehicleId]);
+
+  const fetchVehicleDetails = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/transport/vehicles/${vehicleId}`);
+      setVehicle(response.data);
+      if (response.data.priceOptions.length > 0) {
+        setSelectedOption(response.data.priceOptions[0]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch vehicle details:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getVehicleIcon = (type) => {
+    const iconMap = {
+      'truck': Truck,
+      'mini-truck': Truck,
+      'car': Car,
+      'bike': Bike,
+      'bus': Bus,
+      'jeep': Car,
+      'autorickshaw': Car,
+      'tractor': Truck,
+      'cycle': Bike
+    };
+    return iconMap[type] || Truck;
+  };
+
+  const getVehicleColor = (type) => {
+    const colorMap = {
+      'truck': 'from-amber-500 to-orange-600',
+      'mini-truck': 'from-amber-400 to-orange-500',
+      'car': 'from-blue-500 to-indigo-600',
+      'bike': 'from-green-500 to-emerald-600',
+      'bus': 'from-purple-500 to-violet-600',
+      'jeep': 'from-gray-500 to-slate-600',
+      'autorickshaw': 'from-yellow-500 to-amber-600',
+      'tractor': 'from-red-500 to-rose-600',
+      'cycle': 'from-teal-500 to-cyan-600'
+    };
+    return colorMap[type] || 'from-gray-500 to-slate-600';
+  };
+
+  const handleBookNow = () => {
+    if (selectedOption) {
+      window.location.href = `/local-transport/booking/${vehicleId}?option=${encodeURIComponent(JSON.stringify(selectedOption))}`;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="w-14 h-14 border-3 border-amber-200 border-t-amber-600 rounded-full"
+        />
+      </div>
+    );
+  }
+
+  if (!vehicle) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+        <div className="text-center">
+          <Truck className="w-16 h-16 text-amber-300 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-amber-900 mb-2">Vehicle Not Found</h3>
+          <p className="text-amber-700">The requested vehicle could not be found.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const IconComponent = getVehicleIcon(vehicle.type);
+  const colorClass = getVehicleColor(vehicle.type);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white/80 backdrop-blur-xl border-b border-amber-200/50 sticky top-0 z-50"
+      >
+        <div className="px-6 py-4">
+          <div className="flex items-center gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.history.back()}
+              className="w-10 h-10 flex items-center justify-center bg-amber-100 hover:bg-amber-200 rounded-xl transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-amber-700" />
+            </motion.button>
+            
+            <div>
+              <h1 className="text-2xl font-bold text-amber-900 capitalize">{vehicle.name}</h1>
+              <p className="text-sm text-amber-700 capitalize">{vehicle.type.replace('-', ' ')}</p>
+            </div>
+          </div>
+        </div>
+      </motion.header>
+
+      {/* Content */}
+      <div className="px-6 py-8">
+        {/* Vehicle Info Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-amber-200/50 shadow-lg"
+        >
+          <div className="flex items-center gap-6 mb-6">
+            <div className={`w-20 h-20 bg-gradient-to-br ${colorClass} rounded-2xl flex items-center justify-center shadow-lg`}>
+              <IconComponent className="w-10 h-10 text-white" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold text-amber-900 capitalize mb-2">
+                {vehicle.name}
+              </h2>
+              <div className="flex items-center gap-4 text-sm text-amber-700">
+                <div className="flex items-center gap-1">
+                  <Shield className="w-4 h-4" />
+                  <span>Verified Vehicle</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  <span>Available 24/7</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-amber-50 rounded-xl p-4 text-center">
+              <Users className="w-6 h-6 text-amber-600 mx-auto mb-2" />
+              <div className="text-sm font-semibold text-amber-900">Professional Driver</div>
+              <div className="text-xs text-amber-700">Experienced & Licensed</div>
+            </div>
+            <div className="bg-amber-50 rounded-xl p-4 text-center">
+              <Package className="w-6 h-6 text-amber-600 mx-auto mb-2" />
+              <div className="text-sm font-semibold text-amber-900">Secure Loading</div>
+              <div className="text-xs text-amber-700">Safe Crop Transport</div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Price Options */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-8"
+        >
+          <h3 className="text-xl font-bold text-amber-900 mb-4">Choose Your Option</h3>
+          <div className="space-y-3">
+            {vehicle.priceOptions.map((option, index) => (
+              <motion.div
+                key={index}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedOption(option)}
+                className={`bg-white/70 backdrop-blur-xl rounded-xl p-4 border cursor-pointer transition-all ${
+                  selectedOption === option 
+                    ? 'border-amber-400 bg-amber-50/50 shadow-lg' 
+                    : 'border-amber-200/50 hover:border-amber-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="font-semibold text-amber-900 mb-1">
+                      {option.capacity}
+                    </div>
+                    <div className="text-sm text-amber-700">
+                      {option.description}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-amber-900">
+                      ₹{option.basePrice}
+                    </div>
+                    <div className="text-sm text-amber-700">
+                      + ₹{option.pricePerKm}/km
+                    </div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border-2 ml-4 ${
+                    selectedOption === option 
+                      ? 'border-amber-500 bg-amber-500' 
+                      : 'border-amber-300'
+                  }`}>
+                    {selectedOption === option && (
+                      <div className="w-2 h-2 bg-white rounded-full m-0.5" />
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Book Now Button */}
+        {selectedOption && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="sticky bottom-6"
+          >
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleBookNow}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <IndianRupee className="w-5 h-5" />
+                <span>Book Now - {selectedOption.capacity}</span>
+              </div>
+            </motion.button>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default VehicleDetails;
