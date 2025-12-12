@@ -144,7 +144,8 @@ const bookingSchema = new mongoose.Schema({
   notes: String,
   cargoDescription: {
     type: String,
-    required: true
+    required: false,
+    default: 'No description provided'
   },
   cancellationReason: String,
   cancelledBy: String,
