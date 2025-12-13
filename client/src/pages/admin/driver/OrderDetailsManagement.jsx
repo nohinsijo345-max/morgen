@@ -307,7 +307,7 @@ const OrderDetailsManagement = () => {
                 </div>
                 
                 <div className="flex gap-3">
-                  {!order.driverId && (
+                  {!order.driverId && !['cancelled', 'completed', 'delivered'].includes(order.status) && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

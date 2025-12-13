@@ -47,7 +47,7 @@ const estimateDeliveryTime = async (fromLocation, toLocation, vehicleType, cargo
   try {
     const { GoogleGenerativeAI } = require('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
     // Get current date and time for context
     const currentDate = new Date();
@@ -132,35 +132,264 @@ const estimateDeliveryTime = async (fromLocation, toLocation, vehicleType, cargo
   } catch (error) {
     console.error('AI estimation error:', error);
     
-    // Enhanced fallback estimation with distance-based calculation
+    // Enhanced ultra-realistic estimation with comprehensive Indian transport factors
     const getDistanceBasedEstimate = () => {
-      // Rough distance estimation based on location differences
+      console.log('🔄 Using enhanced ultra-realistic calculation for delivery estimation');
+      
+      // More precise distance and route classification
       const sameDistrict = fromLocation.district === toLocation.district;
       const sameState = fromLocation.state === toLocation.state;
+      const samePinCode = fromLocation.pinCode === toLocation.pinCode;
       
-      let baseHours;
-      if (sameDistrict) {
-        baseHours = 4; // Within district
+      // Enhanced distance estimation based on Indian geography
+      let estimatedDistance;
+      let roadQualityFactor = 1.0;
+      
+      if (samePinCode) {
+        estimatedDistance = 5; // Same area: 2-8km
+        roadQualityFactor = 0.9; // Local roads, some congestion
+      } else if (sameDistrict) {
+        estimatedDistance = 35; // Within district: 15-60km
+        roadQualityFactor = 1.0; // Mix of state highways and local roads
       } else if (sameState) {
-        baseHours = 12; // Within state
+        estimatedDistance = 120; // Within state: 60-250km
+        roadQualityFactor = 0.95; // Mostly state highways, some national highways
       } else {
-        baseHours = 24; // Interstate
+        estimatedDistance = 350; // Interstate: 150-800km
+        roadQualityFactor = 0.85; // National highways but with toll stops and checkpoints
       }
       
-      // Vehicle-specific multipliers
-      const vehicleMultipliers = {
-        'truck': 1.5,
-        'mini-truck': 1.2,
-        'tractor': 2.0,
-        'autorickshaw': 0.8,
-        'jeep': 1.0,
-        'car': 0.9,
-        'bike': 0.7,
-        'cycle': 0.5
+      // Ultra-realistic vehicle performance on Indian roads
+      const vehicleSpecs = {
+        'truck': { 
+          avgSpeed: 45, // km/h on mixed roads
+          loadingTime: 2.5, // hours for proper loading/securing
+          fuelStopFreq: 300, // km between fuel stops
+          restRequirement: 4, // hours driving before mandatory rest
+          trafficSensitivity: 1.3 // how much traffic affects this vehicle
+        },
+        'mini-truck': { 
+          avgSpeed: 50,
+          loadingTime: 1.8,
+          fuelStopFreq: 250,
+          restRequirement: 5,
+          trafficSensitivity: 1.2
+        },
+        'tractor': { 
+          avgSpeed: 28, // Much slower, especially on highways
+          loadingTime: 3.0, // Farm equipment takes time
+          fuelStopFreq: 150,
+          restRequirement: 3,
+          trafficSensitivity: 0.8 // Less affected by traffic, uses alternate routes
+        },
+        'autorickshaw': { 
+          avgSpeed: 35,
+          loadingTime: 0.5,
+          fuelStopFreq: 100,
+          restRequirement: 6,
+          trafficSensitivity: 1.8 // Heavily affected by city traffic
+        },
+        'jeep': { 
+          avgSpeed: 55,
+          loadingTime: 1.0,
+          fuelStopFreq: 200,
+          restRequirement: 5,
+          trafficSensitivity: 1.1
+        },
+        'car': { 
+          avgSpeed: 60,
+          loadingTime: 0.8,
+          fuelStopFreq: 180,
+          restRequirement: 6,
+          trafficSensitivity: 1.0
+        },
+        'bike': { 
+          avgSpeed: 45,
+          loadingTime: 0.3,
+          fuelStopFreq: 120,
+          restRequirement: 4,
+          trafficSensitivity: 0.7 // Can navigate through traffic
+        },
+        'cycle': { 
+          avgSpeed: 18,
+          loadingTime: 0.2,
+          fuelStopFreq: 0, // No fuel needed
+          restRequirement: 2,
+          trafficSensitivity: 0.5 // Can use alternate routes
+        }
       };
       
-      const multiplier = vehicleMultipliers[vehicleType] || 1.2;
-      return Math.ceil(baseHours * multiplier);
+      const vehicleSpec = vehicleSpecs[vehicleType] || vehicleSpecs['truck'];
+      
+      // Calculate base transit time with road quality
+      const effectiveSpeed = vehicleSpec.avgSpeed * roadQualityFactor;
+      let baseTransitHours = estimatedDistance / effectiveSpeed;
+      
+      // Add fuel and rest stops for long journeys
+      if (estimatedDistance > vehicleSpec.fuelStopFreq) {
+        const fuelStops = Math.floor(estimatedDistance / vehicleSpec.fuelStopFreq);
+        baseTransitHours += fuelStops * 0.5; // 30 minutes per fuel stop
+      }
+      
+      if (baseTransitHours > vehicleSpec.restRequirement) {
+        const restPeriods = Math.floor(baseTransitHours / vehicleSpec.restRequirement);
+        baseTransitHours += restPeriods * 1.5; // 1.5 hours rest per period
+      }
+      
+      // Enhanced time-based traffic analysis
+      const scheduledDate = pickupDate ? new Date(pickupDate) : new Date();
+      const scheduledHour = scheduledDate.getHours();
+      const dayOfWeek = scheduledDate.getDay();
+      
+      // More nuanced traffic patterns
+      let trafficMultiplier = 1.0;
+      
+      // Morning rush (7-10 AM)
+      if (scheduledHour >= 7 && scheduledHour <= 10) {
+        trafficMultiplier = 1.0 + (vehicleSpec.trafficSensitivity * 0.4);
+      }
+      // Evening rush (5-8 PM)
+      else if (scheduledHour >= 17 && scheduledHour <= 20) {
+        trafficMultiplier = 1.0 + (vehicleSpec.trafficSensitivity * 0.5);
+      }
+      // Late night (11 PM - 5 AM) - faster but safety concerns
+      else if (scheduledHour >= 23 || scheduledHour <= 5) {
+        trafficMultiplier = 0.8; // 20% faster
+      }
+      // Weekend adjustments
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        if (scheduledHour >= 10 && scheduledHour <= 16) {
+          trafficMultiplier *= 1.2; // Weekend leisure traffic
+        } else {
+          trafficMultiplier *= 0.9; // Generally less traffic
+        }
+      }
+      
+      // Advanced cargo handling factors
+      let cargoMultiplier = 1.0;
+      let loadingTimeMultiplier = 1.0;
+      
+      if (cargoDescription) {
+        const cargoLower = cargoDescription.toLowerCase();
+        
+        // Fragile items
+        if (cargoLower.includes('fragile') || cargoLower.includes('glass') || cargoLower.includes('ceramic')) {
+          cargoMultiplier = 1.5; // 50% slower for safety
+          loadingTimeMultiplier = 1.8; // Extra care in loading
+        }
+        // Perishable goods
+        else if (cargoLower.includes('perishable') || cargoLower.includes('fresh') || 
+                 cargoLower.includes('vegetable') || cargoLower.includes('fruit') ||
+                 cargoLower.includes('dairy') || cargoLower.includes('meat')) {
+          cargoMultiplier = 1.2; // Faster but careful
+          loadingTimeMultiplier = 1.3; // Proper storage needed
+        }
+        // Heavy machinery
+        else if (cargoLower.includes('heavy') || cargoLower.includes('machinery') || 
+                 cargoLower.includes('equipment') || cargoLower.includes('steel')) {
+          cargoMultiplier = 1.4; // Slower due to weight
+          loadingTimeMultiplier = 2.0; // Crane/special equipment needed
+        }
+        // Hazardous materials
+        else if (cargoLower.includes('liquid') || cargoLower.includes('chemical') || 
+                 cargoLower.includes('fuel') || cargoLower.includes('gas')) {
+          cargoMultiplier = 1.6; // Very careful transport
+          loadingTimeMultiplier = 1.5; // Safety protocols
+        }
+        // Bulk agricultural goods
+        else if (cargoLower.includes('grain') || cargoLower.includes('rice') || 
+                 cargoLower.includes('wheat') || cargoLower.includes('fertilizer')) {
+          cargoMultiplier = 1.1; // Standard agricultural transport
+          loadingTimeMultiplier = 1.2; // Bulk loading
+        }
+      }
+      
+      // Comprehensive seasonal and weather factors
+      const currentMonth = scheduledDate.getMonth() + 1;
+      let seasonalMultiplier = 1.0;
+      
+      // Monsoon season with regional variations
+      if (currentMonth >= 6 && currentMonth <= 9) {
+        // Peak monsoon (July-August)
+        if (currentMonth === 7 || currentMonth === 8) {
+          seasonalMultiplier = 1.6; // 60% extra for peak monsoon
+        } else {
+          seasonalMultiplier = 1.3; // 30% extra for moderate monsoon
+        }
+        
+        // Additional monsoon factors for different regions
+        const monsoonStates = ['kerala', 'karnataka', 'maharashtra', 'goa', 'west bengal'];
+        if (monsoonStates.includes(fromLocation.state.toLowerCase()) || 
+            monsoonStates.includes(toLocation.state.toLowerCase())) {
+          seasonalMultiplier *= 1.2; // Extra 20% for heavy monsoon states
+        }
+      }
+      // Winter fog season (December-January) in North India
+      else if ((currentMonth === 12 || currentMonth === 1) && 
+               (['punjab', 'haryana', 'delhi', 'uttar pradesh', 'bihar'].includes(fromLocation.state.toLowerCase()) ||
+                ['punjab', 'haryana', 'delhi', 'uttar pradesh', 'bihar'].includes(toLocation.state.toLowerCase()))) {
+        seasonalMultiplier = 1.3; // 30% extra for fog delays
+      }
+      // Festival seasons with specific impacts
+      else if (currentMonth === 10 || currentMonth === 11) {
+        seasonalMultiplier = 1.25; // Diwali season
+      } else if (currentMonth === 3 || currentMonth === 4) {
+        seasonalMultiplier = 1.15; // Holi/regional festivals
+      }
+      
+      // Calculate component times
+      const adjustedTransitTime = baseTransitHours * trafficMultiplier * cargoMultiplier;
+      const totalLoadingTime = vehicleSpec.loadingTime * loadingTimeMultiplier;
+      
+      // Interstate checkpoint delays
+      let checkpointTime = 0;
+      if (!sameState) {
+        checkpointTime = 1.5; // 1.5 hours for interstate checkpoints and documentation
+      }
+      
+      // Calculate total time
+      let totalHours = (adjustedTransitTime + totalLoadingTime + checkpointTime) * seasonalMultiplier;
+      
+      // Add realistic buffer based on distance and complexity
+      let bufferMultiplier = 1.1; // Base 10% buffer
+      if (!sameDistrict) bufferMultiplier = 1.15; // 15% for inter-district
+      if (!sameState) bufferMultiplier = 1.2; // 20% for interstate
+      if (cargoDescription && cargoDescription.toLowerCase().includes('fragile')) {
+        bufferMultiplier += 0.05; // Extra 5% for fragile
+      }
+      
+      totalHours *= bufferMultiplier;
+      
+      // Round to realistic intervals (0.5 hour precision)
+      const finalHours = Math.ceil(totalHours * 2) / 2;
+      
+      // Enhanced bounds based on realistic scenarios
+      let minHours, maxHours;
+      if (samePinCode) {
+        minHours = 1; maxHours = 6;
+      } else if (sameDistrict) {
+        minHours = 2; maxHours = 12;
+      } else if (sameState) {
+        minHours = 4; maxHours = 30;
+      } else {
+        minHours = 8; maxHours = 72;
+      }
+      
+      const boundedHours = Math.max(minHours, Math.min(maxHours, finalHours));
+      
+      console.log(`📊 Ultra-realistic calculation breakdown:`);
+      console.log(`   Distance: ${estimatedDistance}km (${sameDistrict ? 'local' : sameState ? 'intra-state' : 'interstate'})`);
+      console.log(`   Vehicle: ${vehicleType} @ ${effectiveSpeed.toFixed(1)}km/h effective speed`);
+      console.log(`   Base transit: ${baseTransitHours.toFixed(1)}h`);
+      console.log(`   Loading time: ${totalLoadingTime.toFixed(1)}h`);
+      console.log(`   Traffic factor: ${trafficMultiplier.toFixed(2)}x (${scheduledHour}:00 ${dayOfWeek === 0 || dayOfWeek === 6 ? 'weekend' : 'weekday'})`);
+      console.log(`   Cargo factor: ${cargoMultiplier.toFixed(2)}x (${cargoDescription || 'standard'})`);
+      console.log(`   Seasonal factor: ${seasonalMultiplier.toFixed(2)}x (month ${currentMonth})`);
+      console.log(`   Checkpoint time: ${checkpointTime}h`);
+      console.log(`   Buffer: ${bufferMultiplier.toFixed(2)}x`);
+      console.log(`   Final estimate: ${boundedHours}h`);
+      
+      return boundedHours;
     };
     
     return getDistanceBasedEstimate();
@@ -177,10 +406,8 @@ router.post('/estimate-delivery', async (req, res) => {
     }
     
     const estimatedHours = await estimateDeliveryTime(fromLocation, toLocation, vehicleType, cargoDescription, pickupDate);
-    const estimatedDate = new Date();
-    if (pickupDate) {
-      estimatedDate.setTime(new Date(pickupDate).getTime());
-    }
+    // Calculate delivery date from pickup date
+    const estimatedDate = new Date(pickupDate || new Date());
     estimatedDate.setHours(estimatedDate.getHours() + estimatedHours);
     
     // Calculate confidence level based on data completeness
@@ -277,7 +504,13 @@ router.post('/bookings', async (req, res) => {
 
     // Calculate expected delivery date using AI with enhanced parameters
     const estimatedHours = await estimateDeliveryTime(fromLocation, toLocation, vehicleType, cargoDescription, pickupDate);
-    const expectedDeliveryDate = new Date();
+    
+    // Create proper pickup datetime from date and time
+    const expectedDeliveryDate = new Date(pickupDate);
+    const [hours, minutes] = pickupTime.split(':');
+    expectedDeliveryDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    
+    // Add estimated hours to pickup datetime
     expectedDeliveryDate.setHours(expectedDeliveryDate.getHours() + estimatedHours);
 
     const booking = new Booking({

@@ -216,58 +216,240 @@ router.patch('/bookings/:bookingId/update-status', async (req, res) => {
     const { bookingId } = req.params;
     const { step, location, notes } = req.body;
     
-    const booking = await Booking.findOne({ bookingId });
+    console.log(`🔄 Driver updating status for booking ${bookingId}:`, { step, location, notes });
+    
+    // Validate required fields
+    if (!step || typeof step !== 'string' || step.trim() === '') {
+      console.log(`❌ Missing or invalid step field`);
+      return res.status(400).json({ error: 'Step is required and must be a valid string' });
+    }
+    
+    if (!location || typeof location !== 'string' || location.trim() === '') {
+      console.log(`❌ Missing or invalid location field`);
+      return res.status(400).json({ error: 'Location is required and must be a valid string' });
+    }
+
+    // Validate step value
+    const validSteps = ['pickup_started', 'order_picked_up', 'in_transit', 'delivered'];
+    if (!validSteps.includes(step.trim())) {
+      console.log(`❌ Invalid step: ${step}`);
+      return res.status(400).json({ error: `Invalid step. Must be one of: ${validSteps.join(', ')}` });
+    }
+    
+    // Find booking with comprehensive error handling
+    let booking;
+    try {
+      booking = await Booking.findOne({ bookingId: bookingId.trim() });
+    } catch (dbError) {
+      console.error(`❌ Database error finding booking ${bookingId}:`, dbError);
+      return res.status(500).json({ error: 'Database error occurred while finding booking' });
+    }
+    
     if (!booking) {
-      return res.status(404).json({ error: 'Booking not found' });
+      console.log(`❌ Booking ${bookingId} not found`);
+      return res.status(404).json({ error: `Booking ${bookingId} not found` });
+    }
+    
+    console.log(`📦 Found booking ${bookingId}, current status: ${booking.status}`);
+    
+    // Ensure booking has required fields
+    if (!booking.fromLocation) {
+      booking.fromLocation = { city: 'Unknown', district: 'Unknown', state: 'Unknown' };
+    }
+    if (!booking.toLocation) {
+      booking.toLocation = { city: 'Unknown', district: 'Unknown', state: 'Unknown' };
+    }
+    
+    // Validate and initialize tracking steps
+    if (!booking.trackingSteps || !Array.isArray(booking.trackingSteps) || booking.trackingSteps.length === 0) {
+      console.log(`❌ Booking ${bookingId} has no tracking steps, initializing...`);
+      const fromLocationStr = booking.fromLocation?.city ? 
+        `${booking.fromLocation.city}, ${booking.fromLocation.district || 'Unknown'}` : 
+        'Unknown Location';
+        
+      booking.trackingSteps = [
+        { 
+          step: 'order_placed', 
+          status: 'completed', 
+          timestamp: new Date(), 
+          location: fromLocationStr,
+          notes: 'Order has been placed successfully'
+        },
+        { 
+          step: 'order_accepted', 
+          status: 'completed', 
+          timestamp: new Date(), 
+          notes: 'Order accepted by driver'
+        },
+        { step: 'pickup_started', status: 'pending' },
+        { step: 'order_picked_up', status: 'pending' },
+        { step: 'in_transit', status: 'pending' },
+        { step: 'delivered', status: 'pending' }
+      ];
+    }
+    
+    console.log(`📋 Current tracking steps:`, booking.trackingSteps.map(s => `${s.step}: ${s.status}`));
+    
+    // Validate status progression logic
+    const statusProgression = {
+      'pickup_started': ['order_processing', 'order_accepted'],
+      'order_picked_up': ['pickup_started'],
+      'in_transit': ['order_picked_up'],
+      'delivered': ['in_transit']
+    };
+    
+    const allowedPreviousStatuses = statusProgression[step];
+    if (allowedPreviousStatuses && !allowedPreviousStatuses.includes(booking.status)) {
+      console.log(`❌ Invalid status progression: ${booking.status} -> ${step}`);
+      return res.status(400).json({ 
+        error: `Cannot update to ${step} from current status ${booking.status}. Expected one of: ${allowedPreviousStatuses.join(', ')}` 
+      });
     }
     
     // Update the specific tracking step
     const stepIndex = booking.trackingSteps.findIndex(s => s.step === step);
     if (stepIndex !== -1) {
+      console.log(`✅ Updating step ${step} at index ${stepIndex}`);
+      
+      // Check if step is already completed
+      if (booking.trackingSteps[stepIndex].status === 'completed') {
+        console.log(`⚠️ Step ${step} is already completed`);
+        return res.status(400).json({ 
+          error: `Step ${step} is already completed`,
+          currentStatus: booking.status,
+          completedAt: booking.trackingSteps[stepIndex].timestamp
+        });
+      }
+      
+      // Validate step object structure
+      if (!booking.trackingSteps[stepIndex].step) {
+        console.log(`❌ Invalid tracking step structure at index ${stepIndex}`);
+        return res.status(500).json({ error: 'Invalid tracking step structure' });
+      }
+      
+      // Update the step
       booking.trackingSteps[stepIndex].status = 'completed';
       booking.trackingSteps[stepIndex].timestamp = new Date();
-      booking.trackingSteps[stepIndex].location = location;
-      booking.trackingSteps[stepIndex].notes = notes;
+      booking.trackingSteps[stepIndex].location = location.trim();
+      booking.trackingSteps[stepIndex].notes = notes ? notes.trim() : `${step.replace(/_/g, ' ')} completed`;
 
       // Update next step to current if exists
       if (stepIndex + 1 < booking.trackingSteps.length) {
         booking.trackingSteps[stepIndex + 1].status = 'current';
+        console.log(`➡️ Set next step ${booking.trackingSteps[stepIndex + 1].step} to current`);
       }
 
-      // Update booking status based on step
-      if (step === 'pickup_started' || step === 'order_picked_up') booking.status = 'in-progress';
-      if (step === 'delivered') {
-        booking.status = 'completed';
-        booking.actualDeliveryDate = new Date();
+      // Update booking status based on step with validation
+      let newStatus = booking.status;
+      switch (step) {
+        case 'pickup_started':
+          newStatus = 'pickup_started';
+          break;
+        case 'order_picked_up':
+          newStatus = 'order_picked_up';
+          break;
+        case 'in_transit':
+          newStatus = 'in_transit';
+          break;
+        case 'delivered':
+          newStatus = 'delivered';
+          booking.actualDeliveryDate = new Date();
+          break;
+        default:
+          console.log(`⚠️ Unknown step for status update: ${step}`);
+      }
+      
+      if (newStatus !== booking.status) {
+        console.log(`📊 Updating booking status from ${booking.status} to ${newStatus}`);
+        booking.status = newStatus;
       }
 
-      await booking.save();
-
-      // Create update notification for farmer
-      const Update = require('../models/Update');
-      const stepMessages = {
-        'pickup_started': 'Driver is on the way to pickup location',
-        'order_picked_up': 'Your order has been picked up',
-        'in_transit': 'Your order is in transit',
-        'delivered': 'Your order has been delivered successfully'
-      };
-
-      const user = await User.findOne({ farmerId: booking.farmerId });
-      if (user) {
-        const update = new Update({
-          userId: user._id,
-          title: 'Transport Update',
-          message: `${stepMessages[step]}. Tracking ID: ${booking.trackingId}`,
-          category: 'transport',
-          isActive: true
-        });
-        await update.save();
+      // Save with comprehensive error handling
+      try {
+        // Validate before saving
+        const validationError = booking.validateSync();
+        if (validationError) {
+          console.error(`❌ Validation error for booking ${bookingId}:`, validationError);
+          return res.status(400).json({ 
+            error: 'Booking validation failed', 
+            details: validationError.message 
+          });
+        }
+        
+        await booking.save();
+        console.log(`💾 Booking ${bookingId} saved successfully`);
+      } catch (saveError) {
+        console.error(`❌ Error saving booking ${bookingId}:`, saveError);
+        
+        // Provide specific error messages based on error type
+        if (saveError.name === 'ValidationError') {
+          return res.status(400).json({ 
+            error: 'Booking validation failed', 
+            details: saveError.message 
+          });
+        } else if (saveError.name === 'MongoError' || saveError.name === 'MongoServerError') {
+          return res.status(500).json({ 
+            error: 'Database error occurred', 
+            details: 'Please try again in a moment' 
+          });
+        } else {
+          return res.status(500).json({ 
+            error: 'Failed to save booking changes', 
+            details: saveError.message 
+          });
+        }
       }
+
+      // Create update notification for farmer (non-blocking)
+      try {
+        const Update = require('../models/Update');
+        const stepMessages = {
+          'pickup_started': 'Driver is on the way to pickup location',
+          'order_picked_up': 'Your order has been picked up',
+          'in_transit': 'Your order is in transit',
+          'delivered': 'Your order has been delivered successfully'
+        };
+
+        const user = await User.findOne({ farmerId: booking.farmerId });
+        if (user) {
+          const update = new Update({
+            userId: user._id,
+            title: 'Transport Update',
+            message: `${stepMessages[step]}. Tracking ID: ${booking.trackingId}`,
+            category: 'transport',
+            isActive: true
+          });
+          await update.save();
+          console.log(`📢 Notification sent to farmer ${booking.farmerId}`);
+        } else {
+          console.log(`⚠️ Farmer ${booking.farmerId} not found for notification`);
+        }
+      } catch (notificationError) {
+        console.error(`⚠️ Failed to send notification:`, notificationError);
+        // Don't fail the request if notification fails
+      }
+    } else {
+      console.log(`❌ Step ${step} not found in tracking steps`);
+      console.log(`Available steps:`, booking.trackingSteps.map(s => s.step));
+      return res.status(400).json({ error: `Invalid step: ${step}. Available steps: ${booking.trackingSteps.map(s => s.step).join(', ')}` });
     }
 
-    res.json({ message: 'Status updated successfully', booking });
+    res.json({ 
+      message: 'Status updated successfully', 
+      booking: {
+        bookingId: booking.bookingId,
+        status: booking.status,
+        trackingSteps: booking.trackingSteps
+      }
+    });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update status' });
+    console.error(`❌ Error updating status for booking ${req.params.bookingId}:`, error);
+    console.error(`Error stack:`, error.stack);
+    res.status(500).json({ 
+      error: 'Failed to update status', 
+      details: error.message,
+      bookingId: req.params.bookingId
+    });
   }
 });
 

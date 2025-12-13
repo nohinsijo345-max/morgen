@@ -6,11 +6,13 @@ import axios from 'axios';
 const PriceForecastCard = ({ onClick }) => {
   const [forecasts, setForecasts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [isAiGenerated, setIsAiGenerated] = useState(false);
 
   useEffect(() => {
     fetchForecasts();
-    // Auto-refresh every 5 minutes for updated price forecasts
-    const interval = setInterval(fetchForecasts, 5 * 60 * 1000);
+    // Auto-refresh every 2 minutes for more frequent AI-powered updates
+    const interval = setInterval(fetchForecasts, 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -24,7 +26,15 @@ const PriceForecastCard = ({ onClick }) => {
         const timestamp = new Date().getTime();
         const response = await axios.get(`${API_URL}/api/price-forecast/forecast/${userData.farmerId}?t=${timestamp}`);
         setForecasts(response.data.forecasts || []);
-        console.log('Price forecasts refreshed:', new Date().toLocaleTimeString());
+        setLastUpdated(response.data.lastUpdated);
+        setIsAiGenerated(response.data.aiGenerated || false);
+        
+        const updateSource = response.data.fromCache ? 'cache' : 'fresh AI';
+        console.log(`📊 Price forecasts refreshed from ${updateSource}:`, new Date().toLocaleTimeString());
+        
+        if (response.data.aiGenerated && !response.data.fromCache) {
+          console.log('🤖 Fresh AI-powered forecasts generated');
+        }
       }
     } catch (error) {
       console.error('Failed to fetch price forecasts:', error);
@@ -63,7 +73,15 @@ const PriceForecastCard = ({ onClick }) => {
           </div>
           <div>
             <h2 className="text-xl font-bold text-[#082829]">Price Forecast</h2>
-            <p className="text-[#082829]/60 text-xs">AI-powered predictions</p>
+            <div className="flex items-center gap-2">
+              <p className="text-[#082829]/60 text-xs">AI-powered predictions</p>
+              {isAiGenerated && (
+                <div className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] text-green-600 font-medium">AI Live</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="w-10 h-10 rounded-full bg-[#082829]/10 flex items-center justify-center">
@@ -135,8 +153,15 @@ const PriceForecastCard = ({ onClick }) => {
         transition={{ delay: 1 }}
         className="mt-4 pt-4 border-t border-[#082829]/10 relative z-10"
       >
-        <div className="text-center text-[#082829]/70 text-sm font-medium group-hover:text-[#082829] transition-colors">
-          Tap to view detailed forecast →
+        <div className="flex items-center justify-between">
+          <div className="text-center text-[#082829]/70 text-sm font-medium group-hover:text-[#082829] transition-colors">
+            Tap to view detailed forecast →
+          </div>
+          {lastUpdated && (
+            <div className="text-[10px] text-[#082829]/50">
+              Updated: {new Date(lastUpdated).toLocaleTimeString()}
+            </div>
+          )}
         </div>
       </motion.div>
     </motion.div>

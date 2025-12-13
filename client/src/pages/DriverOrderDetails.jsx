@@ -95,24 +95,61 @@ const DriverOrderDetails = ({ user, onBack }) => {
   };
 
   const handleStatusUpdate = async (bookingId, step, location, notes) => {
+    // Validate inputs
+    if (!location || !location.trim()) {
+      alert('Please enter a valid location');
+      return;
+    }
+
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.patch(`${API_URL}/api/driver/bookings/${bookingId}/update-status`, {
+      console.log(`🔄 Updating status for booking ${bookingId}:`, { step, location: location.trim(), notes });
+      
+      const response = await axios.patch(`${API_URL}/api/driver/bookings/${bookingId}/update-status`, {
         step,
-        location,
-        notes
+        location: location.trim(),
+        notes: notes || `${step.replace('_', ' ')} completed`
       });
       
-      alert('Status updated successfully!');
-      fetchOrders(); // Refresh the list
+      console.log('✅ Status updated successfully:', response.data);
+      
+      // Show success message with step details
+      const stepNames = {
+        'pickup_started': 'Pickup Started',
+        'order_picked_up': 'Order Picked Up',
+        'in_transit': 'In Transit',
+        'delivered': 'Delivered'
+      };
+      alert(`✅ ${stepNames[step]} - Status updated successfully!`);
+      
+      // Refresh the orders list
+      await fetchOrders();
+      
+      // Update the selected order if it's the same one
       if (selectedOrder && selectedOrder.bookingId === bookingId) {
-        // Refresh the selected order details
-        const updatedOrder = orders.find(o => o.bookingId === bookingId);
-        setSelectedOrder(updatedOrder);
+        const updatedOrders = await axios.get(`${API_URL}/api/driver/bookings/${user.driverId}`);
+        const updatedOrder = updatedOrders.data.find(o => o.bookingId === bookingId);
+        if (updatedOrder) {
+          setSelectedOrder(updatedOrder);
+        }
       }
     } catch (error) {
-      console.error('Failed to update status:', error);
-      alert('Failed to update status');
+      console.error('❌ Failed to update status:', error);
+      console.error('Error response:', error.response?.data);
+      
+      let errorMessage = 'Failed to update status. Please try again.';
+      
+      if (error.response?.status === 400) {
+        errorMessage = error.response.data.error || 'Invalid request. Please check the order status.';
+      } else if (error.response?.status === 404) {
+        errorMessage = 'Order not found. Please refresh and try again.';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Server error. Please try again in a moment.';
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+      
+      alert(`❌ Error: ${errorMessage}`);
     }
   };
 
@@ -438,64 +475,68 @@ const DriverOrderDetails = ({ user, onBack }) => {
               </div>
 
               {/* Status Update Actions */}
-              {selectedOrder.status === 'order_processing' && (
-                <div className="bg-green-50 rounded-xl p-4">
-                  <h4 className="font-semibold text-green-900 mb-3">Update Order Status</h4>
+              {(selectedOrder.status === 'order_processing' || selectedOrder.status === 'order_accepted' || selectedOrder.status === 'pickup_started' || selectedOrder.status === 'order_picked_up' || selectedOrder.status === 'in_transit') && (
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-200">
+                  <h4 className="font-semibold text-orange-900 mb-3">Update Order Status</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => {
                         const location = prompt('Enter pickup location:');
-                        if (location) {
-                          handleStatusUpdate(selectedOrder.bookingId, 'pickup_started', location, 'Pickup started');
+                        if (location && location.trim()) {
+                          handleStatusUpdate(selectedOrder.bookingId, 'pickup_started', location.trim(), 'Pickup started');
                         }
                       }}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                      disabled={selectedOrder.status !== 'order_processing' && selectedOrder.status !== 'order_accepted'}
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
-                      Start Pickup
+                      🚚 Start Pickup
                     </motion.button>
                     
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => {
                         const location = prompt('Enter pickup location:');
-                        if (location) {
-                          handleStatusUpdate(selectedOrder.bookingId, 'order_picked_up', location, 'Order picked up');
+                        if (location && location.trim()) {
+                          handleStatusUpdate(selectedOrder.bookingId, 'order_picked_up', location.trim(), 'Order picked up');
                         }
                       }}
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                      disabled={selectedOrder.status !== 'pickup_started'}
+                      className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
-                      Mark Picked Up
+                      📦 Mark Picked Up
                     </motion.button>
                     
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => {
                         const location = prompt('Enter current location:');
-                        if (location) {
-                          handleStatusUpdate(selectedOrder.bookingId, 'in_transit', location, 'In transit');
+                        if (location && location.trim()) {
+                          handleStatusUpdate(selectedOrder.bookingId, 'in_transit', location.trim(), 'In transit');
                         }
                       }}
-                      className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                      disabled={selectedOrder.status !== 'order_picked_up'}
+                      className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
-                      In Transit
+                      🚛 In Transit
                     </motion.button>
                     
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => {
                         const location = prompt('Enter delivery location:');
-                        if (location) {
-                          handleStatusUpdate(selectedOrder.bookingId, 'delivered', location, 'Delivered successfully');
+                        if (location && location.trim()) {
+                          handleStatusUpdate(selectedOrder.bookingId, 'delivered', location.trim(), 'Delivered successfully');
                         }
                       }}
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                      disabled={selectedOrder.status !== 'in_transit'}
+                      className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
-                      Mark Delivered
+                      ✅ Mark Delivered
                     </motion.button>
                   </div>
                 </div>

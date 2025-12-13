@@ -118,21 +118,54 @@ const DriverDashboard = ({ user, onLogout }) => {
   };
 
   const handleStatusUpdate = async (bookingId, step, location, notes) => {
+    // Validate inputs
+    if (!location || !location.trim()) {
+      alert('Please enter a valid location');
+      return;
+    }
+
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.patch(`${API_URL}/api/driver/bookings/${bookingId}/update-status`, {
+      console.log(`🔄 Updating status for booking ${bookingId}:`, { step, location: location.trim(), notes });
+      
+      const response = await axios.patch(`${API_URL}/api/driver/bookings/${bookingId}/update-status`, {
         step,
-        location,
-        notes
+        location: location.trim(),
+        notes: notes || `${step.replace('_', ' ')} completed`
       });
       
-      alert('Status updated successfully!');
-      fetchActiveBookings(); // Refresh the list
-      fetchDashboardData(); // Refresh dashboard data
+      console.log('✅ Status updated successfully:', response.data);
+      
+      // Show success message with step details
+      const stepNames = {
+        'pickup_started': 'Pickup Started',
+        'order_picked_up': 'Order Picked Up',
+        'in_transit': 'In Transit',
+        'delivered': 'Delivered'
+      };
+      alert(`✅ ${stepNames[step]} - Status updated successfully!`);
+      
+      // Refresh data
+      await fetchActiveBookings();
+      await fetchDashboardData();
       setShowStatusModal(false);
     } catch (error) {
-      console.error('Failed to update status:', error);
-      alert('Failed to update status');
+      console.error('❌ Failed to update status:', error);
+      console.error('Error response:', error.response?.data);
+      
+      let errorMessage = 'Failed to update status. Please try again.';
+      
+      if (error.response?.status === 400) {
+        errorMessage = error.response.data.error || 'Invalid request. Please check the order status.';
+      } else if (error.response?.status === 404) {
+        errorMessage = 'Order not found. Please refresh and try again.';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Server error. Please try again in a moment.';
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+      
+      alert(`❌ Error: ${errorMessage}`);
     }
   };
 
@@ -895,68 +928,66 @@ const DriverDashboard = ({ user, onLogout }) => {
                     </div>
 
                     {/* Status Update Buttons */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {booking.status === 'confirmed' && (
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            const location = prompt('Enter current location:');
-                            if (location) {
-                              handleStatusUpdate(booking.bookingId, 'pickup_started', location, 'Started pickup');
-                            }
-                          }}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
-                        >
-                          Start Pickup
-                        </motion.button>
-                      )}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const location = prompt('Enter pickup location:');
+                          if (location && location.trim()) {
+                            handleStatusUpdate(booking.bookingId, 'pickup_started', location.trim(), 'Started pickup');
+                          }
+                        }}
+                        disabled={booking.status !== 'order_processing' && booking.status !== 'order_accepted'}
+                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      >
+                        🚚 Start Pickup
+                      </motion.button>
                       
-                      {booking.status === 'in-progress' && (
-                        <>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                              const location = prompt('Enter pickup location:');
-                              if (location) {
-                                handleStatusUpdate(booking.bookingId, 'order_picked_up', location, 'Order picked up');
-                              }
-                            }}
-                            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
-                          >
-                            Mark Picked Up
-                          </motion.button>
-                          
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                              const location = prompt('Enter current location:');
-                              if (location) {
-                                handleStatusUpdate(booking.bookingId, 'in_transit', location, 'In transit');
-                              }
-                            }}
-                            className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
-                          >
-                            In Transit
-                          </motion.button>
-                          
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => {
-                              const location = prompt('Enter delivery location:');
-                              if (location) {
-                                handleStatusUpdate(booking.bookingId, 'delivered', location, 'Delivered successfully');
-                              }
-                            }}
-                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm transition-colors"
-                          >
-                            Mark Delivered
-                          </motion.button>
-                        </>
-                      )}
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const location = prompt('Enter pickup location:');
+                          if (location && location.trim()) {
+                            handleStatusUpdate(booking.bookingId, 'order_picked_up', location.trim(), 'Order picked up');
+                          }
+                        }}
+                        disabled={booking.status !== 'pickup_started'}
+                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      >
+                        📦 Mark Picked Up
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const location = prompt('Enter current location:');
+                          if (location && location.trim()) {
+                            handleStatusUpdate(booking.bookingId, 'in_transit', location.trim(), 'In transit');
+                          }
+                        }}
+                        disabled={booking.status !== 'order_picked_up'}
+                        className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      >
+                        🚛 In Transit
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          const location = prompt('Enter delivery location:');
+                          if (location && location.trim()) {
+                            handleStatusUpdate(booking.bookingId, 'delivered', location.trim(), 'Delivered successfully');
+                          }
+                        }}
+                        disabled={booking.status !== 'in_transit'}
+                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      >
+                        ✅ Mark Delivered
+                      </motion.button>
                     </div>
                   </div>
                 ))

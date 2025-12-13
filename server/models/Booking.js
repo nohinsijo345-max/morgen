@@ -171,6 +171,7 @@ bookingSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   
   if (this.isNew && this.trackingSteps.length === 0) {
+    console.log(`🆕 Initializing tracking steps for new booking: ${this.bookingId}`);
     this.trackingSteps = [
       { 
         step: 'order_placed', 
@@ -185,6 +186,7 @@ bookingSchema.pre('save', function(next) {
       { step: 'in_transit', status: 'pending' },
       { step: 'delivered', status: 'pending' }
     ];
+    console.log(`✅ Tracking steps initialized for booking: ${this.bookingId}`);
   }
   next();
 });
