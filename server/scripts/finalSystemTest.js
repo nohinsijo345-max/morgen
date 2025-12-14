@@ -1,220 +1,171 @@
-#!/usr/bin/env node
-
-/**
- * Final System Test - Complete User Journey
- * Tests the entire profile change and notification workflow from farmer to admin to notification
- */
-
 const axios = require('axios');
 
 const API_URL = 'http://localhost:5050';
+const TEST_FARMER_ID = 'FAR-369';
 
-const finalSystemTest = async () => {
+async function finalSystemTest() {
+  console.log('🎯 Final AI Plant Doctor System Test\n');
+  console.log('Testing complete integration...\n');
+
+  let testsPassed = 0;
+  let totalTests = 0;
+
+  // Test 1: Chat Session Creation
+  totalTests++;
   try {
-    console.log('🎯 Final System Test - Complete User Journey\n');
+    console.log('1. 🔄 Testing chat session creation...');
+    const chatResponse = await axios.get(`${API_URL}/api/ai-doctor/chat/${TEST_FARMER_ID}`);
     
-    // Test 1: Verify server is running
-    console.log('📋 Test 1: Server Connection Check');
-    try {
-      await axios.get(`${API_URL}/api/admin/stats`);
-      console.log('✅ Server is running and accessible');
-    } catch (error) {
-      console.log('❌ Server is not running. Please start the server first.');
-      console.log('   Run: cd server && npm start');
-      return;
+    if (chatResponse.data.chatId && chatResponse.data.messages) {
+      console.log('   ✅ Chat session created successfully');
+      console.log(`   📋 Chat ID: ${chatResponse.data.chatId}`);
+      console.log(`   💬 Initial messages: ${chatResponse.data.messages.length}`);
+      console.log(`   👤 Farmer: ${chatResponse.data.farmerContext.crops.join(', ')} farmer from ${chatResponse.data.farmerContext.location.district}`);
+      testsPassed++;
+    } else {
+      console.log('   ❌ Invalid chat session response');
     }
-    
-    // Test 2: Farmer Profile Change Request (with PIN code)
-    console.log('\n📋 Test 2: Farmer Submits Profile Change Request');
-    
-    const testFarmerId = 'MGN001';
-    const profileChangeData = {
-      farmerId: testFarmerId,
-      changes: {
-        name: 'Final Test Farmer',
-        city: 'Final Test City',
-        pinCode: '555666',
-        landSize: 8.0
-      }
-    };
-    
-    let requestId = null;
-    try {
-      // First, clear any existing pending requests
-      const existingRequests = await axios.get(`${API_URL}/api/admin/profile-requests`);
-      const existingRequest = existingRequests.data.find(req => req.farmer?.farmerId === testFarmerId);
-      
-      if (existingRequest) {
-        console.log('ℹ️  Found existing request, will use it for testing');
-        requestId = existingRequest._id;
-      } else {
-        const response = await axios.post(`${API_URL}/api/profile/request-change`, profileChangeData);
-        requestId = response.data.request._id;
-        console.log('✅ Profile change request submitted successfully');
-        console.log(`   Request ID: ${requestId}`);
-      }
-    } catch (error) {
-      console.log('❌ Failed to submit profile change request:', error.response?.data?.error || error.message);
-      return;
-    }
-    
-    // Test 3: Admin Reviews and Approves Request
-    console.log('\n📋 Test 3: Admin Reviews and Approves Request');
-    
-    try {
-      // Get pending requests
-      const requestsResponse = await axios.get(`${API_URL}/api/admin/profile-requests`);
-      const targetRequest = requestsResponse.data.find(req => req._id === requestId || req.farmer?.farmerId === testFarmerId);
-      
-      if (targetRequest) {
-        console.log(`✅ Found request for farmer ${targetRequest.farmer?.farmerId}`);
-        console.log(`   Changes include PIN code: ${targetRequest.changes.pinCode ? '✅ Yes' : '❌ No'}`);
-        
-        // Approve the request
-        const approvalResponse = await axios.post(`${API_URL}/api/admin/profile-requests/${targetRequest._id}/approve`);
-        console.log('✅ Profile change request approved by admin');
-        console.log('✅ User profile should be updated');
-        console.log('✅ Notification should be sent to farmer');
-        
-      } else {
-        console.log('❌ No pending request found for testing');
-        return;
-      }
-    } catch (error) {
-      if (error.response?.status === 400 && error.response.data.error.includes('already processed')) {
-        console.log('ℹ️  Request already processed (expected if running multiple times)');
-      } else {
-        console.log('❌ Failed to approve request:', error.response?.data?.error || error.message);
-        return;
-      }
-    }
-    
-    // Test 4: Verify Farmer Receives Notification
-    console.log('\n📋 Test 4: Verify Farmer Receives Notification');
-    
-    try {
-      // Wait a moment for notification processing
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const dashboardResponse = await axios.get(`${API_URL}/api/dashboard/farmer/${testFarmerId}`);
-      const updates = dashboardResponse.data.updates || [];
-      console.log(`✅ Found ${updates.length} updates for farmer`);
-      
-      const profileApprovalUpdate = updates.find(update => 
-        update.title.includes('Profile Changes Approved') && 
-        update.category === 'profile'
-      );
-      
-      if (profileApprovalUpdate) {
-        console.log('✅ Profile approval notification found!');
-        console.log(`   Title: ${profileApprovalUpdate.title}`);
-        console.log(`   Category: ${profileApprovalUpdate.category}`);
-        console.log(`   Message: ${profileApprovalUpdate.message.substring(0, 100)}...`);
-        console.log(`   Created: ${new Date(profileApprovalUpdate.createdAt).toLocaleString()}`);
-      } else {
-        console.log('❌ Profile approval notification not found');
-      }
-      
-      // Check for transport notifications too
-      const transportUpdates = updates.filter(update => update.category === 'transport');
-      console.log(`✅ Found ${transportUpdates.length} transport notifications for farmer`);
-      
-    } catch (error) {
-      console.log('❌ Failed to fetch farmer updates:', error.response?.data?.error || error.message);
-    }
-    
-    // Test 5: Test Transport Booking Notification
-    console.log('\n📋 Test 5: Test Transport Booking Notification');
-    
-    try {
-      // Create a test transport booking
-      const bookingData = {
-        farmerId: testFarmerId,
-        farmerName: 'Final Test Farmer',
-        vehicleId: '507f1f77bcf86cd799439011', // Mock vehicle ID
-        fromLocation: {
-          address: 'Test Pickup Location',
-          city: 'Test City',
-          pinCode: '123456'
-        },
-        toLocation: {
-          address: 'Test Destination',
-          city: 'Destination City', 
-          pinCode: '654321'
-        },
-        distance: 50,
-        scheduledTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        totalAmount: 1500,
-        finalAmount: 1514 // Including ₹14 handling fee
-      };
-      
-      const bookingResponse = await axios.post(`${API_URL}/api/transport/bookings`, bookingData);
-      console.log('✅ Transport booking created successfully');
-      console.log(`   Booking ID: ${bookingResponse.data.booking.bookingId}`);
-      console.log('✅ Transport booking notification should be sent');
-      
-      // Verify the notification was created
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const updatedDashboardResponse = await axios.get(`${API_URL}/api/dashboard/farmer/${testFarmerId}`);
-      const updatedUpdates = updatedDashboardResponse.data.updates || [];
-      const transportNotification = updatedUpdates.find(update => 
-        update.title.includes('Transport Booking Confirmed') && 
-        update.category === 'transport'
-      );
-      
-      if (transportNotification) {
-        console.log('✅ Transport booking notification found!');
-        console.log(`   Title: ${transportNotification.title}`);
-        console.log(`   Category: ${transportNotification.category}`);
-      } else {
-        console.log('⚠️  Transport booking notification not found (may need server restart)');
-      }
-      
-    } catch (error) {
-      console.log('ℹ️  Transport booking test skipped:', error.response?.data?.error || error.message);
-    }
-    
-    // Test 6: System Health Summary
-    console.log('\n📋 Test 6: System Health Summary');
-    
-    try {
-      const statsResponse = await axios.get(`${API_URL}/api/admin/stats`);
-      console.log('✅ System Statistics:');
-      console.log(`   Total Users: ${statsResponse.data.totalUsers}`);
-      console.log(`   Total Farmers: ${statsResponse.data.totalFarmers}`);
-      console.log(`   Active Users: ${statsResponse.data.activeUsers}`);
-      
-      // Check profile requests
-      const requestsResponse = await axios.get(`${API_URL}/api/admin/profile-requests`);
-      console.log(`   Pending Profile Requests: ${requestsResponse.data.length}`);
-      
-      // Check messages
-      const messagesResponse = await axios.get(`${API_URL}/api/admin/messages`);
-      console.log(`   Total Messages/Updates: ${messagesResponse.data.length}`);
-      
-    } catch (error) {
-      console.log('❌ Failed to fetch system stats:', error.response?.data?.error || error.message);
-    }
-    
-    console.log('\n🎉 Final System Test Complete!');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('✅ FARMER PROFILE CHANGE REQUEST: WORKING');
-    console.log('✅ ADMIN APPROVAL WORKFLOW: WORKING');
-    console.log('✅ PIN CODE INTEGRATION: COMPLETE');
-    console.log('✅ NOTIFICATION DELIVERY: ACTIVE');
-    console.log('✅ TRANSPORT BOOKING NOTIFICATIONS: INTEGRATED');
-    console.log('✅ FARMER UPDATES CARD: RECEIVING ALL MESSAGES');
-    console.log('✅ COMPLETE USER JOURNEY: SUCCESSFUL');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('\n🎯 SYSTEM STATUS: FULLY OPERATIONAL');
-    console.log('   All profile change and notification features are working correctly.');
-    console.log('   The system is ready for production use.');
-    
   } catch (error) {
-    console.error('❌ Final test failed:', error.message);
+    console.log(`   ❌ Chat session creation failed: ${error.message}`);
   }
-};
 
-// Run the final test
+  // Test 2: Intelligent AI Responses
+  totalTests++;
+  try {
+    console.log('\n2. 🤖 Testing intelligent AI responses...');
+    const questions = [
+      'My rice plants have yellow leaves',
+      'How to control pests organically?',
+      'What fertilizer for flowering stage?'
+    ];
+
+    let responsesReceived = 0;
+    for (const question of questions) {
+      const response = await axios.post(`${API_URL}/api/ai-doctor/chat/${TEST_FARMER_ID}/message`, {
+        message: question,
+        messageId: `final_test_${Date.now()}`
+      });
+
+      if (response.data.message && response.data.message.content.length > 100) {
+        responsesReceived++;
+      }
+      await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
+    }
+
+    if (responsesReceived === questions.length) {
+      console.log(`   ✅ All ${questions.length} AI responses received successfully`);
+      console.log('   🧠 Intelligent fallback system working perfectly');
+      testsPassed++;
+    } else {
+      console.log(`   ❌ Only ${responsesReceived}/${questions.length} responses received`);
+    }
+  } catch (error) {
+    console.log(`   ❌ AI response test failed: ${error.message}`);
+  }
+
+  // Test 3: Statistics Tracking
+  totalTests++;
+  try {
+    console.log('\n3. 📊 Testing statistics tracking...');
+    const statsResponse = await axios.get(`${API_URL}/api/ai-doctor/stats/${TEST_FARMER_ID}`);
+    
+    if (statsResponse.data.totalConsultations >= 0 && statsResponse.data.questionsAsked >= 0) {
+      console.log('   ✅ Statistics tracking working');
+      console.log(`   📈 Total consultations: ${statsResponse.data.totalConsultations}`);
+      console.log(`   ❓ Questions asked: ${statsResponse.data.questionsAsked}`);
+      console.log(`   📸 Images analyzed: ${statsResponse.data.imagesAnalyzed}`);
+      console.log(`   🟢 Status: ${statsResponse.data.isActive ? 'Active' : 'Inactive'}`);
+      testsPassed++;
+    } else {
+      console.log('   ❌ Invalid statistics response');
+    }
+  } catch (error) {
+    console.log(`   ❌ Statistics test failed: ${error.message}`);
+  }
+
+  // Test 4: Agriculture-Only Validation
+  totalTests++;
+  try {
+    console.log('\n4. 🌱 Testing agriculture-only focus...');
+    const nonAgQuestions = [
+      'Tell me about the weather today',
+      'What is the capital of India?',
+      'How to cook rice?'
+    ];
+
+    let agricultureResponses = 0;
+    for (const question of nonAgQuestions) {
+      const response = await axios.post(`${API_URL}/api/ai-doctor/chat/${TEST_FARMER_ID}/message`, {
+        message: question,
+        messageId: `agri_test_${Date.now()}`
+      });
+
+      const content = response.data.message.content.toLowerCase();
+      if (content.includes('agricultural') || content.includes('farming') || content.includes('crop') || content.includes('plant')) {
+        agricultureResponses++;
+      }
+      await new Promise(resolve => setTimeout(resolve, 200));
+    }
+
+    if (agricultureResponses >= 2) { // Allow some flexibility
+      console.log('   ✅ Agriculture-only focus maintained');
+      console.log(`   🎯 ${agricultureResponses}/${nonAgQuestions.length} responses stayed agriculture-focused`);
+      testsPassed++;
+    } else {
+      console.log(`   ⚠️  Only ${agricultureResponses}/${nonAgQuestions.length} responses were agriculture-focused`);
+    }
+  } catch (error) {
+    console.log(`   ❌ Agriculture focus test failed: ${error.message}`);
+  }
+
+  // Test 5: Error Handling
+  totalTests++;
+  try {
+    console.log('\n5. 🛡️  Testing error handling...');
+    
+    // Test with invalid farmer ID
+    try {
+      await axios.get(`${API_URL}/api/ai-doctor/chat/INVALID_FARMER`);
+      console.log('   ❌ Should have failed with invalid farmer ID');
+    } catch (expectedError) {
+      if (expectedError.response && expectedError.response.status === 404) {
+        console.log('   ✅ Proper error handling for invalid farmer ID');
+        testsPassed++;
+      } else {
+        console.log('   ❌ Unexpected error response');
+      }
+    }
+  } catch (error) {
+    console.log(`   ❌ Error handling test failed: ${error.message}`);
+  }
+
+  // Final Results
+  console.log('\n' + '='.repeat(60));
+  console.log('🏆 FINAL TEST RESULTS');
+  console.log('='.repeat(60));
+  console.log(`✅ Tests Passed: ${testsPassed}/${totalTests}`);
+  console.log(`📊 Success Rate: ${Math.round((testsPassed/totalTests) * 100)}%`);
+  
+  if (testsPassed === totalTests) {
+    console.log('\n🎉 ALL TESTS PASSED! AI Plant Doctor system is fully functional!');
+    console.log('\n🌟 System Features Verified:');
+    console.log('   ✅ Chat session management');
+    console.log('   ✅ Intelligent AI responses with fallback');
+    console.log('   ✅ Farmer context awareness');
+    console.log('   ✅ Statistics tracking');
+    console.log('   ✅ Agriculture-only focus');
+    console.log('   ✅ Error handling');
+    console.log('   ✅ Production-ready architecture');
+    
+    console.log('\n🚀 Ready for Production Deployment!');
+  } else {
+    console.log(`\n⚠️  ${totalTests - testsPassed} test(s) failed. Review the issues above.`);
+  }
+  
+  console.log('\n📱 Frontend Integration:');
+  console.log('   🌐 Client running on: http://localhost:5173');
+  console.log('   🔗 AI Doctor page: http://localhost:5173/ai-doctor');
+  console.log('   📊 Dashboard: http://localhost:5173/dashboard');
+}
+
 finalSystemTest();

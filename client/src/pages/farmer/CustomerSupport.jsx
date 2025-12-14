@@ -4,14 +4,12 @@ import {
   ArrowLeft, 
   MessageCircle, 
   Send, 
-  Phone, 
   Clock,
-  CheckCircle,
-  AlertCircle,
   Plus,
   X,
   User,
-  Headphones
+  Headphones,
+  RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -29,12 +27,41 @@ const CustomerSupport = () => {
     category: 'general',
     message: ''
   });
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     fetchTickets();
-    // Set up polling for real-time updates
-    const interval = setInterval(fetchTickets, 5000);
-    return () => clearInterval(interval);
+    
+    // Set up adaptive polling based on window focus
+    let interval;
+    
+    const startPolling = () => {
+      if (interval) clearInterval(interval);
+      // More frequent polling when window is focused
+      interval = setInterval(fetchTickets, document.hasFocus() ? 1500 : 5000);
+    };
+    
+    const handleFocus = () => {
+      fetchTickets(); // Immediate refresh on focus
+      startPolling();
+    };
+    
+    const handleBlur = () => {
+      startPolling(); // Slower polling when not focused
+    };
+    
+    // Start initial polling
+    startPolling();
+    
+    // Add event listeners for focus/blur
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+    
+    return () => {
+      if (interval) clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+    };
   }, []);
 
   useEffect(() => {
@@ -45,11 +72,20 @@ const CustomerSupport = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (showRefreshIndicator = false) => {
     try {
+      if (showRefreshIndicator) setIsRefreshing(true);
+      
       const user = JSON.parse(localStorage.getItem('farmerUser'));
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       const response = await axios.get(`${API_URL}/api/support/tickets/farmer/${user.farmerId}`);
+      
+      // Check if there are new messages
+      const hasNewMessages = selectedTicket && response.data.find(t => 
+        t.ticketId === selectedTicket.ticketId && 
+        t.messages.length > selectedTicket.messages.length
+      );
+      
       setTickets(response.data);
       
       // Update selected ticket if it exists
@@ -59,12 +95,20 @@ const CustomerSupport = () => {
           setSelectedTicket(updatedTicket);
           // Mark messages as read
           await markMessagesAsRead(updatedTicket.ticketId);
+          
+          // Auto-scroll to bottom if new messages arrived
+          if (hasNewMessages) {
+            setTimeout(scrollToBottom, 100);
+          }
         }
       }
     } catch (error) {
       console.error('Failed to fetch tickets:', error);
     } finally {
       setLoading(false);
+      if (showRefreshIndicator) {
+        setTimeout(() => setIsRefreshing(false), 500);
+      }
     }
   };
 
@@ -115,7 +159,11 @@ const CustomerSupport = () => {
       });
       
       setNewMessage('');
-      fetchTickets();
+      // Immediately fetch updates after sending
+      await fetchTickets();
+      
+      // Also trigger an additional refresh after a short delay to catch any server-side updates
+      setTimeout(fetchTickets, 1000);
     } catch (error) {
       console.error('Failed to send message:', error);
       alert('Failed to send message');
@@ -189,21 +237,42 @@ const CustomerSupport = () => {
                   <Headphones className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-green-800">Customer Support</h1>
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-green-800">Customer Support</h1>
+                    {isRefreshing && (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        className="w-4 h-4 border-2 border-green-300 border-t-green-600 rounded-full"
+                      />
+                    )}
+                  </div>
                   <p className="text-green-600 text-sm">Get help from our support team</p>
                 </div>
               </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowNewTicketModal(true)}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              New Ticket
-            </motion.button>
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => fetchTickets(true)}
+                className="p-2 hover:bg-green-100 rounded-lg transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw className={`w-5 h-5 text-green-600 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowNewTicketModal(true)}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                New Ticket
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -343,7 +412,7 @@ const CustomerSupport = () => {
                       type="text"
                       value={newMessage}
                       onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                      onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
                       placeholder="Type your message..."
                       className="flex-1 px-4 py-3 bg-white/70 border border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400"
                     />

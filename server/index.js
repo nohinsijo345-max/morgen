@@ -8,7 +8,12 @@ const app = express();
 const PORT = process.env.PORT || 5050;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://your-app.vercel.app', 'https://*.vercel.app'] 
+    : ['http://localhost:3000', 'http://localhost:5173'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Serve uploaded images
@@ -31,6 +36,8 @@ app.use('/api/price-forecast', require('./routes/priceForecast'));
 app.use('/api/transport', require('./routes/transport'));
 app.use('/api/driver', require('./routes/driver'));
 app.use('/api/support', require('./routes/customerSupport'));
+app.use('/api/ai-doctor', require('./routes/aiDoctor'));
+app.use('/api', require('./routes/health'));
 
 // Serve client in production if present
 const clientDist = path.join(__dirname, '..', 'client', 'dist');

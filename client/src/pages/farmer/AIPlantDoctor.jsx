@@ -1,185 +1,404 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Camera, Upload, Loader, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowLeft, 
+  Send, 
+  Camera, 
+  Upload, 
+  Loader, 
+  MessageCircle, 
+  Stethoscope,
+  Image as ImageIcon,
+  Trash2,
+  Bot,
+  User as UserIcon,
+  Leaf
+} from 'lucide-react';
 import axios from 'axios';
 
 export default function AIPlantDoctor() {
-  const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [diagnosis, setDiagnosis] = useState(null);
-  const [language, setLanguage] = useState('english');
+  const [chatLoading, setChatLoading] = useState(true);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [chatStats, setChatStats] = useState({});
+  const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
-  const handleImageCapture = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+  // Get farmer ID from localStorage
+  const farmerUser = JSON.parse(localStorage.getItem('farmerUser') || '{}');
+  const farmerId = farmerUser.farmerId;
+
+  useEffect(() => {
+    if (farmerId) {
+      loadChatSession();
+    }
+  }, [farmerId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const loadChatSession = async () => {
+    try {
+      setChatLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/ai-doctor/chat/${farmerId}`);
+      
+      setMessages(response.data.messages || []);
+      setChatStats(response.data.sessionStats || {});
+    } catch (error) {
+      console.error('Failed to load chat session:', error);
+    } finally {
+      setChatLoading(false);
     }
   };
 
-  const analyzePlant = async () => {
-    if (!image) return;
+  const sendMessage = async () => {
+    if (!newMessage.trim() && !imageFile) return;
 
+    const messageText = newMessage.trim();
+    setNewMessage('');
     setLoading(true);
+
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.post(`${API_URL}/api/ai/plant-doctor`, {
-        imageBase64: preview,
-        language
-      });
-      setDiagnosis(response.data);
-    } catch (err) {
-      console.error(err);
+
+      if (imageFile) {
+        // Send image with question
+        const formData = new FormData();
+        formData.append('plantImage', imageFile);
+        formData.append('question', messageText || 'Please analyze this plant image');
+
+        const response = await axios.post(`${API_URL}/api/ai-doctor/chat/${farmerId}/image`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        setMessages(prev => [...prev, response.data.userMessage, response.data.assistantMessage]);
+        setChatStats(response.data.sessionStats);
+        
+        // Clear image
+        setImageFile(null);
+        setImagePreview(null);
+      } else {
+        // Send text message
+        const response = await axios.post(`${API_URL}/api/ai-doctor/chat/${farmerId}/message`, {
+          message: messageText,
+          messageId: `msg_${Date.now()}_user`
+        });
+
+        setMessages(prev => [...prev, {
+          id: `msg_${Date.now()}_user`,
+          role: 'user',
+          content: messageText,
+          timestamp: new Date()
+        }, response.data.message]);
+        
+        setChatStats(response.data.sessionStats);
+      }
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Add error message
+      setMessages(prev => [...prev, {
+        id: `msg_${Date.now()}_error`,
+        role: 'assistant',
+        content: '🌱 Sorry, I encountered an error. Please try again or ask me about your farming needs.',
+        timestamp: new Date()
+      }]);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const clearChat = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      await axios.delete(`${API_URL}/api/ai-doctor/chat/${farmerId}/clear`);
+      await loadChatSession();
+    } catch (error) {
+      console.error('Failed to clear chat:', error);
+    }
+  };
+
+  const formatTime = (timestamp) => {
+    return new Date(timestamp).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (chatLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900 flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 border-4 border-emerald-300/20 border-t-emerald-300 rounded-full"
+        />
+        <p className="mt-4 text-emerald-100">Loading AI Plant Doctor...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 shadow-xl"
+    <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900 relative overflow-hidden">
+      {/* Animated Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-10">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 2px 2px, #10b981 1px, transparent 0)`,
+          backgroundSize: '60px 60px'
+        }} />
+      </div>
+
+      {/* Header */}
+      <motion.header
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="relative z-20 bg-gradient-to-r from-emerald-800/30 to-green-800/30 backdrop-blur-xl border-b border-emerald-600/20 shadow-2xl"
       >
-        <div className="flex items-center gap-4 mb-8">
-          <div className="p-4 bg-green-600 rounded-2xl">
-            <Camera className="w-8 h-8 text-[#fbfbef]" />
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold text-gray-800">AI Plant Doctor</h2>
-            <p className="text-gray-600">Instant disease diagnosis powered by AI</p>
-          </div>
-        </div>
-
-        {/* Language Selector */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Language
-          </label>
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none"
-          >
-            <option value="english">English</option>
-            <option value="malayalam">മലയാളം</option>
-            <option value="hindi">हिंदी</option>
-          </select>
-        </div>
-
-        {/* Image Upload */}
-        <div className="mb-8">
-          <label className="block w-full">
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleImageCapture}
-              className="hidden"
-            />
-            <div className="border-2 border-dashed border-green-300 rounded-2xl p-12 text-center cursor-pointer hover:border-green-500 transition-colors">
-              {preview ? (
-                <img src={preview} alt="Plant" className="max-h-64 mx-auto rounded-xl" />
-              ) : (
-                <div>
-                  <Upload className="w-16 h-16 mx-auto text-green-600 mb-4" />
-                  <p className="text-gray-600 font-medium">
-                    Click to capture or upload plant image
-                  </p>
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.history.back()}
+                className="p-2 bg-emerald-700/50 hover:bg-emerald-600/50 rounded-xl transition-all"
+              >
+                <ArrowLeft className="w-5 h-5 text-emerald-100" />
+              </motion.button>
+              
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-emerald-600 to-green-600 rounded-2xl shadow-lg">
+                  <Stethoscope className="w-8 h-8 text-white" />
                 </div>
-              )}
-            </div>
-          </label>
-        </div>
-
-        {/* Analyze Button */}
-        {preview && !diagnosis && (
-          <button
-            onClick={analyzePlant}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-[#fbfbef] font-bold py-4 rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <Loader className="w-5 h-5 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <CheckCircle className="w-5 h-5" />
-                Analyze Plant
-              </>
-            )}
-          </button>
-        )}
-
-        {/* Diagnosis Results */}
-        {diagnosis && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-8 space-y-6"
-          >
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <div className="flex items-start gap-4">
-                <AlertCircle className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">
-                    {diagnosis.disease}
-                  </h3>
-                  <p className="text-gray-600 mb-4">{diagnosis.description}</p>
-                  <div className="flex items-center gap-2">
-                    <div className="text-sm text-gray-500">Confidence:</div>
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-green-600 h-2 rounded-full"
-                        style={{ width: `${diagnosis.confidence * 100}%` }}
-                      ></div>
-                    </div>
-                    <div className="text-sm font-semibold text-green-600">
-                      {(diagnosis.confidence * 100).toFixed(0)}%
-                    </div>
-                  </div>
+                  <h1 className="text-2xl font-bold text-emerald-100">AI Plant Doctor</h1>
+                  <p className="text-emerald-300 text-sm">Your agricultural health expert</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-green-50 rounded-2xl p-6 border border-green-200">
-              <h4 className="text-lg font-bold text-green-800 mb-3">
-                💊 Recommended Treatment
-              </h4>
-              <p className="text-green-900 font-medium mb-4">{diagnosis.remedy}</p>
+            <div className="flex items-center gap-4">
+              <div className="text-right hidden sm:block">
+                <p className="text-emerald-200 text-sm font-medium">
+                  {chatStats.questionsAsked || 0} consultations
+                </p>
+                <p className="text-emerald-300 text-xs">
+                  {chatStats.imagesAnalyzed || 0} images analyzed
+                </p>
+              </div>
               
-              <h5 className="font-semibold text-green-800 mb-2">Preventive Measures:</h5>
-              <ul className="space-y-2">
-                {diagnosis.preventiveMeasures.map((measure, i) => (
-                  <li key={i} className="flex items-start gap-2 text-green-900">
-                    <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span>{measure}</span>
-                  </li>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={clearChat}
+                className="p-2 bg-red-600/50 hover:bg-red-500/50 rounded-xl transition-all"
+              >
+                <Trash2 className="w-5 h-5 text-red-200" />
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.header>
+
+      {/* Chat Container */}
+      <div className="max-w-4xl mx-auto p-6 h-[calc(100vh-120px)] flex flex-col">
+        {/* Messages Area */}
+        <div className="flex-1 bg-gradient-to-br from-emerald-800/20 to-green-800/20 backdrop-blur-xl rounded-3xl border border-emerald-600/20 shadow-2xl overflow-hidden">
+          <div className="h-full flex flex-col">
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <AnimatePresence>
+                {messages.map((message, index) => (
+                  <motion.div
+                    key={message.id || index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`max-w-[80%] ${message.role === 'user' ? 'order-2' : 'order-1'}`}>
+                      <div className={`flex items-start gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                        {/* Avatar */}
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+                          message.role === 'user' 
+                            ? 'bg-gradient-to-br from-emerald-600 to-green-600' 
+                            : 'bg-gradient-to-br from-teal-600 to-emerald-600'
+                        }`}>
+                          {message.role === 'user' ? (
+                            <UserIcon className="w-5 h-5 text-white" />
+                          ) : (
+                            <Bot className="w-5 h-5 text-white" />
+                          )}
+                        </div>
+
+                        {/* Message Content */}
+                        <div className={`flex flex-col ${message.role === 'user' ? 'items-end' : 'items-start'}`}>
+                          <div className={`px-4 py-3 rounded-2xl shadow-lg ${
+                            message.role === 'user'
+                              ? 'bg-gradient-to-br from-emerald-600 to-green-600 text-white'
+                              : 'bg-gradient-to-br from-emerald-50/90 to-green-50/90 text-emerald-900 border border-emerald-200/50'
+                          }`}>
+                            {/* Image if present */}
+                            {message.hasImage && message.imageUrl && (
+                              <div className="mb-3">
+                                <img 
+                                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}${message.imageUrl}`}
+                                  alt="Plant analysis" 
+                                  className="max-w-xs rounded-xl shadow-md"
+                                />
+                              </div>
+                            )}
+                            
+                            {/* Message text */}
+                            <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                              {message.content}
+                            </div>
+                          </div>
+                          
+                          {/* Timestamp */}
+                          <div className={`text-xs mt-1 ${
+                            message.role === 'user' ? 'text-emerald-300' : 'text-emerald-400'
+                          }`}>
+                            {formatTime(message.timestamp)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
                 ))}
-              </ul>
+              </AnimatePresence>
+              
+              {/* Loading indicator */}
+              {loading && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex justify-start"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
+                      <Bot className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="bg-gradient-to-br from-emerald-50/90 to-green-50/90 px-4 py-3 rounded-2xl shadow-lg border border-emerald-200/50">
+                      <div className="flex items-center gap-2">
+                        <Loader className="w-4 h-4 animate-spin text-emerald-600" />
+                        <span className="text-emerald-700 text-sm">AI Doctor is analyzing...</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              
+              <div ref={messagesEndRef} />
             </div>
 
-            <button
-              onClick={() => {
-                setDiagnosis(null);
-                setPreview(null);
-                setImage(null);
-              }}
-              className="w-full bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-300 transition-colors"
-            >
-              Analyze Another Plant
-            </button>
-          </motion.div>
-        )}
-      </motion.div>
+            {/* Input Area */}
+            <div className="p-6 border-t border-emerald-600/20">
+              {/* Image Preview */}
+              {imagePreview && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 relative inline-block"
+                >
+                  <img 
+                    src={imagePreview} 
+                    alt="Plant to analyze" 
+                    className="max-h-32 rounded-xl shadow-lg border border-emerald-300/50"
+                  />
+                  <button
+                    onClick={clearImage}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg transition-colors"
+                  >
+                    <span className="text-white text-xs">×</span>
+                  </button>
+                </motion.div>
+              )}
+
+              {/* Input Row */}
+              <div className="flex items-end gap-3">
+                {/* Image Upload Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-3 bg-gradient-to-br from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-xl shadow-lg transition-all"
+                >
+                  <Camera className="w-5 h-5 text-white" />
+                </motion.button>
+
+                {/* Text Input */}
+                <div className="flex-1 relative">
+                  <textarea
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                      }
+                    }}
+                    placeholder="Ask about plant diseases, crop care, or upload an image..."
+                    className="w-full px-4 py-3 bg-emerald-50/90 border border-emerald-300/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none text-emerald-900 placeholder-emerald-600/70"
+                    rows="2"
+                    disabled={loading}
+                  />
+                </div>
+
+                {/* Send Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={sendMessage}
+                  disabled={loading || (!newMessage.trim() && !imageFile)}
+                  className="p-3 bg-gradient-to-br from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-lg transition-all"
+                >
+                  <Send className="w-5 h-5 text-white" />
+                </motion.button>
+              </div>
+
+              {/* Hidden File Input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import TransportBooking from "./pages/farmer/TransportBooking";
 import OrderTracking from "./pages/farmer/OrderTracking";
 import OrderHistory from "./pages/farmer/OrderHistory";
 import CustomerSupport from "./pages/farmer/CustomerSupport";
+import AIPlantDoctor from "./pages/farmer/AIPlantDoctor";
 import DriverLogin from "./pages/DriverLogin";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverOrderDetails from "./pages/DriverOrderDetails";
@@ -145,6 +146,10 @@ export default function App() {
         <Route 
           path="/customer-support" 
           element={farmerUser ? <CustomerSupport /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/ai-doctor" 
+          element={farmerUser ? <AIPlantDoctor /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/admin" 

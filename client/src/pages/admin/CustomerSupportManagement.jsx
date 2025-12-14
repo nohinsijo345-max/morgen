@@ -3,14 +3,12 @@ import { motion } from 'framer-motion';
 import { 
   MessageCircle, 
   Clock, 
-  CheckCircle, 
-  AlertCircle,
   Send,
   User,
   Headphones,
   Filter,
   Search,
-  Eye
+  RefreshCw
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -21,18 +19,50 @@ const CustomerSupportManagement = () => {
   const [replyMessage, setReplyMessage] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     fetchTickets();
-    // Set up polling for real-time updates
-    const interval = setInterval(fetchTickets, 10000);
-    return () => clearInterval(interval);
+    
+    // Set up adaptive polling based on window focus
+    let interval;
+    
+    const startPolling = () => {
+      if (interval) clearInterval(interval);
+      // More frequent polling when window is focused
+      interval = setInterval(fetchTickets, document.hasFocus() ? 1500 : 5000);
+    };
+    
+    const handleFocus = () => {
+      fetchTickets(); // Immediate refresh on focus
+      startPolling();
+    };
+    
+    const handleBlur = () => {
+      startPolling(); // Slower polling when not focused
+    };
+    
+    // Start initial polling
+    startPolling();
+    
+    // Add event listeners for focus/blur
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+    
+    return () => {
+      if (interval) clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+    };
   }, []);
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (showRefreshIndicator = false) => {
     try {
+      if (showRefreshIndicator) setIsRefreshing(true);
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       const response = await axios.get(`${API_URL}/api/admin/support/tickets`);
+      
       setTickets(response.data);
       
       // Update selected ticket if it exists
@@ -46,6 +76,9 @@ const CustomerSupportManagement = () => {
       console.error('Failed to fetch tickets:', error);
     } finally {
       setLoading(false);
+      if (showRefreshIndicator) {
+        setTimeout(() => setIsRefreshing(false), 500);
+      }
     }
   };
 
@@ -59,7 +92,11 @@ const CustomerSupportManagement = () => {
       });
       
       setReplyMessage('');
-      fetchTickets();
+      // Immediately fetch updates after sending
+      await fetchTickets();
+      
+      // Also trigger an additional refresh after a short delay to catch any server-side updates
+      setTimeout(fetchTickets, 1000);
     } catch (error) {
       console.error('Failed to send reply:', error);
       alert('Failed to send reply');
@@ -127,11 +164,31 @@ const CustomerSupportManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#2C5F7C]">Customer Support</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold text-[#2C5F7C]">Customer Support</h1>
+            {isRefreshing && (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                className="w-5 h-5 border-2 border-[#5B9FBF]/30 border-t-[#5B9FBF] rounded-full"
+              />
+            )}
+          </div>
           <p className="text-[#4A7C99] mt-1">Manage farmer support tickets and inquiries</p>
         </div>
-        <div className="text-sm text-[#4A7C99]">
-          {tickets.length} total tickets
+        <div className="flex items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => fetchTickets(true)}
+            className="p-2 hover:bg-[#5B9FBF]/10 rounded-lg transition-colors"
+            title="Refresh tickets"
+          >
+            <RefreshCw className={`w-5 h-5 text-[#5B9FBF] ${isRefreshing ? 'animate-spin' : ''}`} />
+          </motion.button>
+          <div className="text-sm text-[#4A7C99]">
+            {tickets.length} total tickets
+          </div>
         </div>
       </div>
 

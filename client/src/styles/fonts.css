@@ -15,19 +15,17 @@
   font-display: swap;
 }
 
-/* Apply Orkney font to non-admin pages only */
-/* Admin pages will use system fonts */
-body:not(.admin-portal) {
+/* Ensure Orkney is the default font for all non-admin pages */
+* {
   font-family: 'Orkney', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
 }
 
-/* Farmer and buyer pages use Orkney */
-.farmer-page,
-.buyer-page,
-.auth-page {
-  font-family: 'Orkney', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+/* Admin pages override to use system fonts */
+.admin-portal,
+.admin-portal * {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    sans-serif !important;
 }

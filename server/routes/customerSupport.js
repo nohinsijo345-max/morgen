@@ -149,6 +149,47 @@ router.patch('/tickets/:ticketId/status', async (req, res) => {
   }
 });
 
+// Admin reply to ticket (separate endpoint for admin interface)
+router.post('/tickets/:ticketId/reply', async (req, res) => {
+  try {
+    const { message } = req.body;
+    const ticket = await CustomerSupport.findOne({ ticketId: req.params.ticketId });
+    
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    
+    ticket.messages.push({
+      sender: 'admin',
+      message,
+      timestamp: new Date()
+    });
+    
+    ticket.status = 'in-progress';
+    await ticket.save();
+    
+    // Send notification to farmer when admin replies
+    const Update = require('../models/Update');
+    const User = require('../models/User');
+    
+    const farmer = await User.findOne({ farmerId: ticket.farmerId });
+    if (farmer) {
+      const update = new Update({
+        userId: farmer._id,
+        title: 'Support Reply Received',
+        message: `You have received a reply to your support ticket "${ticket.subject}". Check your support tickets for the latest update.`,
+        category: 'support',
+        isActive: true
+      });
+      await update.save();
+    }
+    
+    res.json({ message: 'Reply sent', ticket });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send reply' });
+  }
+});
+
 // Mark messages as read
 router.patch('/tickets/:ticketId/read', async (req, res) => {
   try {

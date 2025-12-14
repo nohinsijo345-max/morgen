@@ -147,12 +147,26 @@ router.get('/bookings/:driverId', async (req, res) => {
       .populate('vehicleId')
       .sort({ createdAt: -1 });
     
+    // Get driver information to include in response
+    const driver = await Driver.findOne({ driverId }).select('name driverId phone');
+    
+    // Add driver information to each booking
+    const bookingsWithDriverInfo = bookings.map(booking => {
+      const bookingObj = booking.toObject();
+      bookingObj.driverInfo = driver ? {
+        name: driver.name,
+        driverId: driver.driverId,
+        phone: driver.phone
+      } : null;
+      return bookingObj;
+    });
+    
     console.log(`📦 Found ${bookings.length} bookings for driver ${driverId}`);
     bookings.forEach(booking => {
       console.log(`   - ${booking.bookingId}: ${booking.status} (${booking.farmerName})`);
     });
     
-    res.json(bookings);
+    res.json(bookingsWithDriverInfo);
   } catch (error) {
     console.error(`❌ Error fetching bookings for driver ${req.params.driverId}:`, error);
     res.status(500).json({ error: 'Failed to fetch bookings' });
@@ -179,7 +193,10 @@ router.patch('/bookings/:bookingId/accept', async (req, res) => {
     if (acceptedStep) {
       acceptedStep.status = 'completed';
       acceptedStep.timestamp = new Date();
-      acceptedStep.notes = `Accepted by driver ${driverId}`;
+      // Get driver name for better tracking notes
+      const driver = await Driver.findOne({ driverId }).select('name');
+      const driverName = driver ? driver.name : driverId;
+      acceptedStep.notes = `Accepted by driver ${driverName}`;
     }
     
     // Set next step as current
@@ -327,11 +344,15 @@ router.patch('/bookings/:bookingId/update-status', async (req, res) => {
         return res.status(500).json({ error: 'Invalid tracking step structure' });
       }
       
+      // Get driver name for better tracking notes
+      const driver = await Driver.findOne({ driverId: booking.driverId }).select('name');
+      const driverName = driver ? driver.name : booking.driverId;
+      
       // Update the step
       booking.trackingSteps[stepIndex].status = 'completed';
       booking.trackingSteps[stepIndex].timestamp = new Date();
       booking.trackingSteps[stepIndex].location = location.trim();
-      booking.trackingSteps[stepIndex].notes = notes ? notes.trim() : `${step.replace(/_/g, ' ')} completed`;
+      booking.trackingSteps[stepIndex].notes = notes ? notes.trim() : `${step.replace(/_/g, ' ')} completed by ${driverName}`;
 
       // Update next step to current if exists
       if (stepIndex + 1 < booking.trackingSteps.length) {
@@ -530,7 +551,10 @@ router.patch('/orders/:bookingId/accept', async (req, res) => {
     if (processingStep) {
       processingStep.status = 'completed';
       processingStep.timestamp = new Date();
-      processingStep.notes = `Accepted by driver ${driverId}`;
+      // Get driver name for better tracking notes
+      const driver = await Driver.findOne({ driverId }).select('name');
+      const driverName = driver ? driver.name : driverId;
+      processingStep.notes = `Accepted by driver ${driverName}`;
     }
 
     await booking.save();
