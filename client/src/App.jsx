@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./styles/neumorphic-theme.css";
+import { ThemeProvider } from "./context/ThemeContext";
+import { AdminThemeProvider } from "./context/AdminThemeContext";
 import Login from "./pages/Login";
 import AdminLogin from "./pages/AdminLogin";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -81,8 +84,9 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
-      <Routes>
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
         <Route 
           path="/login" 
           element={farmerUser ? <Navigate to="/dashboard" /> : <Login onLogin={handleFarmerLogin} />} 
@@ -153,7 +157,11 @@ export default function App() {
         />
         <Route 
           path="/admin" 
-          element={adminUser ? <Admin onLogout={handleAdminLogout} /> : <Navigate to="/admin-login" />} 
+          element={adminUser ? (
+            <AdminThemeProvider>
+              <Admin onLogout={handleAdminLogout} />
+            </AdminThemeProvider>
+          ) : <Navigate to="/admin-login" />} 
         />
         <Route 
           path="/driver-login" 
@@ -176,7 +184,8 @@ export default function App() {
             <Navigate to="/login" />
           } 
         />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }

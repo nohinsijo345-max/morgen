@@ -14,6 +14,9 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import BookingSuccessAnimation from '../../components/BookingSuccessAnimation';
+import { useTheme } from '../../context/ThemeContext';
+import FarmerHeader from '../../components/FarmerHeader';
+import GlassCard from '../../components/GlassCard';
 
 const TransportBooking = () => {
   const { vehicleId } = useParams();
@@ -25,6 +28,7 @@ const TransportBooking = () => {
   const [booking, setBooking] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [bookingResult, setBookingResult] = useState(null);
+  const { isDarkMode, colors } = useTheme();
   const [bookingData, setBookingData] = useState({
     fromLocation: {
       state: 'Kerala',
@@ -237,11 +241,18 @@ const TransportBooking = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+      <div 
+        className="min-h-screen flex items-center justify-center transition-colors duration-300"
+        style={{ backgroundColor: colors.background }}
+      >
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-14 h-14 border-3 border-amber-200 border-t-amber-600 rounded-full"
+          className="w-14 h-14 border-3 rounded-full"
+          style={{ 
+            borderColor: `${colors.primary}30`,
+            borderTopColor: colors.primary
+          }}
         />
       </div>
     );
@@ -250,31 +261,17 @@ const TransportBooking = () => {
   const { baseAmount, handlingFee, total } = calculateTotal();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div 
+      className="min-h-screen transition-colors duration-300"
+      style={{ backgroundColor: colors.background }}
+    >
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white/80 backdrop-blur-xl border-b border-amber-200/50 sticky top-0 z-50"
-      >
-        <div className="px-6 py-4">
-          <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.history.back()}
-              className="w-10 h-10 flex items-center justify-center bg-amber-100 hover:bg-amber-200 rounded-xl transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-amber-700" />
-            </motion.button>
-            
-            <div>
-              <h1 className="text-2xl font-bold text-amber-900">Book Transport</h1>
-              <p className="text-sm text-amber-700">{vehicle?.name} - {selectedOption?.capacity}</p>
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <FarmerHeader 
+        title="Book Transport"
+        subtitle={`${vehicle?.name} - ${selectedOption?.capacity}`}
+        icon={Package}
+        onBack={() => window.history.back()}
+      />
 
       {/* Content */}
       <div className="px-6 py-8 max-w-2xl mx-auto">
@@ -283,68 +280,94 @@ const TransportBooking = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-amber-200/50"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <MapPin className="w-5 h-5 text-green-600" />
-            <h3 className="text-lg font-semibold text-amber-900">Pickup Location</h3>
-          </div>
+          <GlassCard className="p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <MapPin className="w-5 h-5 text-green-600" />
+              <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Pickup Location</h3>
+            </div>
           
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <input
-              type="text"
-              placeholder="State"
-              value={bookingData.fromLocation.state}
-              onChange={(e) => handleInputChange('fromLocation.state', e.target.value)}
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="State"
+                value={bookingData.fromLocation.state}
+                onChange={(e) => handleInputChange('fromLocation.state', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                style={{ 
+                  backgroundColor: isDarkMode ? 'rgba(33, 38, 45, 0.8)' : 'rgba(255, 255, 255, 0.9)',
+                  border: `1px solid ${colors.border}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.primary
+                }}
+              />
+              <input
+                type="text"
+                placeholder="District"
+                value={bookingData.fromLocation.district}
+                onChange={(e) => handleInputChange('fromLocation.district', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                style={{ 
+                  backgroundColor: isDarkMode ? 'rgba(28, 33, 40, 0.9)' : 'rgba(255, 255, 255, 0.95)',
+                  border: `1px solid ${colors.border}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.primary
+                }}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="City"
+                value={bookingData.fromLocation.city}
+                onChange={(e) => handleInputChange('fromLocation.city', e.target.value)}
+                className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                style={{ 
+                  backgroundColor: colors.cardBackground,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.primary
+                }}
+              />
+              <input
+                type="text"
+                placeholder="PIN Code"
+                value={bookingData.fromLocation.pinCode}
+                onChange={(e) => handleInputChange('fromLocation.pinCode', e.target.value)}
+                maxLength="6"
+                pattern="[0-9]{6}"
+                className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                style={{ 
+                  backgroundColor: colors.cardBackground,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.primary
+                }}
+              />
+            </div>
+            
+            <textarea
+              placeholder="Detailed Address"
+              value={bookingData.fromLocation.address}
+              onChange={(e) => handleInputChange('fromLocation.address', e.target.value)}
+              className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 h-20 resize-none transition-colors"
+              style={{ 
+                backgroundColor: colors.cardBackground,
+                border: `1px solid ${colors.cardBorder}`,
+                color: colors.textPrimary,
+                '--tw-ring-color': colors.primary
+              }}
             />
-            <input
-              type="text"
-              placeholder="District"
-              value={bookingData.fromLocation.district}
-              onChange={(e) => handleInputChange('fromLocation.district', e.target.value)}
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <input
-              type="text"
-              placeholder="City"
-              value={bookingData.fromLocation.city}
-              onChange={(e) => handleInputChange('fromLocation.city', e.target.value)}
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-            <input
-              type="text"
-              placeholder="PIN Code"
-              value={bookingData.fromLocation.pinCode}
-              onChange={(e) => handleInputChange('fromLocation.pinCode', e.target.value)}
-              maxLength="6"
-              pattern="[0-9]{6}"
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
-            />
-          </div>
-          
-          <textarea
-            placeholder="Detailed Address"
-            value={bookingData.fromLocation.address}
-            onChange={(e) => handleInputChange('fromLocation.address', e.target.value)}
-            className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 h-20 resize-none"
-          />
+          </GlassCard>
         </motion.div>
 
         {/* To Location */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-amber-200/50"
-        >
+        <GlassCard delay={0.2} className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-red-600" />
-              <h3 className="text-lg font-semibold text-amber-900">Destination</h3>
+              <MapPin className="w-5 h-5" style={{ color: colors.primary }} />
+              <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Destination</h3>
             </div>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -359,7 +382,11 @@ const TransportBooking = () => {
                   }
                 }));
               }}
-              className="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-sm transition-colors"
+              className="px-3 py-1 rounded-lg text-sm transition-colors"
+              style={{ 
+                backgroundColor: colors.primaryLight,
+                color: colors.primary
+              }}
             >
               Copy from Pickup
             </motion.button>
@@ -371,7 +398,13 @@ const TransportBooking = () => {
               placeholder="State *"
               value={bookingData.toLocation.state}
               onChange={(e) => handleInputChange('toLocation.state', e.target.value)}
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+              style={{ 
+                backgroundColor: colors.cardBackground,
+                border: `1px solid ${colors.cardBorder}`,
+                color: colors.textPrimary,
+                '--tw-ring-color': colors.primary
+              }}
               required
             />
             <input
@@ -379,7 +412,13 @@ const TransportBooking = () => {
               placeholder="District *"
               value={bookingData.toLocation.district}
               onChange={(e) => handleInputChange('toLocation.district', e.target.value)}
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+              style={{ 
+                backgroundColor: colors.cardBackground,
+                border: `1px solid ${colors.cardBorder}`,
+                color: colors.textPrimary,
+                '--tw-ring-color': colors.primary
+              }}
               required
             />
           </div>
@@ -390,7 +429,13 @@ const TransportBooking = () => {
               placeholder="City *"
               value={bookingData.toLocation.city}
               onChange={(e) => handleInputChange('toLocation.city', e.target.value)}
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+              style={{ 
+                backgroundColor: colors.cardBackground,
+                border: `1px solid ${colors.cardBorder}`,
+                color: colors.textPrimary,
+                '--tw-ring-color': colors.primary
+              }}
               required
             />
             <input
@@ -400,7 +445,13 @@ const TransportBooking = () => {
               onChange={(e) => handleInputChange('toLocation.pinCode', e.target.value)}
               maxLength="6"
               pattern="[0-9]{6}"
-              className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+              style={{ 
+                backgroundColor: colors.cardBackground,
+                border: `1px solid ${colors.cardBorder}`,
+                color: colors.textPrimary,
+                '--tw-ring-color': colors.primary
+              }}
               required
             />
           </div>
@@ -409,40 +460,53 @@ const TransportBooking = () => {
             placeholder="Detailed Address"
             value={bookingData.toLocation.address}
             onChange={(e) => handleInputChange('toLocation.address', e.target.value)}
-            className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 h-20 resize-none"
+            className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 h-20 resize-none transition-colors"
+            style={{ 
+              backgroundColor: colors.cardBackground,
+              border: `1px solid ${colors.cardBorder}`,
+              color: colors.textPrimary,
+              '--tw-ring-color': colors.primary
+            }}
           />
-        </motion.div>
+        </GlassCard>
 
         {/* Pickup Details */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-amber-200/50"
-        >
+        <GlassCard delay={0.3} className="mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <Calendar className="w-5 h-5 text-amber-600" />
-            <h3 className="text-lg font-semibold text-amber-900">Pickup Schedule</h3>
+            <Calendar className="w-5 h-5" style={{ color: colors.primary }} />
+            <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Pickup Schedule</h3>
           </div>
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-amber-700 mb-2">Date *</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>Date *</label>
               <input
                 type="date"
                 value={bookingData.pickupDate}
                 onChange={(e) => handleInputChange('pickupDate', e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                style={{ 
+                  backgroundColor: colors.cardBackground,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.primary
+                }}
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-amber-700 mb-2">Time *</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>Time *</label>
               <select
                 value={bookingData.pickupTime}
                 onChange={(e) => handleInputChange('pickupTime', e.target.value)}
-                className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                style={{ 
+                  backgroundColor: colors.cardBackground,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.primary
+                }}
                 required
               >
                 <option value="">
@@ -455,7 +519,7 @@ const TransportBooking = () => {
                 ))}
               </select>
               {bookingData.pickupDate && getAvailableTimeOptions().length === 0 && (
-                <p className="text-sm text-amber-600 mt-1">
+                <p className="text-sm mt-1" style={{ color: colors.textSecondary }}>
                   No pickup times available for today. Please select a future date.
                 </p>
               )}
@@ -463,7 +527,7 @@ const TransportBooking = () => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-amber-700 mb-2">Distance (km) *</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>Distance (km) *</label>
             <div className="space-y-3">
               <input
                 type="range"
@@ -471,14 +535,15 @@ const TransportBooking = () => {
                 max="500"
                 value={bookingData.distance}
                 onChange={(e) => handleInputChange('distance', parseInt(e.target.value))}
-                className="w-full h-2 bg-amber-200 rounded-lg appearance-none cursor-pointer slider"
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer slider"
+                style={{ backgroundColor: colors.border }}
               />
               <div className="flex justify-between items-center">
-                <span className="text-sm text-amber-700">1 km</span>
-                <div className="bg-amber-100 px-3 py-1 rounded-lg">
-                  <span className="font-bold text-amber-900">{bookingData.distance} km</span>
+                <span className="text-sm" style={{ color: colors.textSecondary }}>1 km</span>
+                <div className="px-3 py-1 rounded-lg" style={{ backgroundColor: colors.primaryLight }}>
+                  <span className="font-bold" style={{ color: colors.primary }}>{bookingData.distance} km</span>
                 </div>
-                <span className="text-sm text-amber-700">500 km</span>
+                <span className="text-sm" style={{ color: colors.textSecondary }}>500 km</span>
               </div>
               <input
                 type="number"
@@ -487,84 +552,87 @@ const TransportBooking = () => {
                 onChange={(e) => handleInputChange('distance', parseInt(e.target.value) || 1)}
                 min="1"
                 max="500"
-                className="w-full px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 text-center"
+                className="w-full px-4 py-2 rounded-xl focus:outline-none focus:ring-2 text-center transition-colors"
+                style={{ 
+                  backgroundColor: colors.cardBackground,
+                  border: `1px solid ${colors.cardBorder}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.primary
+                }}
               />
             </div>
           </div>
-        </motion.div>
+        </GlassCard>
 
         {/* Cargo Description */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-amber-200/50"
-        >
+        <GlassCard delay={0.4} className="mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <Package className="w-5 h-5 text-amber-600" />
-            <h3 className="text-lg font-semibold text-amber-900">What's in this truck? *</h3>
+            <Package className="w-5 h-5" style={{ color: colors.primary }} />
+            <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>What's in this truck? *</h3>
           </div>
           <textarea
             placeholder="Describe what you're transporting (e.g., Rice bags, Vegetables, Farm equipment, etc.)"
             value={bookingData.cargoDescription}
             onChange={(e) => handleInputChange('cargoDescription', e.target.value)}
-            className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 h-24 resize-none"
+            className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 h-24 resize-none transition-colors"
+            style={{ 
+              backgroundColor: colors.cardBackground,
+              border: `1px solid ${colors.cardBorder}`,
+              color: colors.textPrimary,
+              '--tw-ring-color': colors.primary
+            }}
             required
           />
-          <div className="mt-2 text-sm text-amber-600">
+          <div className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
             Please provide details about the items being transported for proper handling and documentation.
           </div>
-        </motion.div>
+        </GlassCard>
 
         {/* Notes */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-amber-200/50"
-        >
-          <h3 className="text-lg font-semibold text-amber-900 mb-4">Additional Notes</h3>
+        <GlassCard delay={0.45} className="mb-6">
+          <h3 className="text-lg font-semibold mb-4" style={{ color: colors.textPrimary }}>Additional Notes</h3>
           <textarea
             placeholder="Any special instructions or requirements..."
             value={bookingData.notes}
             onChange={(e) => handleInputChange('notes', e.target.value)}
-            className="w-full px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 h-24 resize-none"
+            className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 h-24 resize-none transition-colors"
+            style={{ 
+              backgroundColor: colors.cardBackground,
+              border: `1px solid ${colors.cardBorder}`,
+              color: colors.textPrimary,
+              '--tw-ring-color': colors.primary
+            }}
           />
-        </motion.div>
+        </GlassCard>
 
         {/* Bill Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-6 border border-amber-200/50"
-        >
+        <GlassCard delay={0.5} className="mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <Calculator className="w-5 h-5 text-amber-600" />
-            <h3 className="text-lg font-semibold text-amber-900">Bill Summary</h3>
+            <Calculator className="w-5 h-5" style={{ color: colors.primary }} />
+            <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Bill Summary</h3>
           </div>
           
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-amber-700">Base Price ({selectedOption?.capacity})</span>
-              <span className="font-semibold text-amber-900">₹{selectedOption?.basePrice || 0}</span>
+              <span style={{ color: colors.textSecondary }}>Base Price ({selectedOption?.capacity})</span>
+              <span className="font-semibold" style={{ color: colors.textPrimary }}>₹{selectedOption?.basePrice || 0}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-amber-700">Distance ({bookingData.distance} km × ₹{selectedOption?.pricePerKm || 0})</span>
-              <span className="font-semibold text-amber-900">₹{(selectedOption?.pricePerKm || 0) * bookingData.distance}</span>
+              <span style={{ color: colors.textSecondary }}>Distance ({bookingData.distance} km × ₹{selectedOption?.pricePerKm || 0})</span>
+              <span className="font-semibold" style={{ color: colors.textPrimary }}>₹{(selectedOption?.pricePerKm || 0) * bookingData.distance}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-amber-700">Handling Fee</span>
-              <span className="font-semibold text-amber-900">₹{handlingFee}</span>
+              <span style={{ color: colors.textSecondary }}>Handling Fee</span>
+              <span className="font-semibold" style={{ color: colors.textPrimary }}>₹{handlingFee}</span>
             </div>
-            <div className="border-t border-amber-200 pt-3">
+            <div className="pt-3" style={{ borderTop: `1px solid ${colors.border}` }}>
               <div className="flex justify-between items-center">
-                <span className="text-lg font-bold text-amber-900">Total Amount</span>
-                <span className="text-xl font-bold text-amber-900">₹{total}</span>
+                <span className="text-lg font-bold" style={{ color: colors.textPrimary }}>Total Amount</span>
+                <span className="text-xl font-bold" style={{ color: colors.primary }}>₹{total}</span>
               </div>
             </div>
           </div>
-        </motion.div>
+        </GlassCard>
 
 
 
@@ -579,11 +647,12 @@ const TransportBooking = () => {
             whileTap={{ scale: isFormValid() ? 0.98 : 1 }}
             onClick={handleBooking}
             disabled={!isFormValid() || booking}
-            className={`w-full py-4 px-6 rounded-2xl font-bold text-white shadow-lg transition-all ${
-              isFormValid() && !booking
-                ? 'bg-gradient-to-r from-amber-500 to-orange-600 hover:shadow-xl'
-                : 'bg-gray-400 cursor-not-allowed'
-            }`}
+            className="w-full py-4 px-6 rounded-2xl font-bold shadow-lg transition-all"
+            style={{
+              backgroundColor: isFormValid() && !booking ? colors.primary : colors.textMuted,
+              color: isFormValid() && !booking ? (isDarkMode ? '#0d1117' : '#ffffff') : colors.textSecondary,
+              cursor: isFormValid() && !booking ? 'pointer' : 'not-allowed'
+            }}
           >
             <div className="flex items-center justify-center gap-2">
               {booking ? (

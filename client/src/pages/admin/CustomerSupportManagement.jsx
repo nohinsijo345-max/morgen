@@ -11,8 +11,12 @@ import {
   RefreshCw
 } from 'lucide-react';
 import axios from 'axios';
+import useSocket from '../../hooks/useSocket';
+import { useAdminTheme } from '../../context/AdminThemeContext';
+import AdminGlassCard from '../../components/AdminGlassCard';
 
 const CustomerSupportManagement = () => {
+  const { colors } = useAdminTheme();
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,43 +24,83 @@ const CustomerSupportManagement = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  
+  const {
+    socket,
+    joinTicket,
+    leaveTicket,
+    joinAdmin,
+    onNewMessage,
+    onTicketUpdated,
+    offNewMessage,
+    offTicketUpdated
+  } = useSocket();
 
   useEffect(() => {
     fetchTickets();
     
-    // Set up aggressive polling for real-time messaging
-    let interval;
+    // Join admin room for real-time updates
+    if (socket) {
+      joinAdmin();
+    }
     
-    const startPolling = () => {
-      if (interval) clearInterval(interval);
-      // Very frequent polling for real-time experience
-      interval = setInterval(fetchTickets, 800); // Poll every 800ms for real-time feel
-    };
-    
-    const handleFocus = () => {
-      fetchTickets(); // Immediate refresh on focus
-      startPolling();
-    };
-    
-    const handleBlur = () => {
-      // Continue frequent polling even when not focused for real-time notifications
-      if (interval) clearInterval(interval);
-      interval = setInterval(fetchTickets, 2000); // Slower but still frequent when not focused
-    };
-    
-    // Start initial polling
-    startPolling();
-    
-    // Add event listeners for focus/blur
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
+    // Set up socket connection status
+    if (socket) {
+      socket.on('connect', () => {
+        console.log('🔌 Admin Customer Support connected to Socket.IO');
+        setIsConnected(true);
+        joinAdmin();
+      });
+      
+      socket.on('disconnect', () => {
+        console.log('🔌 Admin Customer Support disconnected from Socket.IO');
+        setIsConnected(false);
+      });
+    }
     
     return () => {
-      if (interval) clearInterval(interval);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
+      if (socket) {
+        socket.off('connect');
+        socket.off('disconnect');
+      }
     };
-  }, []);
+  }, [socket]);
+
+  // Set up real-time message listeners for selected ticket
+  useEffect(() => {
+    if (!selectedTicket || !socket) return;
+
+    // Join the specific ticket room
+    joinTicket(selectedTicket.ticketId);
+    
+    // Handle new messages in real-time
+    const handleNewMessage = (data) => {
+      console.log('📨 Admin received new message:', data);
+      if (data.ticketId === selectedTicket.ticketId) {
+        setSelectedTicket(data.ticket);
+      }
+    };
+
+    // Handle ticket updates
+    const handleTicketUpdated = (data) => {
+      console.log('🎫 Admin ticket updated:', data);
+      if (data.ticketId === selectedTicket.ticketId) {
+        setSelectedTicket(data.ticket);
+      }
+      // Refresh tickets list to update unread indicators
+      fetchTickets();
+    };
+
+    onNewMessage(handleNewMessage);
+    onTicketUpdated(handleTicketUpdated);
+
+    return () => {
+      leaveTicket(selectedTicket.ticketId);
+      offNewMessage(handleNewMessage);
+      offTicketUpdated(handleTicketUpdated);
+    };
+  }, [selectedTicket, socket]);
 
   const fetchTickets = async (showRefreshIndicator = false) => {
     try {
@@ -65,13 +109,21 @@ const CustomerSupportManagement = () => {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       const response = await axios.get(`${API_URL}/api/admin/support/tickets`);
       
+      // Always update tickets
       setTickets(response.data);
       
       // Update selected ticket if it exists
       if (selectedTicket) {
         const updatedTicket = response.data.find(t => t.ticketId === selectedTicket.ticketId);
         if (updatedTicket) {
-          setSelectedTicket(updatedTicket);
+          // Force update even if message count is same (in case of message content changes)
+          const shouldUpdate = !selectedTicket || 
+            updatedTicket.messages.length !== selectedTicket.messages.length ||
+            JSON.stringify(updatedTicket.messages) !== JSON.stringify(selectedTicket.messages);
+          
+          if (shouldUpdate) {
+            setSelectedTicket(updatedTicket);
+          }
         }
       }
     } catch (error) {
@@ -89,21 +141,34 @@ const CustomerSupportManagement = () => {
     
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.post(`${API_URL}/api/admin/support/tickets/${selectedTicket.ticketId}/reply`, {
-        message: replyMessage
-      });
       
+      // Optimistically add message to UI immediately
+      const optimisticMessage = {
+        sender: 'admin',
+        message: replyMessage,
+        timestamp: new Date(),
+        isRead: false
+      };
+      
+      const updatedTicket = {
+        ...selectedTicket,
+        messages: [...selectedTicket.messages, optimisticMessage]
+      };
+      setSelectedTicket(updatedTicket);
       setReplyMessage('');
       
-      // Multiple immediate refreshes to ensure message appears
-      await fetchTickets();
-      setTimeout(fetchTickets, 200);
-      setTimeout(fetchTickets, 500);
-      setTimeout(fetchTickets, 1000);
-      setTimeout(fetchTickets, 2000);
+      // Send to server - real-time update will be handled by Socket.IO
+      await axios.post(`${API_URL}/api/admin/support/tickets/${selectedTicket.ticketId}/reply`, {
+        message: optimisticMessage.message
+      });
+      
+      // No need for aggressive polling - Socket.IO handles real-time updates
+      console.log('✅ Admin reply sent, waiting for Socket.IO confirmation');
     } catch (error) {
       console.error('Failed to send reply:', error);
       alert('Failed to send reply');
+      // Revert optimistic update on error
+      fetchTickets();
     }
   };
 
@@ -169,7 +234,7 @@ const CustomerSupportManagement = () => {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold text-[#2C5F7C]">Customer Support</h1>
+            <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>Customer Support</h1>
             {isRefreshing && (
               <motion.div
                 animate={{ rotate: 360 }}
@@ -177,8 +242,13 @@ const CustomerSupportManagement = () => {
                 className="w-5 h-5 border-2 border-[#5B9FBF]/30 border-t-[#5B9FBF] rounded-full"
               />
             )}
+            {/* Real-time connection indicator */}
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} 
+                 title={isConnected ? 'Connected - Real-time updates active' : 'Disconnected - Check your connection'} />
           </div>
-          <p className="text-[#4A7C99] mt-1">Manage farmer support tickets and inquiries</p>
+          <p className="mt-1" style={{ color: colors.textSecondary }}>
+            Manage farmer support tickets and inquiries {isConnected ? '• Live' : '• Offline'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <motion.button
@@ -190,32 +260,44 @@ const CustomerSupportManagement = () => {
           >
             <RefreshCw className={`w-5 h-5 text-[#5B9FBF] ${isRefreshing ? 'animate-spin' : ''}`} />
           </motion.button>
-          <div className="text-sm text-[#4A7C99]">
+          <div className="text-sm" style={{ color: colors.textSecondary }}>
             {tickets.length} total tickets
           </div>
         </div>
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg">
+      <AdminGlassCard>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4A7C99] w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: colors.textSecondary }} />
             <input
               type="text"
               placeholder="Search tickets by subject, farmer name, or ticket ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white/50 border border-[#5B9FBF]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5B9FBF] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+              style={{ 
+                backgroundColor: colors.cardBackground,
+                border: `1px solid ${colors.cardBorder}`,
+                color: colors.textPrimary,
+                '--tw-ring-color': colors.primary
+              }}
             />
           </div>
           
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4A7C99] w-5 h-5" />
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: colors.textSecondary }} />
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="pl-10 pr-8 py-3 bg-white/50 border border-[#5B9FBF]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5B9FBF] focus:border-transparent appearance-none"
+              className="pl-10 pr-8 py-3 rounded-xl focus:outline-none focus:ring-2 appearance-none transition-colors"
+              style={{ 
+                backgroundColor: colors.cardBackground,
+                border: `1px solid ${colors.cardBorder}`,
+                color: colors.textPrimary,
+                '--tw-ring-color': colors.primary
+              }}
             >
               <option value="all">All Tickets</option>
               <option value="open">Open</option>
@@ -225,17 +307,17 @@ const CustomerSupportManagement = () => {
             </select>
           </div>
         </div>
-      </div>
+      </AdminGlassCard>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Tickets List */}
         <div className="lg:col-span-1 space-y-4">
-          <h2 className="text-xl font-semibold text-[#2C5F7C]">Support Tickets</h2>
+          <h2 className="text-xl font-semibold" style={{ color: colors.textPrimary }}>Support Tickets</h2>
           
           {filteredTickets.length === 0 ? (
             <div className="text-center py-8">
-              <MessageCircle className="w-12 h-12 text-[#4A7C99]/50 mx-auto mb-3" />
-              <p className="text-[#4A7C99]">No tickets found</p>
+              <MessageCircle className="w-12 h-12 mx-auto mb-3" style={{ color: colors.textMuted }} />
+              <p style={{ color: colors.textSecondary }}>No tickets found</p>
             </div>
           ) : (
             <div className="space-y-3 max-h-[600px] overflow-y-auto">
@@ -247,14 +329,18 @@ const CustomerSupportManagement = () => {
                   transition={{ delay: index * 0.05 }}
                   whileHover={{ scale: 1.02 }}
                   onClick={() => setSelectedTicket(ticket)}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                    selectedTicket?.ticketId === ticket.ticketId
-                      ? 'bg-[#5B9FBF]/10 border-[#5B9FBF]/30 shadow-lg'
-                      : 'bg-white/60 border-[#5B9FBF]/20 hover:bg-[#5B9FBF]/5'
-                  }`}
+                  className="p-4 rounded-xl border cursor-pointer transition-all"
+                  style={{
+                    backgroundColor: selectedTicket?.ticketId === ticket.ticketId 
+                      ? colors.primaryLight 
+                      : colors.backgroundCard,
+                    borderColor: selectedTicket?.ticketId === ticket.ticketId 
+                      ? colors.primary 
+                      : colors.border
+                  }}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold text-[#2C5F7C] text-sm">
+                    <span className="font-semibold text-sm" style={{ color: colors.textPrimary }}>
                       #{ticket.ticketId}
                     </span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(ticket.status)}`}>
@@ -262,22 +348,22 @@ const CustomerSupportManagement = () => {
                     </span>
                   </div>
                   
-                  <h3 className="font-medium text-[#2C5F7C] mb-2 line-clamp-2">
+                  <h3 className="font-medium mb-2 line-clamp-2" style={{ color: colors.textPrimary }}>
                     {ticket.subject}
                   </h3>
                   
-                  <div className="text-sm text-[#4A7C99] mb-2">
+                  <div className="text-sm mb-2" style={{ color: colors.textSecondary }}>
                     <strong>Farmer:</strong> {ticket.farmerName}
                   </div>
                   
-                  <div className="flex items-center justify-between text-xs text-[#4A7C99]">
+                  <div className="flex items-center justify-between text-xs" style={{ color: colors.textSecondary }}>
                     <span className="capitalize">{ticket.category}</span>
                     <span className={getPriorityColor(ticket.priority)}>
                       {ticket.priority} priority
                     </span>
                   </div>
                   
-                  <div className="flex items-center gap-2 mt-2 text-xs text-[#4A7C99]">
+                  <div className="flex items-center gap-2 mt-2 text-xs" style={{ color: colors.textSecondary }}>
                     <Clock className="w-3 h-3" />
                     {new Date(ticket.updatedAt).toLocaleDateString()}
                   </div>
@@ -295,7 +381,7 @@ const CustomerSupportManagement = () => {
         {/* Ticket Details */}
         <div className="lg:col-span-2">
           {selectedTicket ? (
-            <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-[#5B9FBF]/20 shadow-lg">
+            <AdminGlassCard noPadding>
               {/* Ticket Header */}
               <div className="p-6 border-b border-[#5B9FBF]/20">
                 <div className="flex items-center justify-between mb-4">
@@ -403,20 +489,20 @@ const CustomerSupportManagement = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </AdminGlassCard>
           ) : (
             /* No Ticket Selected */
-            <div className="bg-white/60 backdrop-blur-xl rounded-2xl border border-[#5B9FBF]/20 shadow-lg h-96 flex items-center justify-center">
+            <AdminGlassCard className="h-96 flex items-center justify-center">
               <div className="text-center">
-                <MessageCircle className="w-16 h-16 text-[#4A7C99]/50 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-[#2C5F7C] mb-2">
+                <MessageCircle className="w-16 h-16 mx-auto mb-4" style={{ color: colors.textMuted }} />
+                <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>
                   Select a ticket to view details
                 </h3>
-                <p className="text-[#4A7C99]">
+                <p style={{ color: colors.textSecondary }}>
                   Choose a support ticket from the list to view the conversation and respond
                 </p>
               </div>
-            </div>
+            </AdminGlassCard>
           )}
         </div>
       </div>

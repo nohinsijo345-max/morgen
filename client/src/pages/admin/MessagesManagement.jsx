@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Send, Search, X, AlertTriangle, MessageSquare, Calendar, User } from 'lucide-react';
 import axios from 'axios';
+import { useAdminTheme } from '../../context/AdminThemeContext';
+import AdminGlassCard from '../../components/AdminGlassCard';
 
 const MessagesManagement = () => {
+  const { colors } = useAdminTheme();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,44 +67,42 @@ const MessagesManagement = () => {
         className="flex items-center justify-between mb-8"
       >
         <div>
-          <h1 className="text-3xl font-bold text-[#2C5F7C]">Messages Management</h1>
-          <p className="text-sm text-[#4A7C99] mt-1">View and manage all sent messages</p>
+          <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>Messages Management</h1>
+          <p className="text-sm mt-1" style={{ color: colors.textSecondary }}>View and manage all sent messages</p>
         </div>
-        <div className="text-sm text-[#4A7C99]">
-          Total Messages: <span className="font-bold text-[#2C5F7C]">{messages.length}</span>
+        <div className="text-sm" style={{ color: colors.textSecondary }}>
+          Total Messages: <span className="font-bold" style={{ color: colors.textPrimary }}>{messages.length}</span>
         </div>
       </motion.div>
 
       {/* Search Bar */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mb-6"
-      >
+      <AdminGlassCard delay={0.1} className="mb-6">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#4A7C99]" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: colors.textSecondary }} />
           <input
             type="text"
             placeholder="Search messages by content or farmer..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white/40 backdrop-blur-xl border border-[#5B9FBF]/30 rounded-xl text-[#2C5F7C] placeholder-[#4A7C99]/60 focus:outline-none focus:ring-2 focus:ring-[#5B9FBF]"
+            className="w-full pl-12 pr-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+            style={{ 
+              backgroundColor: colors.cardBackground,
+              border: `1px solid ${colors.cardBorder}`,
+              color: colors.textPrimary,
+              '--tw-ring-color': colors.primary
+            }}
           />
         </div>
-      </motion.div>
+      </AdminGlassCard>
 
       {/* Messages Grid */}
       {filteredMessages.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredMessages.map((message, index) => (
-            <motion.div
+            <AdminGlassCard
               key={message._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              whileHover={{ scale: 1.02, y: -5 }}
-              className="bg-white/40 backdrop-blur-xl rounded-2xl p-5 border border-[#5B9FBF]/20 shadow-xl relative overflow-hidden group"
+              delay={index * 0.05}
+              className="relative overflow-hidden group"
             >
               {/* Animated background */}
               <motion.div
@@ -114,14 +115,14 @@ const MessagesManagement = () => {
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-[#5B9FBF] rounded-lg flex items-center justify-center">
-                      <MessageSquare className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                      <MessageSquare className="w-5 h-5" style={{ color: colors.background }} />
                     </div>
                     <div>
-                      <div className="font-semibold text-[#2C5F7C] text-sm">
+                      <div className="font-semibold text-sm" style={{ color: colors.textPrimary }}>
                         {message.userId?.name || 'Unknown'}
                       </div>
-                      <div className="text-xs text-[#4A7C99]">
+                      <div className="text-xs" style={{ color: colors.textSecondary }}>
                         {message.userId?.farmerId || 'N/A'}
                       </div>
                     </div>
@@ -142,12 +143,12 @@ const MessagesManagement = () => {
                   onClick={() => setSelectedMessage(message)}
                   className="cursor-pointer"
                 >
-                  <p className="text-[#2C5F7C] text-sm mb-3 line-clamp-3">
+                  <p className="text-sm mb-3 line-clamp-3" style={{ color: colors.textPrimary }}>
                     {message.message}
                   </p>
 
                   {/* Date */}
-                  <div className="flex items-center gap-2 text-xs text-[#4A7C99]">
+                  <div className="flex items-center gap-2 text-xs" style={{ color: colors.textSecondary }}>
                     <Calendar className="w-3 h-3" />
                     {new Date(message.createdAt).toLocaleDateString('en-US', {
                       month: 'short',
@@ -159,21 +160,17 @@ const MessagesManagement = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </AdminGlassCard>
           ))}
         </div>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-white/40 backdrop-blur-xl rounded-3xl p-12 border border-[#5B9FBF]/20 shadow-xl text-center"
-        >
-          <MessageSquare className="w-20 h-20 text-[#4A7C99]/30 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-[#2C5F7C] mb-2">No Messages Found</h3>
-          <p className="text-[#4A7C99]">
+        <AdminGlassCard className="text-center py-12">
+          <MessageSquare className="w-20 h-20 mx-auto mb-4" style={{ color: colors.textMuted }} />
+          <h3 className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>No Messages Found</h3>
+          <p style={{ color: colors.textSecondary }}>
             {searchTerm ? 'Try a different search term' : 'No messages have been sent yet'}
           </p>
-        </motion.div>
+        </AdminGlassCard>
       )}
 
       {/* Delete Confirmation Modal */}

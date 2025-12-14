@@ -14,8 +14,11 @@ import {
   Clock
 } from 'lucide-react';
 import axios from 'axios';
+import { useAdminTheme } from '../../context/AdminThemeContext';
+import AdminGlassCard from '../../components/AdminGlassCard';
 
 const TransportManagement = () => {
+  const { colors } = useAdminTheme();
   const [activeTab, setActiveTab] = useState('vehicles');
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -118,128 +121,110 @@ const TransportManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#2C5F7C]">Transport Management</h1>
-          <p className="text-[#4A7C99] mt-1">Manage vehicles, drivers, and bookings</p>
+          <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>Transport Management</h1>
+          <p className="mt-1" style={{ color: colors.textSecondary }}>Manage vehicles, drivers, and bookings</p>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20"
-        >
+        <AdminGlassCard delay={0}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-              <Truck className="w-6 h-6 text-amber-600" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primaryLight }}>
+              <Truck className="w-6 h-6" style={{ color: colors.primary }} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#2C5F7C]">{stats.totalVehicles}</div>
-              <div className="text-sm text-[#4A7C99]">Total Vehicles</div>
+              <div className="text-2xl font-bold" style={{ color: colors.textPrimary }}>{stats.totalVehicles}</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>Total Vehicles</div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20"
-        >
+        <AdminGlassCard delay={0.1}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Users className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primaryLight }}>
+              <Users className="w-6 h-6" style={{ color: colors.primary }} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#2C5F7C]">{stats.totalDrivers}</div>
-              <div className="text-sm text-[#4A7C99]">Total Drivers</div>
+              <div className="text-2xl font-bold" style={{ color: colors.textPrimary }}>{stats.totalDrivers}</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>Total Drivers</div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20"
-        >
+        <AdminGlassCard delay={0.2}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primaryLight }}>
+              <Calendar className="w-6 h-6" style={{ color: colors.primary }} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#2C5F7C]">{stats.totalBookings}</div>
-              <div className="text-sm text-[#4A7C99]">Total Bookings</div>
+              <div className="text-2xl font-bold" style={{ color: colors.textPrimary }}>{stats.totalBookings}</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>Total Bookings</div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20"
-        >
+        <AdminGlassCard delay={0.3}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-              <IndianRupee className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primaryLight }}>
+              <IndianRupee className="w-6 h-6" style={{ color: colors.primary }} />
             </div>
             <div>
-              <div className="text-2xl font-bold text-[#2C5F7C]">₹{stats.totalRevenue?.toLocaleString()}</div>
-              <div className="text-sm text-[#4A7C99]">Total Revenue</div>
+              <div className="text-2xl font-bold" style={{ color: colors.textPrimary }}>₹{stats.totalRevenue?.toLocaleString()}</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>Total Revenue</div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 bg-white/40 backdrop-blur-xl rounded-xl p-1 border border-[#5B9FBF]/20">
-        {['vehicles', 'drivers', 'bookings'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all capitalize ${
-              activeTab === tab
-                ? 'bg-[#5B9FBF] text-white shadow-lg'
-                : 'text-[#4A7C99] hover:text-[#2C5F7C]'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <AdminGlassCard noPadding className="p-1">
+        <div className="flex space-x-1">
+          {['vehicles', 'drivers', 'bookings'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="flex-1 py-3 px-4 rounded-lg font-medium transition-all capitalize"
+              style={{
+                backgroundColor: activeTab === tab ? colors.primary : 'transparent',
+                color: activeTab === tab ? colors.background : colors.textSecondary
+              }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </AdminGlassCard>
 
       {/* Content */}
-      <motion.div
-        key={activeTab}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white/60 backdrop-blur-xl rounded-2xl border border-[#5B9FBF]/20"
-      >
+      <AdminGlassCard key={activeTab} noPadding>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
         {/* Vehicles Tab */}
         {activeTab === 'vehicles' && (
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#2C5F7C]">Vehicles</h2>
+              <h2 className="text-xl font-semibold" style={{ color: colors.textPrimary }}>Vehicles</h2>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#5B9FBF]/20">
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Type</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Price Options</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Status</th>
+                  <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Name</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Type</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Price Options</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {vehicles.map((vehicle) => (
-                    <tr key={vehicle._id} className="border-b border-[#5B9FBF]/10">
-                      <td className="py-3 px-4 text-[#2C5F7C] font-medium">{vehicle.name}</td>
-                      <td className="py-3 px-4 text-[#4A7C99] capitalize">{vehicle.type.replace('-', ' ')}</td>
-                      <td className="py-3 px-4 text-[#4A7C99]">{vehicle.priceOptions.length} options</td>
+                    <tr key={vehicle._id} style={{ borderBottom: `1px solid ${colors.borderLight}` }}>
+                      <td className="py-3 px-4 font-medium" style={{ color: colors.textPrimary }}>{vehicle.name}</td>
+                      <td className="py-3 px-4 capitalize" style={{ color: colors.textSecondary }}>{vehicle.type.replace('-', ' ')}</td>
+                      <td className="py-3 px-4" style={{ color: colors.textSecondary }}>{vehicle.priceOptions.length} options</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           vehicle.availability ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -259,27 +244,27 @@ const TransportManagement = () => {
         {activeTab === 'drivers' && (
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#2C5F7C]">Drivers</h2>
+              <h2 className="text-xl font-semibold" style={{ color: colors.textPrimary }}>Drivers</h2>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#5B9FBF]/20">
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Driver ID</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Phone</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Vehicle Type</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Status</th>
+                  <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Name</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Driver ID</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Phone</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Vehicle Type</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {drivers.map((driver) => (
-                    <tr key={driver._id} className="border-b border-[#5B9FBF]/10">
-                      <td className="py-3 px-4 text-[#2C5F7C] font-medium">{driver.name}</td>
-                      <td className="py-3 px-4 text-[#4A7C99]">{driver.driverId}</td>
-                      <td className="py-3 px-4 text-[#4A7C99]">{driver.phone}</td>
-                      <td className="py-3 px-4 text-[#4A7C99] capitalize">{driver.vehicleType}</td>
+                    <tr key={driver._id} style={{ borderBottom: `1px solid ${colors.borderLight}` }}>
+                      <td className="py-3 px-4 font-medium" style={{ color: colors.textPrimary }}>{driver.name}</td>
+                      <td className="py-3 px-4" style={{ color: colors.textSecondary }}>{driver.driverId}</td>
+                      <td className="py-3 px-4" style={{ color: colors.textSecondary }}>{driver.phone}</td>
+                      <td className="py-3 px-4 capitalize" style={{ color: colors.textSecondary }}>{driver.vehicleType}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           driver.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -299,8 +284,8 @@ const TransportManagement = () => {
         {activeTab === 'bookings' && (
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-[#2C5F7C]">Bookings</h2>
-              <div className="flex items-center gap-2 text-sm text-[#4A7C99]">
+              <h2 className="text-xl font-semibold" style={{ color: colors.textPrimary }}>Bookings</h2>
+              <div className="flex items-center gap-2 text-sm" style={{ color: colors.textSecondary }}>
                 <Clock className="w-4 h-4" />
                 <span>Pending: {stats.pendingBookings}</span>
               </div>
@@ -309,22 +294,22 @@ const TransportManagement = () => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#5B9FBF]/20">
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Booking ID</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Farmer</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Vehicle</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Amount</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Status</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2C5F7C]">Actions</th>
+                  <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Booking ID</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Farmer</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Vehicle</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Amount</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Status</th>
+                    <th className="text-left py-3 px-4 font-semibold" style={{ color: colors.textPrimary }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {bookings.map((booking) => (
-                    <tr key={booking._id} className="border-b border-[#5B9FBF]/10">
-                      <td className="py-3 px-4 text-[#2C5F7C] font-medium">{booking.bookingId}</td>
-                      <td className="py-3 px-4 text-[#4A7C99]">{booking.farmerName}</td>
-                      <td className="py-3 px-4 text-[#4A7C99]">{booking.vehicleId?.name}</td>
-                      <td className="py-3 px-4 text-[#4A7C99]">₹{booking.finalAmount}</td>
+                    <tr key={booking._id} style={{ borderBottom: `1px solid ${colors.borderLight}` }}>
+                      <td className="py-3 px-4 font-medium" style={{ color: colors.textPrimary }}>{booking.bookingId}</td>
+                      <td className="py-3 px-4" style={{ color: colors.textSecondary }}>{booking.farmerName}</td>
+                      <td className="py-3 px-4" style={{ color: colors.textSecondary }}>{booking.vehicleId?.name}</td>
+                      <td className="py-3 px-4" style={{ color: colors.textSecondary }}>₹{booking.finalAmount}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
                           {booking.status}
@@ -377,7 +362,8 @@ const TransportManagement = () => {
             </div>
           </div>
         )}
-      </motion.div>
+        </motion.div>
+      </AdminGlassCard>
 
       {/* Modal for Add/Edit */}
       {showModal && (

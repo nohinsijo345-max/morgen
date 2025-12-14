@@ -12,8 +12,11 @@ import {
   AlertCircle
 } from 'lucide-react';
 import axios from 'axios';
+import { useAdminTheme } from '../../context/AdminThemeContext';
+import AdminGlassCard from '../../components/AdminGlassCard';
 
 const ProfileRequests = () => {
+  const { colors } = useAdminTheme();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(null);
@@ -129,47 +132,40 @@ const ProfileRequests = () => {
 
       {/* Requests List */}
       {requests.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-white/40 backdrop-blur-xl rounded-3xl p-12 border border-[#5B9FBF]/20 shadow-xl text-center"
-        >
-          <Clock className="w-20 h-20 text-[#4A7C99]/30 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-[#2C5F7C] mb-2">No Pending Requests</h3>
-          <p className="text-[#4A7C99]">All profile change requests have been reviewed</p>
-        </motion.div>
+        <AdminGlassCard className="text-center py-12">
+          <Clock className="w-20 h-20 mx-auto mb-4" style={{ color: colors.textMuted }} />
+          <h3 className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>No Pending Requests</h3>
+          <p style={{ color: colors.textSecondary }}>All profile change requests have been reviewed</p>
+        </AdminGlassCard>
       ) : (
         <div className="space-y-6">
           {requests.map((request, index) => (
-            <motion.div
+            <AdminGlassCard
               key={request._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white/40 backdrop-blur-xl rounded-3xl p-6 border border-[#5B9FBF]/20 shadow-xl"
+              delay={index * 0.1}
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-[#5B9FBF] rounded-xl flex items-center justify-center shadow-lg">
-                    <User className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg" style={{ backgroundColor: colors.primary }}>
+                    <User className="w-7 h-7" style={{ color: colors.background }} />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-[#2C5F7C]">
+                    <h3 className="text-xl font-bold" style={{ color: colors.textPrimary }}>
                       {request.farmer?.name || 'Unknown Farmer'}
                     </h3>
-                    <p className="text-sm text-[#4A7C99]">
+                    <p className="text-sm" style={{ color: colors.textSecondary }}>
                       Farmer ID: {request.farmer?.farmerId || 'N/A'}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Calendar className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-xs text-[#4A7C99]">
+                      <Calendar className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-xs" style={{ color: colors.textSecondary }}>
                         Requested: {new Date(request.requestedAt).toLocaleDateString()}
                       </span>
                     </div>
                     {/* Request Summary */}
-                    <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-                      <p className="text-xs font-medium text-blue-700">
+                    <div className="mt-2 p-2 rounded-lg" style={{ backgroundColor: colors.primaryLight }}>
+                      <p className="text-xs font-medium" style={{ color: colors.primary }}>
                         Requesting changes to: {Object.keys(request.changes || {}).filter(field => {
                           // Filter out empty cropTypes arrays
                           if (field === 'cropTypes' && Array.isArray(request.changes[field]) && request.changes[field].length === 0) {
@@ -196,70 +192,70 @@ const ProfileRequests = () => {
               {/* Changes Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {request.changes.name && (
-                  <div className="bg-white/30 rounded-xl p-4">
+                  <div className="rounded-xl p-4" style={{ backgroundColor: colors.cardBackground }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <User className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-sm font-medium text-[#4A7C99]">Name</span>
+                      <User className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>Name</span>
                     </div>
-                    <div className="text-[#2C5F7C] font-semibold">{request.changes.name}</div>
+                    <div className="font-semibold" style={{ color: colors.textPrimary }}>{request.changes.name}</div>
                   </div>
                 )}
 
                 {request.changes.state && (
-                  <div className="bg-white/30 rounded-xl p-4">
+                  <div className="rounded-xl p-4" style={{ backgroundColor: colors.cardBackground }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-sm font-medium text-[#4A7C99]">State</span>
+                      <MapPin className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>State</span>
                     </div>
-                    <div className="text-[#2C5F7C] font-semibold">{request.changes.state}</div>
+                    <div className="font-semibold" style={{ color: colors.textPrimary }}>{request.changes.state}</div>
                   </div>
                 )}
 
                 {request.changes.district && (
-                  <div className="bg-white/30 rounded-xl p-4">
+                  <div className="rounded-xl p-4" style={{ backgroundColor: colors.cardBackground }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-sm font-medium text-[#4A7C99]">District</span>
+                      <MapPin className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>District</span>
                     </div>
-                    <div className="text-[#2C5F7C] font-semibold">{request.changes.district}</div>
+                    <div className="font-semibold" style={{ color: colors.textPrimary }}>{request.changes.district}</div>
                   </div>
                 )}
 
                 {request.changes.city && (
-                  <div className="bg-white/30 rounded-xl p-4">
+                  <div className="rounded-xl p-4" style={{ backgroundColor: colors.cardBackground }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-sm font-medium text-[#4A7C99]">City</span>
+                      <MapPin className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>City</span>
                     </div>
-                    <div className="text-[#2C5F7C] font-semibold">{request.changes.city}</div>
+                    <div className="font-semibold" style={{ color: colors.textPrimary }}>{request.changes.city}</div>
                   </div>
                 )}
 
                 {request.changes.pinCode && (
-                  <div className="bg-white/30 rounded-xl p-4">
+                  <div className="rounded-xl p-4" style={{ backgroundColor: colors.cardBackground }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-sm font-medium text-[#4A7C99]">PIN Code</span>
+                      <MapPin className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>PIN Code</span>
                     </div>
-                    <div className="text-[#2C5F7C] font-semibold">{request.changes.pinCode}</div>
+                    <div className="font-semibold" style={{ color: colors.textPrimary }}>{request.changes.pinCode}</div>
                   </div>
                 )}
 
                 {request.changes.landSize && (
-                  <div className="bg-white/30 rounded-xl p-4">
+                  <div className="rounded-xl p-4" style={{ backgroundColor: colors.cardBackground }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <Home className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-sm font-medium text-[#4A7C99]">Land Size</span>
+                      <Home className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>Land Size</span>
                     </div>
-                    <div className="text-[#2C5F7C] font-semibold">{request.changes.landSize} acres</div>
+                    <div className="font-semibold" style={{ color: colors.textPrimary }}>{request.changes.landSize} acres</div>
                   </div>
                 )}
 
                 {request.changes.cropTypes && request.changes.cropTypes.length > 0 && (
-                  <div className="bg-white/30 rounded-xl p-4 md:col-span-2">
+                  <div className="rounded-xl p-4 md:col-span-2" style={{ backgroundColor: colors.cardBackground }}>
                     <div className="flex items-center gap-2 mb-2">
-                      <Wheat className="w-4 h-4 text-[#4A7C99]" />
-                      <span className="text-sm font-medium text-[#4A7C99]">Crop Types</span>
+                      <Wheat className="w-4 h-4" style={{ color: colors.textSecondary }} />
+                      <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>Crop Types</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {request.changes.cropTypes.map((crop, idx) => (
@@ -299,7 +295,7 @@ const ProfileRequests = () => {
                   {processing === request._id ? 'Processing...' : 'Reject'}
                 </motion.button>
               </div>
-            </motion.div>
+            </AdminGlassCard>
           ))}
         </div>
       )}

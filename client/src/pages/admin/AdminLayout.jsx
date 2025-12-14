@@ -15,6 +15,8 @@ import {
   Headphones,
   ArrowLeft
 } from 'lucide-react';
+import { useAdminTheme } from '../../context/AdminThemeContext';
+import AdminNeumorphicThemeToggle from '../../components/AdminNeumorphicThemeToggle';
 
 const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -24,6 +26,7 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
   const warningTimeoutRef = useRef(null);
   const countdownRef = useRef(null);
   const lastActivityRef = useRef(Date.now());
+  const { isDarkMode, colors } = useAdminTheme();
   
   // Session timeout settings (in milliseconds)
   const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
@@ -165,32 +168,41 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#D4E7F0] via-[#B8D8E8] to-[#A0C4D9]">
+    <div 
+      className="min-h-screen transition-colors duration-300"
+      style={{ backgroundColor: colors.background }}
+    >
       {/* Animated Background Pattern */}
       <div className="fixed inset-0 pointer-events-none opacity-5">
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(96, 165, 250, 0.3) 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 2px 2px, ${colors.accent} 1px, transparent 0)`,
           backgroundSize: '40px 40px'
         }} />
       </div>
 
-      {/* Floating orbs */}
+      {/* Floating orbs with blue tint */}
       <motion.div
         animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="fixed top-20 left-20 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"
+        className="fixed top-20 left-20 w-72 h-72 rounded-full blur-3xl pointer-events-none"
+        style={{ backgroundColor: `${colors.accent}15` }}
       />
       <motion.div
         animate={{ y: [0, 20, 0], x: [0, -10, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="fixed bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"
+        className="fixed bottom-20 right-20 w-96 h-96 rounded-full blur-3xl pointer-events-none"
+        style={{ backgroundColor: `${colors.primary}15` }}
       />
 
       {/* Header */}
       <motion.header
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative z-30 bg-white/40 backdrop-blur-xl border-b border-[#5B9FBF]/20 shadow-lg"
+        className="relative z-30 backdrop-blur-xl border-b shadow-lg transition-colors duration-300"
+        style={{ 
+          backgroundColor: colors.glassBackground,
+          borderColor: colors.glassBorder
+        }}
       >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
@@ -198,12 +210,13 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden p-2 hover:bg-[#082829]/5 rounded-lg transition-colors"
+                className="lg:hidden p-2 rounded-lg transition-colors"
+                style={{ color: colors.textPrimary }}
               >
                 {sidebarOpen ? (
-                  <X className="w-6 h-6 text-[#082829]" />
+                  <X className="w-6 h-6" />
                 ) : (
-                  <Menu className="w-6 h-6 text-[#082829]" />
+                  <Menu className="w-6 h-6" />
                 )}
               </button>
 
@@ -212,31 +225,42 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={onBack}
-                  className="p-2 hover:bg-[#082829]/5 rounded-lg transition-colors"
+                  className="p-2 rounded-lg transition-colors"
+                  style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
                 >
-                  <ArrowLeft className="w-5 h-5 text-[#082829]" />
+                  <ArrowLeft className="w-5 h-5" />
                 </motion.button>
               )}
               
               <div className="flex items-center gap-3">
                 <img src="/admin-logo.png" alt="Morgen Admin" className="h-10 w-auto rounded-xl shadow-lg" />
                 <div>
-                  <h1 className="text-xl font-bold text-[#2C5F7C]">Morgen Admin</h1>
-                  <p className="text-xs text-[#4A7C99]">Management Panel</p>
+                  <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Morgen Admin</h1>
+                  <p className="text-xs" style={{ color: colors.textSecondary }}>Management Panel</p>
                 </div>
               </div>
             </div>
 
-            {/* Logout Button */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onLogout}
-              className="bg-[#5B9FBF] hover:bg-[#4A8CAF] rounded-xl px-4 py-2 flex items-center gap-2 transition-all shadow-lg"
-            >
-              <LogOut className="w-4 h-4 text-white" />
-              <span className="text-white font-semibold text-sm">Logout</span>
-            </motion.button>
+            {/* Right Section */}
+            <div className="flex items-center gap-4">
+              {/* Modern Theme Toggle */}
+              <AdminNeumorphicThemeToggle size="sm" />
+
+              {/* Logout Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onLogout}
+                className="rounded-xl px-4 py-2 flex items-center gap-2 transition-all shadow-lg"
+                style={{ 
+                  backgroundColor: colors.primary, 
+                  color: isDarkMode ? '#ffffff' : '#ffffff' 
+                }}
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="font-semibold text-sm">Logout</span>
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -250,7 +274,11 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: -300, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed lg:sticky top-0 left-0 h-screen w-64 bg-white/40 backdrop-blur-xl border-r border-[#5B9FBF]/20 shadow-xl z-20 pt-20"
+              className="fixed lg:sticky top-0 left-0 h-screen w-64 backdrop-blur-xl shadow-xl z-20 pt-20 transition-colors duration-300"
+              style={{ 
+                backgroundColor: colors.glassBackground,
+                borderRight: `1px solid ${colors.glassBorder}`
+              }}
             >
               <nav className="p-4 space-y-2">
                 {menuItems.map((item) => {
@@ -263,11 +291,24 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
                       whileHover={{ x: 5 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => onNavigate(item.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                        isActive
-                          ? 'bg-[#5B9FBF] text-white shadow-lg'
-                          : 'text-[#2C5F7C] hover:bg-white/30 hover:text-[#1A4A5F]'
-                      }`}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
+                      style={{
+                        backgroundColor: isActive ? colors.primary : 'transparent',
+                        color: isActive ? '#ffffff' : colors.textSecondary,
+                        boxShadow: isActive ? `0 4px 15px ${colors.primary}40` : 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.backgroundColor = colors.surfaceHover;
+                          e.currentTarget.style.color = colors.textPrimary;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.color = colors.textSecondary;
+                        }
+                      }}
                     >
                       <Icon className="w-5 h-5" />
                       <span className="font-medium">{item.label}</span>
@@ -304,29 +345,36 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-red-200"
+              className="rounded-2xl p-6 max-w-md w-full shadow-2xl transition-colors duration-300"
+              style={{ 
+                backgroundColor: colors.backgroundCard,
+                border: `1px solid ${colors.error}40`
+              }}
             >
               <div className="text-center">
-                <div className="mx-auto flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-                  <AlertTriangle className="w-8 h-8 text-red-600" />
+                <div 
+                  className="mx-auto flex items-center justify-center w-16 h-16 rounded-full mb-4"
+                  style={{ backgroundColor: `${colors.error}20` }}
+                >
+                  <AlertTriangle className="w-8 h-8" style={{ color: colors.error }} />
                 </div>
                 
-                <h3 className="text-xl font-bold text-[#2C5F7C] mb-2">
+                <h3 className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>
                   Session Timeout Warning
                 </h3>
                 
-                <p className="text-[#4A7C99] mb-4">
+                <p className="mb-4" style={{ color: colors.textSecondary }}>
                   Your admin session will expire in:
                 </p>
                 
                 <div className="flex items-center justify-center gap-2 mb-6">
-                  <Clock className="w-5 h-5 text-red-600" />
-                  <span className="text-2xl font-bold text-red-600">
+                  <Clock className="w-5 h-5" style={{ color: colors.error }} />
+                  <span className="text-2xl font-bold" style={{ color: colors.error }}>
                     {formatTime(timeoutCountdown)}
                   </span>
                 </div>
                 
-                <p className="text-sm text-[#4A7C99] mb-6">
+                <p className="text-sm mb-6" style={{ color: colors.textSecondary }}>
                   Click "Stay Logged In" to extend your session, or you will be automatically logged out for security.
                 </p>
                 
@@ -335,7 +383,12 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleLogout}
-                    className="flex-1 px-4 py-2 border border-[#5B9FBF] text-[#5B9FBF] rounded-xl hover:bg-[#5B9FBF]/5 transition-colors"
+                    className="flex-1 px-4 py-2 rounded-xl transition-colors"
+                    style={{ 
+                      border: `1px solid ${colors.accent}`,
+                      color: colors.accent,
+                      backgroundColor: 'transparent'
+                    }}
                   >
                     Logout Now
                   </motion.button>
@@ -344,7 +397,8 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={extendSession}
-                    className="flex-1 px-4 py-2 bg-[#5B9FBF] text-white rounded-xl hover:bg-[#4A8CAF] transition-colors"
+                    className="flex-1 px-4 py-2 text-white rounded-xl transition-colors"
+                    style={{ backgroundColor: colors.primary }}
                   >
                     Stay Logged In
                   </motion.button>

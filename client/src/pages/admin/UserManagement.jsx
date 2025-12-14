@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Send, Search, X, AlertTriangle, Users, ShoppingCart, Globe, Briefcase } from 'lucide-react';
 import axios from 'axios';
+import { useAdminTheme } from '../../context/AdminThemeContext';
+import AdminGlassCard from '../../components/AdminGlassCard';
 
 const UserManagement = () => {
+  const { colors } = useAdminTheme();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -102,7 +105,11 @@ const UserManagement = () => {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-16 h-16 border-4 border-[#5B9FBF]/20 border-t-[#5B9FBF] rounded-full"
+          className="w-16 h-16 border-4 rounded-full"
+          style={{ 
+            borderColor: `${colors.accent}20`,
+            borderTopColor: colors.accent
+          }}
         />
       </div>
     );
@@ -115,9 +122,9 @@ const UserManagement = () => {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between mb-8"
       >
-        <h1 className="text-3xl font-bold text-[#2C5F7C]">User Management</h1>
-        <div className="text-sm text-[#4A7C99]">
-          Total Users: <span className="font-bold text-[#2C5F7C]">{users.length}</span>
+        <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>User Management</h1>
+        <div className="text-sm" style={{ color: colors.textSecondary }}>
+          Total Users: <span className="font-bold" style={{ color: colors.textPrimary }}>{users.length}</span>
         </div>
       </motion.div>
 
@@ -139,21 +146,23 @@ const UserManagement = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setActiveSection(section.id)}
-                className={`p-4 rounded-xl border transition-all ${
-                  isActive
-                    ? 'bg-[#5B9FBF] text-white border-[#5B9FBF] shadow-lg'
-                    : 'bg-white/30 backdrop-blur-xl border-[#5B9FBF]/20 text-[#2C5F7C] hover:bg-white/50'
-                }`}
+                className="p-4 rounded-xl border transition-all backdrop-blur-xl"
+                style={{
+                  backgroundColor: isActive ? colors.primary : colors.glassBackground,
+                  borderColor: isActive ? colors.primary : colors.glassBorder,
+                  color: isActive ? '#ffffff' : colors.textPrimary,
+                  boxShadow: isActive ? `0 4px 15px ${colors.primary}40` : 'none'
+                }}
               >
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                     isActive ? 'bg-white/20' : section.color
                   }`}>
-                    <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white'}`} />
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
                     <div className="font-semibold">{section.label}</div>
-                    <div className={`text-sm ${isActive ? 'text-white/90' : 'text-white/50'}`}>
+                    <div className="text-sm" style={{ opacity: isActive ? 0.9 : 0.6 }}>
                       {section.count} users
                     </div>
                   </div>
@@ -172,13 +181,19 @@ const UserManagement = () => {
         className="mb-6"
       >
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#4A7C99]" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: colors.textMuted }} />
           <input
             type="text"
             placeholder={`Search ${sections.find(s => s.id === activeSection)?.label.toLowerCase()}...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white/40 backdrop-blur-xl border border-[#5B9FBF]/30 rounded-xl text-[#2C5F7C] placeholder-[#4A7C99]/60 focus:outline-none focus:ring-2 focus:ring-[#5B9FBF]"
+            className="w-full pl-12 pr-4 py-3 backdrop-blur-xl rounded-xl focus:outline-none focus:ring-2 transition-colors"
+            style={{ 
+              backgroundColor: colors.surface,
+              border: `1px solid ${colors.border}`,
+              color: colors.textPrimary,
+              '--tw-ring-color': colors.accent
+            }}
           />
         </div>
       </motion.div>
@@ -190,7 +205,7 @@ const UserManagement = () => {
         transition={{ delay: 0.3 }}
         className="mb-4"
       >
-        <h2 className="text-2xl font-bold text-[#2C5F7C] flex items-center gap-3">
+        <h2 className="text-2xl font-bold flex items-center gap-3" style={{ color: colors.textPrimary }}>
           {(() => {
             const section = sections.find(s => s.id === activeSection);
             const Icon = section?.icon;
@@ -200,7 +215,7 @@ const UserManagement = () => {
                   <Icon className="w-4 h-4 text-white" />
                 </div>
                 {section?.label}
-                <span className="text-lg text-[#4A7C99]">({section?.count})</span>
+                <span className="text-lg" style={{ color: colors.textSecondary }}>({section?.count})</span>
               </>
             );
           })()}
@@ -212,37 +227,39 @@ const UserManagement = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white/40 backdrop-blur-xl rounded-3xl border border-[#5B9FBF]/20 shadow-2xl overflow-hidden"
       >
+        <AdminGlassCard className="shadow-2xl overflow-hidden" noPadding>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-[#5B9FBF]/10 border-b border-[#5B9FBF]/20">
+            <thead style={{ backgroundColor: `${colors.accent}10`, borderBottom: `1px solid ${colors.glassBorder}` }}>
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">User</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Phone</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Email</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>User</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Phone</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Email</th>
                 {activeSection === 'farmers' && (
                   <>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Location</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Land Size</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Crops</th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Subsidy</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Location</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Land Size</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Crops</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Subsidy</th>
                   </>
                 )}
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Registered</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-[#2C5F7C]">Last Login</th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-[#2C5F7C]">Actions</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Registered</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold" style={{ color: colors.textPrimary }}>Last Login</th>
+                <th className="px-6 py-4 text-center text-sm font-semibold" style={{ color: colors.textPrimary }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#5B9FBF]/10">
+            <tbody style={{ borderColor: `${colors.glassBorder}` }}>
               {filteredUsers.map((user, index) => (
                 <motion.tr
                   key={user._id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  whileHover={{ backgroundColor: 'rgba(91, 159, 191, 0.05)' }}
                   className="transition-colors"
+                  style={{ borderBottom: `1px solid ${colors.glassBorder}` }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.surfaceHover}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
@@ -250,36 +267,36 @@ const UserManagement = () => {
                         <div className="w-2 h-2 bg-yellow-500 rounded-full" title="Subsidy Requested" />
                       )}
                       <div>
-                        <div className="font-semibold text-[#2C5F7C]">{user.name}</div>
-                        <div className="text-xs text-[#4A7C99]">{user.farmerId || user.role || 'N/A'}</div>
+                        <div className="font-semibold" style={{ color: colors.textPrimary }}>{user.name}</div>
+                        <div className="text-xs" style={{ color: colors.textSecondary }}>{user.farmerId || user.role || 'N/A'}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#4A7C99]">{user.phone}</td>
-                  <td className="px-6 py-4 text-sm text-[#4A7C99]">{user.email || 'N/A'}</td>
+                  <td className="px-6 py-4 text-sm" style={{ color: colors.textSecondary }}>{user.phone}</td>
+                  <td className="px-6 py-4 text-sm" style={{ color: colors.textSecondary }}>{user.email || 'N/A'}</td>
                   {activeSection === 'farmers' && (
                     <>
-                      <td className="px-6 py-4 text-sm text-[#4A7C99]">
+                      <td className="px-6 py-4 text-sm" style={{ color: colors.textSecondary }}>
                         <div>
                           <div>{user.city || 'N/A'}, {user.district || 'N/A'}</div>
                           {user.pinCode && (
-                            <div className="text-xs text-[#4A7C99]/70">PIN: {user.pinCode}</div>
+                            <div className="text-xs" style={{ color: colors.textMuted }}>PIN: {user.pinCode}</div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#4A7C99]">
+                      <td className="px-6 py-4 text-sm" style={{ color: colors.textSecondary }}>
                         {user.landSize ? `${user.landSize} acres` : 'N/A'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#4A7C99]">
+                      <td className="px-6 py-4 text-sm" style={{ color: colors.textSecondary }}>
                         {user.cropTypes && user.cropTypes.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
                             {user.cropTypes.slice(0, 2).map((crop, i) => (
-                              <span key={i} className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">
+                              <span key={i} className="px-2 py-1 rounded text-xs" style={{ backgroundColor: `${colors.success}20`, color: colors.success }}>
                                 {crop}
                               </span>
                             ))}
                             {user.cropTypes.length > 2 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
+                              <span className="px-2 py-1 rounded text-xs" style={{ backgroundColor: colors.surface, color: colors.textMuted }}>
                                 +{user.cropTypes.length - 2}
                               </span>
                             )}
@@ -288,19 +305,19 @@ const UserManagement = () => {
                       </td>
                       <td className="px-6 py-4 text-sm">
                         {user.subsidyRequested ? (
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                          <span className="px-2 py-1 rounded-full text-xs font-medium" style={{ backgroundColor: `${colors.warning}20`, color: colors.warning }}>
                             {user.subsidyStatus || 'Pending'}
                           </span>
                         ) : (
-                          <span className="text-[#4A7C99]/60">No</span>
+                          <span style={{ color: colors.textMuted }}>No</span>
                         )}
                       </td>
                     </>
                   )}
-                  <td className="px-6 py-4 text-sm text-[#4A7C99]">
+                  <td className="px-6 py-4 text-sm" style={{ color: colors.textSecondary }}>
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 text-sm text-[#4A7C99]">
+                  <td className="px-6 py-4 text-sm" style={{ color: colors.textSecondary }}>
                     {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
                   </td>
                   <td className="px-6 py-4">
@@ -309,7 +326,8 @@ const UserManagement = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setUpdateModal({ show: true, user })}
-                        className="p-2 bg-[#5B9FBF] hover:bg-[#4A8CAF] text-white rounded-lg transition-colors"
+                        className="p-2 text-white rounded-lg transition-colors"
+                        style={{ backgroundColor: colors.accent }}
                         title="Send Update"
                       >
                         <Send className="w-4 h-4" />
@@ -318,7 +336,8 @@ const UserManagement = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setDeleteModal({ show: true, user })}
-                        className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                        className="p-2 text-white rounded-lg transition-colors"
+                        style={{ backgroundColor: colors.error }}
                         title="Delete User"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -331,11 +350,12 @@ const UserManagement = () => {
           </table>
         </div>
 
-        {filteredUsers.length === 0 && (
-          <div className="text-center py-12 text-[#4A7C99]">
-            No {sections.find(s => s.id === activeSection)?.label.toLowerCase()} found
-          </div>
-        )}
+          {filteredUsers.length === 0 && (
+            <div className="text-center py-12" style={{ color: colors.textSecondary }}>
+              No {sections.find(s => s.id === activeSection)?.label.toLowerCase()} found
+            </div>
+          )}
+        </AdminGlassCard>
       </motion.div>
 
       {/* Delete Confirmation Modal */}
@@ -353,30 +373,36 @@ const UserManagement = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
+              className="rounded-3xl p-8 max-w-md w-full shadow-2xl"
+              style={{ 
+                backgroundColor: colors.backgroundCard,
+                border: `1px solid ${colors.glassBorder}`
+              }}
             >
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6 text-red-600" />
+                <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: `${colors.error}20` }}>
+                  <AlertTriangle className="w-6 h-6" style={{ color: colors.error }} />
                 </div>
-                <h2 className="text-2xl font-bold text-[#2C5F7C]">Delete User</h2>
+                <h2 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Delete User</h2>
               </div>
               
-              <p className="text-[#4A7C99] mb-6">
-                Are you sure you want to delete <span className="font-bold">{deleteModal.user?.name}</span>? 
+              <p className="mb-6" style={{ color: colors.textSecondary }}>
+                Are you sure you want to delete <span className="font-bold" style={{ color: colors.textPrimary }}>{deleteModal.user?.name}</span>? 
                 This action cannot be undone.
               </p>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => setDeleteModal({ show: false, user: null })}
-                  className="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-[#2C5F7C] rounded-xl font-semibold transition-colors"
+                  className="flex-1 px-4 py-3 rounded-xl font-semibold transition-colors"
+                  style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleDelete(deleteModal.user._id)}
-                  className="flex-1 px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-colors"
+                  className="flex-1 px-4 py-3 text-white rounded-xl font-semibold transition-colors"
+                  style={{ backgroundColor: colors.error }}
                 >
                   Delete
                 </button>
@@ -401,22 +427,27 @@ const UserManagement = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
+              className="rounded-3xl p-8 max-w-md w-full shadow-2xl"
+              style={{ 
+                backgroundColor: colors.backgroundCard,
+                border: `1px solid ${colors.glassBorder}`
+              }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-[#2C5F7C]">Send Update</h2>
+                <h2 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Send Update</h2>
                 <button
                   onClick={() => setUpdateModal({ show: false, user: null })}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 rounded-lg transition-colors"
+                  style={{ color: colors.textPrimary }}
                 >
-                  <X className="w-5 h-5 text-[#2C5F7C]" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
               
               <div className="mb-4">
-                <p className="text-sm text-[#4A7C99] mb-2">Sending to:</p>
-                <p className="font-semibold text-[#2C5F7C]">{updateModal.user?.name}</p>
-                <p className="text-sm text-[#4A7C99]">{updateModal.user?.email}</p>
+                <p className="text-sm mb-2" style={{ color: colors.textSecondary }}>Sending to:</p>
+                <p className="font-semibold" style={{ color: colors.textPrimary }}>{updateModal.user?.name}</p>
+                <p className="text-sm" style={{ color: colors.textSecondary }}>{updateModal.user?.email}</p>
               </div>
 
               <textarea
@@ -424,20 +455,28 @@ const UserManagement = () => {
                 onChange={(e) => setUpdateMessage(e.target.value)}
                 placeholder="Enter your message..."
                 rows={5}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-[#2C5F7C] placeholder-[#4A7C99]/60 focus:outline-none focus:ring-2 focus:ring-[#5B9FBF]/50 resize-none mb-4"
+                className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 resize-none mb-4"
+                style={{ 
+                  backgroundColor: colors.surface,
+                  border: `1px solid ${colors.border}`,
+                  color: colors.textPrimary,
+                  '--tw-ring-color': colors.accent
+                }}
               />
 
               <div className="flex gap-3">
                 <button
                   onClick={() => setUpdateModal({ show: false, user: null })}
-                  className="flex-1 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-[#2C5F7C] rounded-xl font-semibold transition-colors"
+                  className="flex-1 px-4 py-3 rounded-xl font-semibold transition-colors"
+                  style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSendUpdate}
                   disabled={sending}
-                  className="flex-1 px-4 py-3 bg-[#5B9FBF] hover:bg-[#4A8CAF] text-white rounded-xl font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-3 text-white rounded-xl font-semibold transition-colors disabled:opacity-50"
+                  style={{ backgroundColor: colors.accent }}
                 >
                   {sending ? 'Sending...' : 'Send'}
                 </button>

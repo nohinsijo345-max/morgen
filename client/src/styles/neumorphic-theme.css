@@ -1,0 +1,155 @@
+/* Neumorphic Theme Toggle Global Styles */
+
+/* Body background transitions for neumorphic theme */
+body {
+  transition: background-color 0.5s ease-in-out;
+}
+
+/* Light mode background */
+body:not(.dark) {
+  background-color: #E0E5EC !important;
+}
+
+/* Dark mode background */
+body.dark {
+  background-color: #2d323b !important;
+}
+
+/* Admin portal backgrounds */
+body.admin-portal:not(.dark) {
+  background-color: #f0f4f8 !important;
+}
+
+body.admin-portal.dark {
+  background-color: #0a0f1a !important;
+}
+
+/* Prevent text selection on toggle components */
+.neumorphic-toggle {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Smooth transitions for all neumorphic elements */
+.neumorphic-element {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom shadow utilities for neumorphic design */
+.shadow-neumorphic-light {
+  box-shadow: 
+    8px 8px 16px #bec3ca,
+    -8px -8px 16px #ffffff;
+}
+
+.shadow-neumorphic-dark {
+  box-shadow: 
+    8px 8px 16px #1a1e24,
+    -8px -8px 16px #404752;
+}
+
+.shadow-neumorphic-inset-light {
+  box-shadow: 
+    inset 8px 8px 16px #bec3ca,
+    inset -8px -8px 16px #ffffff;
+}
+
+.shadow-neumorphic-inset-dark {
+  box-shadow: 
+    inset 8px 8px 16px #1a1e24,
+    inset -8px -8px 16px #404752;
+}
+
+/* Admin neumorphic shadows */
+.shadow-neumorphic-admin-light {
+  box-shadow: 
+    8px 8px 16px #d1d9e0,
+    -8px -8px 16px #ffffff;
+}
+
+.shadow-neumorphic-admin-dark {
+  box-shadow: 
+    8px 8px 16px #060a12,
+    -8px -8px 16px #0e1422;
+}
+
+.shadow-neumorphic-admin-inset-light {
+  box-shadow: 
+    inset 8px 8px 16px #d1d9e0,
+    inset -8px -8px 16px #ffffff;
+}
+
+.shadow-neumorphic-admin-inset-dark {
+  box-shadow: 
+    inset 8px 8px 16px #060a12,
+    inset -8px -8px 16px #0e1422;
+}
+
+/* Hover effects for neumorphic elements */
+.neumorphic-hover:hover {
+  transform: translateY(-1px);
+}
+
+/* Focus styles for accessibility */
+.neumorphic-toggle:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Animation keyframes for smooth transitions */
+@keyframes neumorphic-slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100% + 0.5rem));
+  }
+}
+
+/* Ensure proper knob positioning */
+.neumorphic-knob {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neumorphic-knob.dark {
+  transform: translateX(calc(100% + 0.5rem));
+}
+
+.neumorphic-knob.light {
+  transform: translateX(0);
+}
+
+@keyframes neumorphic-icon-rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) rotate(45deg) scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(90deg) scale(0.75);
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .neumorphic-toggle {
+    transform: scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neumorphic-element,
+  .neumorphic-toggle * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

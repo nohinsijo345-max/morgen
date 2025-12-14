@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Image as ImageIcon, Save, Upload, X } from 'lucide-react';
 import axios from 'axios';
+import { useAdminTheme } from '../../context/AdminThemeContext';
 
 const ImageSettings = () => {
+  const { colors } = useAdminTheme();
   const [images, setImages] = useState({
     loginPage: '',
     registerPage: '',
@@ -150,7 +152,8 @@ const ImageSettings = () => {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-16 h-16 border-4 border-[#5B9FBF]/20 border-t-[#5B9FBF] rounded-full"
+          className="w-16 h-16 border-4 rounded-full"
+          style={{ borderColor: `${colors.primary}20`, borderTopColor: colors.primary }}
         />
       </div>
     );
@@ -164,15 +167,18 @@ const ImageSettings = () => {
         className="flex items-center justify-between mb-8"
       >
         <div>
-          <h1 className="text-3xl font-bold text-[#2C5F7C]">Image Settings</h1>
-          <p className="text-sm text-[#4A7C99] mt-1">Upload images for login, register, and forgot password pages</p>
+          <h1 className="text-3xl font-bold" style={{ color: colors.textPrimary }}>Image Settings</h1>
+          <p className="text-sm mt-1" style={{ color: colors.textSecondary }}>Upload images for login, register, and forgot password pages</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleSave}
           disabled={saving || !Object.values(selectedFiles).some(f => f !== null)}
-          className="bg-[#5B9FBF] hover:bg-[#4A8CAF] text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-3 rounded-xl font-semibold flex items-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = colors.primaryHover}
+          onMouseLeave={(e) => e.target.style.backgroundColor = colors.primary}
         >
           <Save className="w-5 h-5" />
           {saving ? 'Saving...' : 'Save Changes'}
@@ -186,29 +192,40 @@ const ImageSettings = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white/40 backdrop-blur-xl rounded-3xl p-6 border border-[#5B9FBF]/20 shadow-2xl"
+            className="backdrop-blur-xl rounded-3xl p-6 border shadow-2xl"
+            style={{ 
+              backgroundColor: colors.glassBackground, 
+              borderColor: colors.glassBorder 
+            }}
           >
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-12 h-12 bg-[#5B9FBF] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0"
+                   style={{ backgroundColor: colors.primary }}>
                 <ImageIcon className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-[#2C5F7C] mb-1">{field.label}</h3>
-                <p className="text-sm text-[#4A7C99]">{field.description}</p>
+                <h3 className="text-xl font-bold mb-1" style={{ color: colors.textPrimary }}>{field.label}</h3>
+                <p className="text-sm" style={{ color: colors.textSecondary }}>{field.description}</p>
               </div>
             </div>
 
             <div className="space-y-4">
               {/* File Upload */}
               <div>
-                <label className="block text-sm font-semibold text-[#2C5F7C] mb-2">
+                <label className="block text-sm font-semibold mb-2" style={{ color: colors.textPrimary }}>
                   Upload Image
                 </label>
                 <div className="flex gap-3">
                   <label className="flex-1 cursor-pointer">
-                    <div className="flex items-center justify-center gap-2 px-4 py-3 bg-[#5B9FBF]/10 hover:bg-[#5B9FBF]/20 border-2 border-dashed border-[#5B9FBF]/30 rounded-xl transition-all">
-                      <Upload className="w-5 h-5 text-[#5B9FBF]" />
-                      <span className="text-[#2C5F7C] font-medium">
+                    <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-xl transition-all"
+                         style={{ 
+                           backgroundColor: `${colors.primary}10`, 
+                           borderColor: `${colors.primary}30` 
+                         }}
+                         onMouseEnter={(e) => e.target.style.backgroundColor = `${colors.primary}20`}
+                         onMouseLeave={(e) => e.target.style.backgroundColor = `${colors.primary}10`}>
+                      <Upload className="w-5 h-5" style={{ color: colors.primary }} />
+                      <span className="font-medium" style={{ color: colors.textPrimary }}>
                         {selectedFiles[field.key] ? selectedFiles[field.key].name : 'Choose Image'}
                       </span>
                     </div>
@@ -224,13 +241,20 @@ const ImageSettings = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleRemoveFile(field.key)}
-                      className="px-4 py-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl text-red-600"
+                      className="px-4 py-3 border rounded-xl"
+                      style={{ 
+                        backgroundColor: `${colors.error}10`, 
+                        borderColor: `${colors.error}30`,
+                        color: colors.error
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = `${colors.error}20`}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = `${colors.error}10`}
                     >
                       <X className="w-5 h-5" />
                     </motion.button>
                   )}
                 </div>
-                <p className="text-xs text-[#4A7C99] mt-2">
+                <p className="text-xs mt-2" style={{ color: colors.textSecondary }}>
                   Supported formats: JPG, PNG, WebP • Max size: 5MB
                 </p>
               </div>
@@ -238,10 +262,11 @@ const ImageSettings = () => {
               {/* Preview */}
               {previews[field.key] && (
                 <div>
-                  <label className="block text-sm font-semibold text-[#2C5F7C] mb-2">
+                  <label className="block text-sm font-semibold mb-2" style={{ color: colors.textPrimary }}>
                     Preview
                   </label>
-                  <div className="relative w-full h-64 bg-[#5B9FBF]/5 rounded-xl overflow-hidden">
+                  <div className="relative w-full h-64 rounded-xl overflow-hidden border"
+                       style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
                     <img
                       src={previews[field.key]}
                       alt={field.label}
@@ -251,7 +276,8 @@ const ImageSettings = () => {
                         e.target.nextSibling.style.display = 'flex';
                       }}
                     />
-                    <div className="hidden absolute inset-0 items-center justify-center text-[#4A7C99] bg-[#5B9FBF]/5">
+                    <div className="hidden absolute inset-0 items-center justify-center"
+                         style={{ color: colors.textMuted, backgroundColor: colors.surface }}>
                       <div className="text-center">
                         <ImageIcon className="w-12 h-12 mx-auto mb-2" />
                         <p className="text-sm">Failed to load image</p>
@@ -270,10 +296,14 @@ const ImageSettings = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="mt-8 bg-[#5B9FBF]/10 backdrop-blur-xl rounded-3xl p-6 border border-[#5B9FBF]/30"
+        className="mt-8 backdrop-blur-xl rounded-3xl p-6 border"
+        style={{ 
+          backgroundColor: `${colors.primary}10`, 
+          borderColor: `${colors.primary}30` 
+        }}
       >
-        <h3 className="text-lg font-bold text-[#2C5F7C] mb-3">📝 Instructions</h3>
-        <ul className="space-y-2 text-sm text-[#4A7C99]">
+        <h3 className="text-lg font-bold mb-3" style={{ color: colors.textPrimary }}>📝 Instructions</h3>
+        <ul className="space-y-2 text-sm" style={{ color: colors.textSecondary }}>
           <li>• Select high-quality images from your device</li>
           <li>• Recommended image dimensions: 1920x1080 or higher</li>
           <li>• Images should be relevant to farming/agriculture</li>

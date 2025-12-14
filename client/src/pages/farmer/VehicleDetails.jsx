@@ -14,12 +14,16 @@ import {
   Shield
 } from 'lucide-react';
 import axios from 'axios';
+import { useTheme } from '../../context/ThemeContext';
+import FarmerHeader from '../../components/FarmerHeader';
+import GlassCard from '../../components/GlassCard';
 
 const VehicleDetails = () => {
   const { vehicleId } = useParams();
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedOption, setSelectedOption] = useState(null);
+  const { colors } = useTheme();
 
   useEffect(() => {
     fetchVehicleDetails();
@@ -78,11 +82,18 @@ const VehicleDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+      <div 
+        className="min-h-screen flex items-center justify-center transition-colors duration-300"
+        style={{ backgroundColor: colors.background }}
+      >
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-14 h-14 border-3 border-amber-200 border-t-amber-600 rounded-full"
+          className="w-14 h-14 border-3 rounded-full"
+          style={{ 
+            borderColor: `${colors.primary}30`,
+            borderTopColor: colors.primary
+          }}
         />
       </div>
     );
@@ -90,11 +101,14 @@ const VehicleDetails = () => {
 
   if (!vehicle) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+      <div 
+        className="min-h-screen flex items-center justify-center transition-colors duration-300"
+        style={{ backgroundColor: colors.background }}
+      >
         <div className="text-center">
-          <Truck className="w-16 h-16 text-amber-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-amber-900 mb-2">Vehicle Not Found</h3>
-          <p className="text-amber-700">The requested vehicle could not be found.</p>
+          <Truck className="w-16 h-16 mx-auto mb-4" style={{ color: colors.textMuted }} />
+          <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>Vehicle Not Found</h3>
+          <p style={{ color: colors.textSecondary }}>The requested vehicle could not be found.</p>
         </div>
       </div>
     );
@@ -104,31 +118,17 @@ const VehicleDetails = () => {
   const colorClass = getVehicleColor(vehicle.type);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div 
+      className="min-h-screen transition-colors duration-300"
+      style={{ backgroundColor: colors.background }}
+    >
       {/* Header */}
-      <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white/80 backdrop-blur-xl border-b border-amber-200/50 sticky top-0 z-50"
-      >
-        <div className="px-6 py-4">
-          <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.history.back()}
-              className="w-10 h-10 flex items-center justify-center bg-amber-100 hover:bg-amber-200 rounded-xl transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-amber-700" />
-            </motion.button>
-            
-            <div>
-              <h1 className="text-2xl font-bold text-amber-900 capitalize">{vehicle.name}</h1>
-              <p className="text-sm text-amber-700 capitalize">{vehicle.type.replace('-', ' ')}</p>
-            </div>
-          </div>
-        </div>
-      </motion.header>
+      <FarmerHeader 
+        title={vehicle.name}
+        subtitle={vehicle.type.replace('-', ' ')}
+        icon={IconComponent}
+        onBack={() => window.history.back()}
+      />
 
       {/* Content */}
       <div className="px-6 py-8">
@@ -137,42 +137,43 @@ const VehicleDetails = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-amber-200/50 shadow-lg"
         >
-          <div className="flex items-center gap-6 mb-6">
-            <div className={`w-20 h-20 bg-gradient-to-br ${colorClass} rounded-2xl flex items-center justify-center shadow-lg`}>
-              <IconComponent className="w-10 h-10 text-white" />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-amber-900 capitalize mb-2">
-                {vehicle.name}
-              </h2>
-              <div className="flex items-center gap-4 text-sm text-amber-700">
-                <div className="flex items-center gap-1">
-                  <Shield className="w-4 h-4" />
-                  <span>Verified Vehicle</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>Available 24/7</span>
+          <GlassCard className="p-6 mb-8">
+            <div className="flex items-center gap-6 mb-6">
+              <div className={`w-20 h-20 bg-gradient-to-br ${colorClass} rounded-2xl flex items-center justify-center shadow-lg`}>
+                <IconComponent className="w-10 h-10 text-white" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold capitalize mb-2" style={{ color: colors.textPrimary }}>
+                  {vehicle.name}
+                </h2>
+                <div className="flex items-center gap-4 text-sm" style={{ color: colors.textSecondary }}>
+                  <div className="flex items-center gap-1">
+                    <Shield className="w-4 h-4" />
+                    <span>Verified Vehicle</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    <span>Available 24/7</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Features */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-amber-50 rounded-xl p-4 text-center">
-              <Users className="w-6 h-6 text-amber-600 mx-auto mb-2" />
-              <div className="text-sm font-semibold text-amber-900">Professional Driver</div>
-              <div className="text-xs text-amber-700">Experienced & Licensed</div>
+            {/* Features */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="rounded-xl p-4 text-center" style={{ backgroundColor: colors.cardHover }}>
+                <Users className="w-6 h-6 mx-auto mb-2" style={{ color: colors.primary }} />
+                <div className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Professional Driver</div>
+                <div className="text-xs" style={{ color: colors.textSecondary }}>Experienced & Licensed</div>
+              </div>
+              <div className="rounded-xl p-4 text-center" style={{ backgroundColor: colors.cardHover }}>
+                <Package className="w-6 h-6 mx-auto mb-2" style={{ color: colors.primary }} />
+                <div className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Secure Loading</div>
+                <div className="text-xs" style={{ color: colors.textSecondary }}>Safe Crop Transport</div>
+              </div>
             </div>
-            <div className="bg-amber-50 rounded-xl p-4 text-center">
-              <Package className="w-6 h-6 text-amber-600 mx-auto mb-2" />
-              <div className="text-sm font-semibold text-amber-900">Secure Loading</div>
-              <div className="text-xs text-amber-700">Safe Crop Transport</div>
-            </div>
-          </div>
+          </GlassCard>
         </motion.div>
 
         {/* Price Options */}
@@ -182,7 +183,7 @@ const VehicleDetails = () => {
           transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <h3 className="text-xl font-bold text-amber-900 mb-4">Choose Your Option</h3>
+          <h3 className="text-xl font-bold mb-4" style={{ color: colors.textPrimary }}>Choose Your Option</h3>
           <div className="space-y-3">
             {vehicle.priceOptions.map((option, index) => (
               <motion.div
@@ -190,39 +191,46 @@ const VehicleDetails = () => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedOption(option)}
-                className={`bg-white/70 backdrop-blur-xl rounded-xl p-4 border cursor-pointer transition-all ${
-                  selectedOption === option 
-                    ? 'border-amber-400 bg-amber-50/50 shadow-lg' 
-                    : 'border-amber-200/50 hover:border-amber-300'
-                }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="font-semibold text-amber-900 mb-1">
-                      {option.capacity}
+                <GlassCard 
+                  className={`p-4 cursor-pointer transition-all ${
+                    selectedOption === option ? 'ring-2' : ''
+                  }`}
+                  style={{
+                    '--tw-ring-color': selectedOption === option ? colors.primary : 'transparent',
+                    backgroundColor: selectedOption === option ? colors.cardHover : undefined
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="font-semibold mb-1" style={{ color: colors.textPrimary }}>
+                        {option.capacity}
+                      </div>
+                      <div className="text-sm" style={{ color: colors.textSecondary }}>
+                        {option.description}
+                      </div>
                     </div>
-                    <div className="text-sm text-amber-700">
-                      {option.description}
+                    <div className="text-right">
+                      <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>
+                        ₹{option.basePrice}
+                      </div>
+                      <div className="text-sm" style={{ color: colors.textSecondary }}>
+                        + ₹{option.pricePerKm}/km
+                      </div>
+                    </div>
+                    <div 
+                      className="w-4 h-4 rounded-full border-2 ml-4"
+                      style={{
+                        borderColor: selectedOption === option ? colors.primary : colors.textMuted,
+                        backgroundColor: selectedOption === option ? colors.primary : 'transparent'
+                      }}
+                    >
+                      {selectedOption === option && (
+                        <div className="w-2 h-2 bg-white rounded-full m-0.5" />
+                      )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-amber-900">
-                      ₹{option.basePrice}
-                    </div>
-                    <div className="text-sm text-amber-700">
-                      + ₹{option.pricePerKm}/km
-                    </div>
-                  </div>
-                  <div className={`w-4 h-4 rounded-full border-2 ml-4 ${
-                    selectedOption === option 
-                      ? 'border-amber-500 bg-amber-500' 
-                      : 'border-amber-300'
-                  }`}>
-                    {selectedOption === option && (
-                      <div className="w-2 h-2 bg-white rounded-full m-0.5" />
-                    )}
-                  </div>
-                </div>
+                </GlassCard>
               </motion.div>
             ))}
           </div>
@@ -240,7 +248,8 @@ const VehicleDetails = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleBookNow}
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+              className="w-full text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+              style={{ backgroundColor: colors.primary }}
             >
               <div className="flex items-center justify-center gap-2">
                 <IndianRupee className="w-5 h-5" />

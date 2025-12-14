@@ -924,6 +924,27 @@ router.post('/support/tickets/:ticketId/reply', async (req, res) => {
     ticket.updatedAt = new Date(); // Force update timestamp
     await ticket.save();
     
+    // Get the updated ticket
+    const updatedTicket = await CustomerSupport.findOne({ ticketId: req.params.ticketId });
+    
+    // Emit real-time update via Socket.IO
+    const io = req.app.get('io');
+    if (io) {
+      // Emit to specific ticket room
+      io.to(`ticket-${req.params.ticketId}`).emit('new-message', {
+        ticketId: req.params.ticketId,
+        message: newMessage,
+        ticket: updatedTicket
+      });
+      
+      // Emit to farmer room
+      io.to(`farmer-${ticket.farmerId}`).emit('ticket-updated', {
+        ticketId: req.params.ticketId,
+        ticket: updatedTicket,
+        type: 'admin-reply'
+      });
+    }
+    
     // Send notification to farmer when admin replies
     const Update = require('../models/Update');
     const User = require('../models/User');
@@ -940,10 +961,9 @@ router.post('/support/tickets/:ticketId/reply', async (req, res) => {
       await update.save();
     }
     
-    // Return the updated ticket immediately
-    const updatedTicket = await CustomerSupport.findOne({ ticketId: req.params.ticketId });
     res.json({ message: 'Reply sent successfully', ticket: updatedTicket });
   } catch (error) {
+    console.error('Failed to send reply:', error);
     res.status(500).json({ error: 'Failed to send reply' });
   }
 });

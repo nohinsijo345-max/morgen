@@ -12,8 +12,10 @@ import {
   Plus
 } from 'lucide-react';
 import axios from 'axios';
+import { useAdminTheme } from '../../../context/AdminThemeContext';
 
 const DriverAdminDashboard = ({ onNavigate }) => {
+  const { colors } = useAdminTheme();
   const [stats, setStats] = useState({});
   const [recentBookings, setRecentBookings] = useState([]);
   const [recentDrivers, setRecentDrivers] = useState([]);

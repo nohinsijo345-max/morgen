@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   User, 
@@ -18,6 +19,8 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { indiaStates, indiaDistricts, cropTypes } from '../data/indiaLocations';
+import { useTheme } from '../context/ThemeContext';
+import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
 
 const AccountCentre = () => {
   const [user, setUser] = useState(null);
@@ -26,6 +29,8 @@ const AccountCentre = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [pendingRequest, setPendingRequest] = useState(null);
+  const navigate = useNavigate();
+  const { isDarkMode, toggleTheme, colors } = useTheme();
   
   // Editable fields (no approval needed)
   const [email, setEmail] = useState('');
@@ -240,47 +245,80 @@ const AccountCentre = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fbfbef] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
+           style={{ backgroundColor: colors.background }}>
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-16 h-16 border-4 border-[#082829]/20 border-t-[#082829] rounded-full"
+          className="w-16 h-16 border-4 rounded-full"
+          style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fbfbef]">
-      {/* Animated Background Pattern */}
+    <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: colors.background }}>
+      {/* Background Pattern */}
       <div className="fixed inset-0 pointer-events-none opacity-5">
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, #082829 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 2px 2px, ${colors.primary} 1px, transparent 0)`,
           backgroundSize: '40px 40px'
         }} />
       </div>
 
+      {/* Header */}
+      <motion.header
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-20 backdrop-blur-xl border-b shadow-lg sticky top-0"
+        style={{ backgroundColor: colors.headerBg, borderColor: colors.headerBorder }}
+      >
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/dashboard')}
+                className="p-2 rounded-xl transition-all"
+                style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </motion.button>
+              
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                     style={{ backgroundColor: colors.primary }}>
+                  <User className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Account Centre</h1>
+                  <p className="text-xs" style={{ color: colors.textSecondary }}>Manage your profile</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <NeumorphicThemeToggle size="sm" />
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/dashboard')}
+                className="p-2.5 rounded-xl transition-all"
+                style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
+              >
+                <Home className="w-5 h-5" />
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.header>
+
       <div className="relative z-10 p-6">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-4 mb-8"
-          >
-            <motion.button 
-              whileHover={{ scale: 1.05, x: -5 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.history.back()}
-              className="p-3 bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-xl border border-[#082829]/10 shadow-lg"
-            >
-              <ArrowLeft className="w-5 h-5 text-[#082829]" />
-            </motion.button>
-            <div>
-              <h1 className="text-3xl font-bold text-[#082829]">Account Centre</h1>
-              <p className="text-[#082829]/60 text-sm mt-1">Manage your profile and settings</p>
-            </div>
-          </motion.div>
 
           {/* Success/Error Messages */}
           {success && (
@@ -329,19 +367,20 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-8 border border-[#082829]/10 shadow-2xl mb-6"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300"
+            style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold text-[#082829] mb-6 flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#082829] rounded-xl flex items-center justify-center">
-                <User className="w-5 h-5 text-[#fbfbef]" />
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                <User className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               Contact Information
-              <span className="text-sm font-normal text-green-600 ml-auto">(Updates Instantly)</span>
+              <span className="text-sm font-normal ml-auto" style={{ color: colors.success }}>(Updates Instantly)</span>
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#082829] mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                   <Mail className="w-4 h-4" />
                   Email Address
                 </label>
@@ -349,12 +388,17 @@ const AccountCentre = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                  style={{ 
+                    backgroundColor: colors.surface, 
+                    borderColor: colors.border, 
+                    color: colors.textPrimary,
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#082829] mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                   <Phone className="w-4 h-4" />
                   Phone Number
                 </label>
@@ -363,7 +407,12 @@ const AccountCentre = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                   maxLength="10"
-                  className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-colors"
+                  style={{ 
+                    backgroundColor: colors.surface, 
+                    borderColor: colors.border, 
+                    color: colors.textPrimary,
+                  }}
                 />
               </div>
 
@@ -372,7 +421,8 @@ const AccountCentre = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSaveInstant}
                 disabled={saving}
-                className="w-full bg-[#082829] hover:bg-[#082829]/90 text-[#fbfbef] font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
+                style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
                 <Save className="w-5 h-5" />
                 {saving ? 'Saving...' : 'Save Changes'}
@@ -385,36 +435,47 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-8 border border-[#082829]/10 shadow-2xl mb-6"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300"
+            style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold text-[#082829] mb-6 flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#082829] rounded-xl flex items-center justify-center">
-                <MapPin className="w-5 h-5 text-[#fbfbef]" />
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                <MapPin className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               Profile Information
-              <span className="text-sm font-normal text-yellow-600 ml-auto">(Requires Approval)</span>
+              <span className="text-sm font-normal ml-auto" style={{ color: colors.warning }}>(Requires Approval)</span>
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#082829] mb-2">Full Name</label>
+                <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={!!pendingRequest}
-                  className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                  style={{ 
+                    backgroundColor: colors.surface, 
+                    borderColor: colors.border, 
+                    color: colors.textPrimary,
+                  }}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#082829] mb-2">State</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>State</label>
                   <select
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     disabled={!!pendingRequest}
-                    className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                    style={{ 
+                      backgroundColor: colors.surface, 
+                      borderColor: colors.border, 
+                      color: colors.textPrimary,
+                    }}
                   >
                     <option value="">Select State</option>
                     {indiaStates.map(s => (
@@ -424,12 +485,17 @@ const AccountCentre = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#082829] mb-2">District</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>District</label>
                   <select
                     value={district}
                     onChange={(e) => setDistrict(e.target.value)}
                     disabled={!state || !!pendingRequest}
-                    className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                    style={{ 
+                      backgroundColor: colors.surface, 
+                      borderColor: colors.border, 
+                      color: colors.textPrimary,
+                    }}
                   >
                     <option value="">Select District</option>
                     {availableDistricts.map(d => (
@@ -441,17 +507,22 @@ const AccountCentre = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#082829] mb-2">City</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>City</label>
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     disabled={!!pendingRequest}
-                    className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                    style={{ 
+                      backgroundColor: colors.surface, 
+                      borderColor: colors.border, 
+                      color: colors.textPrimary,
+                    }}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#082829] mb-2">PIN Code</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>PIN Code</label>
                   <input
                     type="text"
                     value={pinCode}
@@ -459,13 +530,18 @@ const AccountCentre = () => {
                     maxLength="6"
                     placeholder="6-digit PIN code"
                     disabled={!!pendingRequest}
-                    className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                    style={{ 
+                      backgroundColor: colors.surface, 
+                      borderColor: colors.border, 
+                      color: colors.textPrimary,
+                    }}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#082829] mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                   <Home className="w-4 h-4" />
                   Land Size (Acres)
                 </label>
@@ -475,15 +551,20 @@ const AccountCentre = () => {
                   value={landSize}
                   onChange={(e) => setLandSize(e.target.value)}
                   disabled={!!pendingRequest}
-                  className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                  style={{ 
+                    backgroundColor: colors.surface, 
+                    borderColor: colors.border, 
+                    color: colors.textPrimary,
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#082829] mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                   <Wheat className="w-4 h-4" />
                   Crop Types
-                  <span className="text-xs text-green-600 font-normal ml-auto">(Updates Immediately)</span>
+                  <span className="text-xs font-normal ml-auto" style={{ color: colors.success }}>(Updates Immediately)</span>
                 </label>
                 <div className="flex gap-2 mb-3">
                   <select
@@ -492,7 +573,12 @@ const AccountCentre = () => {
                       e.target.value = '';
                     }}
                     disabled={!!pendingRequest}
-                    className="flex-1 px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 disabled:opacity-50"
+                    className="flex-1 px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                    style={{ 
+                      backgroundColor: colors.surface, 
+                      borderColor: colors.border, 
+                      color: colors.textPrimary,
+                    }}
                   >
                     <option value="">Select Crop</option>
                     {cropTypes.map(crop => (
@@ -506,14 +592,15 @@ const AccountCentre = () => {
                     {selectedCropTypes.map((crop, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
+                        style={{ backgroundColor: colors.primaryLight, color: colors.primary }}
                       >
                         <span>{cropTypes.find(c => c.value === crop)?.label || crop}</span>
                         {!pendingRequest && (
                           <button
                             type="button"
                             onClick={() => removeCrop(crop)}
-                            className="hover:text-emerald-900"
+                            className="hover:opacity-70"
                           >
                             <XCircle className="w-4 h-4" />
                           </button>
@@ -529,7 +616,8 @@ const AccountCentre = () => {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleRequestApproval}
                 disabled={saving || !!pendingRequest}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-[#fbfbef] font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
+                style={{ backgroundColor: colors.warning, color: '#ffffff' }}
               >
                 <Clock className="w-5 h-5" />
                 {pendingRequest ? 'Request Pending' : saving ? 'Submitting...' : 'Request Approval for Changes'}
@@ -542,16 +630,17 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-8 border border-[#082829]/10 shadow-2xl"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300"
+            style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold text-[#082829] mb-6 flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#082829] rounded-xl flex items-center justify-center">
-                <Phone className="w-5 h-5 text-[#fbfbef]" />
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                <Phone className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               Customer Support
             </h2>
 
-            <p className="text-[#082829]/70 mb-6">
+            <p className="mb-6" style={{ color: colors.textSecondary }}>
               Need help? Our support team is here to assist you with any questions or issues about transport, weather, crops, or technical problems.
             </p>
 
@@ -559,7 +648,8 @@ const AccountCentre = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => window.location.href = '/customer-support'}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+              className="w-full font-semibold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+              style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
             >
               <Phone className="w-5 h-5" />
               Contact Support Team
@@ -571,11 +661,12 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-xl rounded-3xl p-8 border border-[#082829]/10 shadow-2xl"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl transition-colors duration-300"
+            style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold text-[#082829] mb-6 flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#082829] rounded-xl flex items-center justify-center">
-                <Lock className="w-5 h-5 text-[#fbfbef]" />
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                <Lock className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               Security
             </h2>
@@ -583,26 +674,33 @@ const AccountCentre = () => {
             {!showPasswordSection ? (
               <button
                 onClick={() => setShowPasswordSection(true)}
-                className="w-full bg-[#082829]/10 hover:bg-[#082829]/20 text-[#082829] font-semibold py-3 rounded-xl transition-colors"
+                className="w-full font-semibold py-3 rounded-xl transition-colors"
+                style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
               >
                 Change Password
               </button>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#082829] mb-2">Current PIN</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>Current PIN</label>
                   <div className="relative">
                     <input
                       type={showCurrentPin ? 'text' : 'password'}
                       value={currentPin}
                       onChange={(e) => setCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                       maxLength="4"
-                      className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 pr-12"
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 pr-12 transition-colors"
+                      style={{ 
+                        backgroundColor: colors.surface, 
+                        borderColor: colors.border, 
+                        color: colors.textPrimary,
+                      }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrentPin(!showCurrentPin)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#082829]/60"
+                      className="absolute right-4 top-1/2 -translate-y-1/2"
+                      style={{ color: colors.textSecondary }}
                     >
                       {showCurrentPin ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -610,19 +708,25 @@ const AccountCentre = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#082829] mb-2">New PIN</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>New PIN</label>
                   <div className="relative">
                     <input
                       type={showNewPin ? 'text' : 'password'}
                       value={newPin}
                       onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                       maxLength="4"
-                      className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 pr-12"
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 pr-12 transition-colors"
+                      style={{ 
+                        backgroundColor: colors.surface, 
+                        borderColor: colors.border, 
+                        color: colors.textPrimary,
+                      }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPin(!showNewPin)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#082829]/60"
+                      className="absolute right-4 top-1/2 -translate-y-1/2"
+                      style={{ color: colors.textSecondary }}
                     >
                       {showNewPin ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -630,19 +734,25 @@ const AccountCentre = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#082829] mb-2">Confirm New PIN</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>Confirm New PIN</label>
                   <div className="relative">
                     <input
                       type={showConfirmPin ? 'text' : 'password'}
                       value={confirmPin}
                       onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                       maxLength="4"
-                      className="w-full px-4 py-3 bg-white/40 border border-[#082829]/10 rounded-xl text-[#082829] focus:outline-none focus:ring-2 focus:ring-[#082829]/20 pr-12"
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 pr-12 transition-colors"
+                      style={{ 
+                        backgroundColor: colors.surface, 
+                        borderColor: colors.border, 
+                        color: colors.textPrimary,
+                      }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPin(!showConfirmPin)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#082829]/60"
+                      className="absolute right-4 top-1/2 -translate-y-1/2"
+                      style={{ color: colors.textSecondary }}
                     >
                       {showConfirmPin ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -658,14 +768,16 @@ const AccountCentre = () => {
                       setConfirmPin('');
                       setError('');
                     }}
-                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-[#082829] font-semibold py-3 rounded-xl transition-colors"
+                    className="flex-1 font-semibold py-3 rounded-xl transition-colors"
+                    style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handlePasswordReset}
                     disabled={saving}
-                    className="flex-1 bg-[#082829] hover:bg-[#082829]/90 text-[#fbfbef] font-semibold py-3 rounded-xl shadow-lg disabled:opacity-50"
+                    className="flex-1 font-semibold py-3 rounded-xl transition-colors disabled:opacity-50 shadow-lg"
+                    style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
                   >
                     {saving ? 'Changing...' : 'Change PIN'}
                   </button>
