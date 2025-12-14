@@ -912,16 +912,37 @@ router.post('/support/tickets/:ticketId/reply', async (req, res) => {
       return res.status(404).json({ error: 'Ticket not found' });
     }
     
-    ticket.messages.push({
+    const newMessage = {
       sender: 'admin',
       message,
-      timestamp: new Date()
-    });
+      timestamp: new Date(),
+      isRead: false
+    };
     
+    ticket.messages.push(newMessage);
     ticket.status = 'in-progress';
+    ticket.updatedAt = new Date(); // Force update timestamp
     await ticket.save();
     
-    res.json({ message: 'Reply sent successfully', ticket });
+    // Send notification to farmer when admin replies
+    const Update = require('../models/Update');
+    const User = require('../models/User');
+    
+    const farmer = await User.findOne({ farmerId: ticket.farmerId });
+    if (farmer) {
+      const update = new Update({
+        userId: farmer._id,
+        title: 'Support Reply Received',
+        message: `You have received a reply to your support ticket "${ticket.subject}". Check your support tickets for the latest update.`,
+        category: 'support',
+        isActive: true
+      });
+      await update.save();
+    }
+    
+    // Return the updated ticket immediately
+    const updatedTicket = await CustomerSupport.findOne({ ticketId: req.params.ticketId });
+    res.json({ message: 'Reply sent successfully', ticket: updatedTicket });
   } catch (error) {
     res.status(500).json({ error: 'Failed to send reply' });
   }

@@ -32,13 +32,13 @@ const CustomerSupport = () => {
   useEffect(() => {
     fetchTickets();
     
-    // Set up adaptive polling based on window focus
+    // Set up aggressive polling for real-time messaging
     let interval;
     
     const startPolling = () => {
       if (interval) clearInterval(interval);
-      // More frequent polling when window is focused
-      interval = setInterval(fetchTickets, document.hasFocus() ? 1500 : 5000);
+      // Very frequent polling for real-time experience
+      interval = setInterval(fetchTickets, 800); // Poll every 800ms for real-time feel
     };
     
     const handleFocus = () => {
@@ -47,7 +47,9 @@ const CustomerSupport = () => {
     };
     
     const handleBlur = () => {
-      startPolling(); // Slower polling when not focused
+      // Continue frequent polling even when not focused for real-time notifications
+      if (interval) clearInterval(interval);
+      interval = setInterval(fetchTickets, 2000); // Slower but still frequent when not focused
     };
     
     // Start initial polling
@@ -159,11 +161,13 @@ const CustomerSupport = () => {
       });
       
       setNewMessage('');
-      // Immediately fetch updates after sending
-      await fetchTickets();
       
-      // Also trigger an additional refresh after a short delay to catch any server-side updates
+      // Multiple immediate refreshes to ensure message appears
+      await fetchTickets();
+      setTimeout(fetchTickets, 200);
+      setTimeout(fetchTickets, 500);
       setTimeout(fetchTickets, 1000);
+      setTimeout(fetchTickets, 2000);
     } catch (error) {
       console.error('Failed to send message:', error);
       alert('Failed to send message');

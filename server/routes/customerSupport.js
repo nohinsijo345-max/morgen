@@ -75,13 +75,16 @@ router.post('/tickets/:ticketId/messages', async (req, res) => {
       return res.status(404).json({ error: 'Ticket not found' });
     }
     
-    ticket.messages.push({
+    const newMessage = {
       sender,
       message,
-      timestamp: new Date()
-    });
+      timestamp: new Date(),
+      isRead: false
+    };
     
+    ticket.messages.push(newMessage);
     ticket.status = 'in-progress';
+    ticket.updatedAt = new Date(); // Force update timestamp
     await ticket.save();
     
     // Send notification to farmer when admin replies
@@ -102,7 +105,9 @@ router.post('/tickets/:ticketId/messages', async (req, res) => {
       }
     }
     
-    res.json({ message: 'Message added', ticket });
+    // Return the updated ticket immediately
+    const updatedTicket = await CustomerSupport.findOne({ ticketId: req.params.ticketId });
+    res.json({ message: 'Message added', ticket: updatedTicket });
   } catch (error) {
     res.status(500).json({ error: 'Failed to add message' });
   }
@@ -159,13 +164,16 @@ router.post('/tickets/:ticketId/reply', async (req, res) => {
       return res.status(404).json({ error: 'Ticket not found' });
     }
     
-    ticket.messages.push({
+    const newMessage = {
       sender: 'admin',
       message,
-      timestamp: new Date()
-    });
+      timestamp: new Date(),
+      isRead: false
+    };
     
+    ticket.messages.push(newMessage);
     ticket.status = 'in-progress';
+    ticket.updatedAt = new Date(); // Force update timestamp
     await ticket.save();
     
     // Send notification to farmer when admin replies
@@ -184,7 +192,9 @@ router.post('/tickets/:ticketId/reply', async (req, res) => {
       await update.save();
     }
     
-    res.json({ message: 'Reply sent', ticket });
+    // Return the updated ticket immediately
+    const updatedTicket = await CustomerSupport.findOne({ ticketId: req.params.ticketId });
+    res.json({ message: 'Reply sent', ticket: updatedTicket });
   } catch (error) {
     res.status(500).json({ error: 'Failed to send reply' });
   }
