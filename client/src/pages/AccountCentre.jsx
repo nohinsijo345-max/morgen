@@ -21,6 +21,7 @@ import axios from 'axios';
 import { indiaStates, indiaDistricts, cropTypes } from '../data/indiaLocations';
 import { useTheme } from '../context/ThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
+import { UserSession } from '../utils/userSession';
 
 const AccountCentre = () => {
   const [user, setUser] = useState(null);
@@ -69,26 +70,37 @@ const AccountCentre = () => {
 
   const fetchUserData = async () => {
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/auth/profile/${userData.farmerId}`);
-        
-        setUser(response.data);
-        setEmail(response.data.email || '');
-        setPhone(response.data.phone || '');
-        setName(response.data.name || '');
-        setState(response.data.state || '');
-        setDistrict(response.data.district || '');
-        setCity(response.data.city || '');
-        setPinCode(response.data.pinCode || '');
-        setLandSize(response.data.landSize || '');
-        setSelectedCropTypes(response.data.cropTypes || []);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        setError('No user session found. Please login again.');
+        setLoading(false);
+        return;
       }
+      
+      console.log('✅ Fetching profile for farmerId:', farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/auth/profile/${farmerId}`);
+      console.log('✅ Profile data received:', response.data);
+      
+      setUser(response.data);
+      setEmail(response.data.email || '');
+      setPhone(response.data.phone || '');
+      setName(response.data.name || '');
+      setState(response.data.state || '');
+      setDistrict(response.data.district || '');
+      setCity(response.data.city || '');
+      setPinCode(response.data.pinCode || '');
+      setLandSize(response.data.landSize || '');
+      setSelectedCropTypes(response.data.cropTypes || []);
+      
     } catch (error) {
       console.error('Failed to fetch user data:', error);
-      setError('Failed to load profile data');
+      setError('Failed to load profile data - API Error: ' + (error.response?.status || error.message));
     } finally {
       setLoading(false);
     }
@@ -96,15 +108,25 @@ const AccountCentre = () => {
 
   const checkPendingRequest = async () => {
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/profile/pending-request/${userData.farmerId}`);
-        setPendingRequest(response.data);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session');
+        return;
       }
+      
+      console.log('✅ Checking pending requests for farmerId:', farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/profile/pending-request/${farmerId}`);
+      setPendingRequest(response.data);
+      console.log('✅ Pending request found:', response.data);
     } catch (error) {
-      // No pending request
+      // No pending request - this is expected
+      console.log('✅ No pending requests (expected)');
       setPendingRequest(null);
     }
   };
@@ -116,7 +138,18 @@ const AccountCentre = () => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      await axios.put(`${API_URL}/api/auth/profile/${user.farmerId}`, {
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        setError('No user session found. Please login again.');
+        setSaving(false);
+        return;
+      }
+      
+      await axios.put(`${API_URL}/api/auth/profile/${farmerId}`, {
         email,
         phone
       });
@@ -145,25 +178,35 @@ const AccountCentre = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        setError('No user session found. Please login again.');
+        setSaving(false);
+        return;
+      }
+      
       // Handle cropTypes separately - update immediately without approval
-      const userCropTypes = user.cropTypes || [];
+      const userCropTypes = user?.cropTypes || [];
       const hasChangedCropTypes = selectedCropTypes.length !== userCropTypes.length || 
         selectedCropTypes.some(crop => !userCropTypes.includes(crop));
       
       if (hasChangedCropTypes) {
-        await axios.put(`${API_URL}/api/auth/profile/${user.farmerId}`, {
+        await axios.put(`${API_URL}/api/auth/profile/${farmerId}`, {
           cropTypes: selectedCropTypes
         });
       }
 
       // Build changes object with only modified fields that require approval
       const changes = {};
-      if (name && name.trim() !== (user.name || '').trim()) changes.name = name.trim();
-      if (state && state !== (user.state || '')) changes.state = state;
-      if (district && district !== (user.district || '')) changes.district = district;
-      if (city && city.trim() !== (user.city || '').trim()) changes.city = city.trim();
-      if (pinCode && pinCode.trim() !== (user.pinCode || '').trim()) changes.pinCode = pinCode.trim();
-      if (landSize && parseFloat(landSize) !== (user.landSize || 0)) changes.landSize = parseFloat(landSize);
+      if (name && name.trim() !== (user?.name || '').trim()) changes.name = name.trim();
+      if (state && state !== (user?.state || '')) changes.state = state;
+      if (district && district !== (user?.district || '')) changes.district = district;
+      if (city && city.trim() !== (user?.city || '').trim()) changes.city = city.trim();
+      if (pinCode && pinCode.trim() !== (user?.pinCode || '').trim()) changes.pinCode = pinCode.trim();
+      if (landSize && parseFloat(landSize) !== (user?.landSize || 0)) changes.landSize = parseFloat(landSize);
       
       // DO NOT include cropTypes in approval requests - they are handled separately
 
@@ -177,7 +220,7 @@ const AccountCentre = () => {
       // Submit approval request only if there are changes requiring approval
       if (Object.keys(changes).length > 0) {
         await axios.post(`${API_URL}/api/profile/request-change`, {
-          farmerId: user.farmerId,
+          farmerId,
           changes
         });
         setSuccess('Change request submitted! Crop types updated immediately.');
@@ -214,8 +257,19 @@ const AccountCentre = () => {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        setError('No user session found. Please login again.');
+        setSaving(false);
+        return;
+      }
+      
       await axios.post(`${API_URL}/api/auth/change-password`, {
-        farmerId: user.farmerId,
+        farmerId,
         currentPin,
         newPin
       });

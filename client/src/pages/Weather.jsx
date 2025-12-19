@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { WeatherIcon, SmallWeatherIcon } from '../components/PremiumWeatherElements';
+import { UserSession } from '../utils/userSession';
 
 // Determine if it's currently night time
 const useTimeOfDay = () => {
@@ -121,37 +122,46 @@ const Weather = () => {
     }
     
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        
-        // Add cache-busting parameter to ensure fresh data
-        const timestamp = new Date().getTime();
-        const response = await axios.get(`${API_URL}/api/dashboard/farmer/${userData.farmerId}?t=${timestamp}`);
-        
-        setWeather(response.data.weather);
-        setLastUpdated(new Date());
-        
-        // Enhanced location display with PIN code if available
-        const farmer = response.data.farmer;
-        let locationDisplay = farmer?.district || 'Your Location';
-        if (farmer?.city && farmer?.pinCode) {
-          locationDisplay = `${farmer.city} (${farmer.pinCode})`;
-        } else if (farmer?.city) {
-          locationDisplay = `${farmer.city}, ${farmer.district}`;
-        }
-        setLocation(locationDisplay.toUpperCase());
-        
-        console.log('Weather data refreshed:', {
-          location: locationDisplay,
-          temperature: response.data.weather?.temperature,
-          condition: response.data.weather?.condition,
-          lastUpdated: response.data.weather?.lastUpdated,
-          isLiveData: response.data.weather?.isLiveData,
-          isManualRefresh
-        });
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session for weather data');
+        setLoading(false);
+        setRefreshing(false);
+        return;
       }
+      
+      console.log('✅ Fetching weather data for farmerId:', farmerId);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      // Add cache-busting parameter to ensure fresh data
+      const timestamp = new Date().getTime();
+      const response = await axios.get(`${API_URL}/api/dashboard/farmer/${farmerId}?t=${timestamp}`);
+      
+      setWeather(response.data.weather);
+      setLastUpdated(new Date());
+      
+      // Enhanced location display with PIN code if available
+      const farmer = response.data.farmer;
+      let locationDisplay = farmer?.district || 'Your Location';
+      if (farmer?.city && farmer?.pinCode) {
+        locationDisplay = `${farmer.city} (${farmer.pinCode})`;
+      } else if (farmer?.city) {
+        locationDisplay = `${farmer.city}, ${farmer.district}`;
+      }
+      setLocation(locationDisplay.toUpperCase());
+      
+      console.log('Weather data refreshed:', {
+        location: locationDisplay,
+        temperature: response.data.weather?.temperature,
+        condition: response.data.weather?.condition,
+        lastUpdated: response.data.weather?.lastUpdated,
+        isLiveData: response.data.weather?.isLiveData,
+        isManualRefresh
+      });
     } catch (error) {
       console.error('Failed to fetch weather:', error);
     } finally {

@@ -15,6 +15,7 @@ import {
   Leaf
 } from 'lucide-react';
 import axios from 'axios';
+import { UserSession } from '../../utils/userSession';
 
 export default function AIPlantDoctor() {
   const [messages, setMessages] = useState([]);
@@ -28,15 +29,15 @@ export default function AIPlantDoctor() {
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Get farmer ID from localStorage
-  const farmerUser = JSON.parse(localStorage.getItem('farmerUser') || '{}');
-  const farmerId = farmerUser.farmerId;
-
   useEffect(() => {
+    const farmerId = UserSession.getFarmerId();
     if (farmerId) {
       loadChatSession();
+    } else {
+      console.log('⚠️ No farmerId found in session for AI Doctor');
+      setChatLoading(false);
     }
-  }, [farmerId]);
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -49,6 +50,15 @@ export default function AIPlantDoctor() {
   const loadChatSession = async () => {
     try {
       setChatLoading(true);
+      const farmerId = UserSession.getFarmerId();
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session');
+        return;
+      }
+      
+      console.log('✅ Loading AI Doctor chat for farmerId:', farmerId);
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       const response = await axios.get(`${API_URL}/api/ai-doctor/chat/${farmerId}`);
       
@@ -63,6 +73,12 @@ export default function AIPlantDoctor() {
 
   const sendMessage = async () => {
     if (!newMessage.trim() && !imageFile) return;
+
+    const farmerId = UserSession.getFarmerId();
+    if (!farmerId) {
+      console.log('⚠️ No farmerId found in session');
+      return;
+    }
 
     const messageText = newMessage.trim();
     setNewMessage('');
@@ -88,19 +104,23 @@ export default function AIPlantDoctor() {
         setImageFile(null);
         setImagePreview(null);
       } else {
-        // Send text message
+        // Send text message with unique ID to prevent caching
+        const uniqueMessageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_user`;
+        
         const response = await axios.post(`${API_URL}/api/ai-doctor/chat/${farmerId}/message`, {
           message: messageText,
-          messageId: `msg_${Date.now()}_user`
+          messageId: uniqueMessageId
         });
 
-        setMessages(prev => [...prev, {
-          id: `msg_${Date.now()}_user`,
+        // Add user message first, then AI response
+        const userMessage = {
+          id: uniqueMessageId,
           role: 'user',
           content: messageText,
           timestamp: new Date()
-        }, response.data.message]);
-        
+        };
+
+        setMessages(prev => [...prev, userMessage, response.data.message]);
         setChatStats(response.data.sessionStats);
       }
     } catch (error) {
@@ -139,6 +159,9 @@ export default function AIPlantDoctor() {
 
   const clearChat = async () => {
     try {
+      const farmerId = UserSession.getFarmerId();
+      if (!farmerId) return;
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       await axios.delete(`${API_URL}/api/ai-doctor/chat/${farmerId}/clear`);
       await loadChatSession();

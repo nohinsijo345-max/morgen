@@ -7,13 +7,12 @@ import {
   IndianRupee,
   MapPin,
   Truck,
-  Calendar,
-  Filter,
   Search,
   Eye,
-  AlertCircle
+  Filter
 } from 'lucide-react';
 import axios from 'axios';
+import { UserSession } from '../../utils/userSession';
 
 const OrderHistory = () => {
   const [bookings, setBookings] = useState([]);
@@ -36,17 +35,18 @@ const OrderHistory = () => {
   const fetchBookings = async () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const user = JSON.parse(localStorage.getItem('farmerUser'));
-      console.log('OrderHistory - User from localStorage:', user);
-      console.log('OrderHistory - Fetching bookings for farmer:', user?.farmerId);
+      const userData = UserSession.getCurrentUser('farmer');
+      console.log('OrderHistory - User from UserSession:', userData);
       
-      if (!user || !user.farmerId) {
-        console.error('OrderHistory - No valid user or farmerId found');
-        setLoading(false);
+      if (!userData || !userData.farmerId) {
+        console.log('❌ OrderHistory - No valid farmer session found');
+        setBookings([]);
         return;
       }
       
-      const response = await axios.get(`${API_URL}/api/transport/bookings/farmer/${user.farmerId}`);
+      console.log('OrderHistory - Fetching bookings for farmer:', userData.farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/transport/bookings/farmer/${userData.farmerId}`);
       console.log('OrderHistory - Bookings response:', response.data);
       console.log('OrderHistory - Number of bookings:', response.data.length);
       setBookings(response.data);

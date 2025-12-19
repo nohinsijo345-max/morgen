@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
+import { UserSession } from '../utils/userSession';
 
 const Updates = () => {
   const [updates, setUpdates] = useState([]);
@@ -18,23 +19,30 @@ const Updates = () => {
   const { isDarkMode, toggleTheme, colors } = useTheme();
 
   useEffect(() => {
-    const farmerUser = localStorage.getItem('farmerUser');
-    if (farmerUser) {
-      const userData = JSON.parse(farmerUser);
-      setUser(userData);
-      fetchUpdates(userData.farmerId);
+    const currentUser = UserSession.getCurrentUser('farmer');
+    if (currentUser) {
+      setUser(currentUser);
+      fetchUpdates();
+    } else {
+      console.log('⚠️ No user session found for updates');
+      setLoading(false);
     }
   }, []);
 
-  const fetchUpdates = async (farmerId) => {
+  const fetchUpdates = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const response = await axios.get(`${API_URL}/api/dashboard/farmer/${userData.farmerId}`);
-        setUpdates(response.data.updates || []);
+      const farmerId = UserSession.getFarmerId();
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session for updates');
+        return;
       }
+      
+      console.log('✅ Fetching updates for farmerId:', farmerId);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/dashboard/farmer/${farmerId}`);
+      setUpdates(response.data.updates || []);
     } catch (error) {
       console.error('Failed to fetch updates:', error);
     } finally {

@@ -18,6 +18,7 @@ import {
 import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import NeumorphicThemeToggle from '../../components/NeumorphicThemeToggle';
+import { UserSession } from '../../utils/userSession';
 
 ChartJS.register(
   CategoryScale,
@@ -46,15 +47,22 @@ const PriceForecast = () => {
 
   const fetchForecasts = async () => {
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/price-forecast/forecast/${userData.farmerId}`);
-        setForecasts(response.data.forecasts || []);
-        if (response.data.forecasts && response.data.forecasts.length > 0) {
-          setSelectedCrop(response.data.forecasts[0]);
-        }
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session for price forecasts');
+        return;
+      }
+      
+      console.log('✅ Fetching price forecasts for farmerId:', farmerId);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/price-forecast/forecast/${farmerId}`);
+      setForecasts(response.data.forecasts || []);
+      if (response.data.forecasts && response.data.forecasts.length > 0) {
+        setSelectedCrop(response.data.forecasts[0]);
       }
     } catch (error) {
       console.error('Failed to fetch price forecasts:', error);

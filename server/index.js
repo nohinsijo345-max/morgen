@@ -48,6 +48,7 @@ app.use('/api/price-forecast', require('./routes/priceForecast'));
 app.use('/api/transport', require('./routes/transport'));
 app.use('/api/driver', require('./routes/driver'));
 app.use('/api/support', require('./routes/customerSupport'));
+app.use('/api/modules', require('./routes/modules'));
 app.use('/api/ai-doctor', require('./routes/aiDoctor'));
 app.use('/api', require('./routes/health'));
 

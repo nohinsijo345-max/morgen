@@ -9,16 +9,14 @@ import {
   CheckCircle, 
   AlertCircle,
   Calendar,
-  Phone,
-  MessageCircle,
   X,
   Search,
-  Filter,
   Eye,
   XCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { UserSession } from '../../utils/userSession';
 
 const OrderTracking = () => {
   const navigate = useNavigate();
@@ -36,12 +34,24 @@ const OrderTracking = () => {
 
   const fetchBookings = async () => {
     try {
-      const user = JSON.parse(localStorage.getItem('farmerUser'));
+      const userData = UserSession.getCurrentUser('farmer');
+      console.log('🔍 OrderTracking - Current user data:', userData);
+      
+      if (!userData || !userData.farmerId) {
+        console.log('❌ No valid farmer session found');
+        setBookings([]);
+        return;
+      }
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.get(`${API_URL}/api/transport/bookings/farmer/${user.farmerId}`);
+      console.log('🔍 OrderTracking - Fetching bookings for farmer:', userData.farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/transport/bookings/farmer/${userData.farmerId}`);
+      console.log('🔍 OrderTracking - Bookings response:', response.data);
       setBookings(response.data);
     } catch (error) {
       console.error('Failed to fetch bookings:', error);
+      console.error('Error details:', error.response?.data);
     } finally {
       setLoading(false);
     }
@@ -91,7 +101,7 @@ const OrderTracking = () => {
         } catch (trackingError) {
           console.error('Failed to refresh tracking data:', trackingError);
           // If tracking fails, just refresh the booking from the list
-          const updatedBooking = await axios.get(`${API_URL}/api/transport/bookings/farmer/${JSON.parse(localStorage.getItem('farmerUser')).farmerId}`);
+          const updatedBooking = await axios.get(`${API_URL}/api/transport/bookings/farmer/${UserSession.getFarmerId()}`);
           const booking = updatedBooking.data.find(b => b._id === selectedBooking._id);
           if (booking) {
             setSelectedBooking(booking);

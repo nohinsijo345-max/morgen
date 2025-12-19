@@ -17,6 +17,7 @@ import BookingSuccessAnimation from '../../components/BookingSuccessAnimation';
 import { useTheme } from '../../context/ThemeContext';
 import FarmerHeader from '../../components/FarmerHeader';
 import GlassCard from '../../components/GlassCard';
+import { UserSession } from '../../utils/userSession';
 
 const TransportBooking = () => {
   const { vehicleId } = useParams();
@@ -134,15 +135,28 @@ const TransportBooking = () => {
   };
 
   const handleBooking = async () => {
+    // Validate pincode format
+    const pincodeRegex = /^\d{6}$/;
+    if (!pincodeRegex.test(bookingData.fromLocation.pinCode)) {
+      alert('Please enter a valid 6-digit PIN code for pickup location');
+      return;
+    }
+    if (!pincodeRegex.test(bookingData.toLocation.pinCode)) {
+      alert('Please enter a valid 6-digit PIN code for delivery location');
+      return;
+    }
+
     try {
       setBooking(true);
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (!farmerUser) {
+      
+      // Use proper session management
+      const userData = UserSession.getCurrentUser('farmer');
+      if (!userData) {
         alert('Please login to continue');
+        navigate('/login');
         return;
       }
 
-      const userData = JSON.parse(farmerUser);
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
       const bookingPayload = {
@@ -186,10 +200,14 @@ const TransportBooking = () => {
   };
 
   const isFormValid = () => {
+    const pincodeRegex = /^\d{6}$/;
     return bookingData.toLocation.state && 
            bookingData.toLocation.district && 
            bookingData.toLocation.city &&
            bookingData.toLocation.pinCode &&
+           pincodeRegex.test(bookingData.toLocation.pinCode) &&
+           bookingData.fromLocation.pinCode &&
+           pincodeRegex.test(bookingData.fromLocation.pinCode) &&
            bookingData.pickupDate && 
            bookingData.pickupTime &&
            bookingData.distance > 0 &&

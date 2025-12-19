@@ -4,7 +4,7 @@ import {
   ArrowLeft, Timer, Plus, Edit2, Trash2, Calendar,
   Sprout, Package, Clock, CheckCircle, AlertCircle
 } from 'lucide-react';
-import axios from 'axios';
+import { UserSession } from '../../utils/userSession';
 
 const HarvestCountdown = () => {
   const [countdowns, setCountdowns] = useState([]);
@@ -31,22 +31,28 @@ const HarvestCountdown = () => {
 
   const fetchPresetCrops = async () => {
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      console.log('farmerUser from localStorage:', farmerUser);
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        console.log('Parsed userData:', userData);
-        console.log('farmerId:', userData.farmerId);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const url = `${API_URL}/api/harvest/crop-preferences/${userData.farmerId}`;
-        console.log('Fetching crops from:', url);
-        const response = await axios.get(url);
-        console.log('Fetched preset crops response:', response.data);
-        console.log('Crops array length:', response.data?.length);
-        setPresetCrops(response.data || []);
-      } else {
-        console.log('No farmerUser in localStorage');
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      console.log('🔧 Session user:', userData);
+      console.log('🔧 Extracted farmerId:', farmerId);
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session for preset crops');
+        setPresetCrops([]);
+        return;
       }
+      
+      console.log('✅ Fetching preset crops for farmerId:', farmerId);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const url = `${API_URL}/api/harvest/crop-preferences/${farmerId}`;
+      console.log('Fetching crops from:', url);
+      const response = await axios.get(url);
+      console.log('Fetched preset crops response:', response.data);
+      console.log('Crops array length:', response.data?.length);
+      setPresetCrops(response.data || []);
     } catch (error) {
       console.error('Failed to fetch preset crops:', error);
       console.error('Error response:', error.response);
@@ -57,13 +63,20 @@ const HarvestCountdown = () => {
 
   const fetchCountdowns = async () => {
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/harvest/countdowns/${userData.farmerId}`);
-        setCountdowns(response.data);
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session for harvest countdowns');
+        return;
       }
+      
+      console.log('✅ Fetching harvest countdowns for farmerId:', farmerId);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/harvest/countdowns/${farmerId}`);
+      setCountdowns(response.data);
     } catch (error) {
       console.error('Failed to fetch countdowns:', error);
     } finally {
@@ -74,10 +87,16 @@ const HarvestCountdown = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (!farmerUser) return;
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId;
+      const farmerName = userData?.name;
+      
+      if (!farmerId) {
+        alert('No user session found. Please login again.');
+        return;
+      }
 
-      const userData = JSON.parse(farmerUser);
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
 
       if (editingCountdown) {
@@ -87,8 +106,8 @@ const HarvestCountdown = () => {
         // Create new
         await axios.post(`${API_URL}/api/harvest/countdowns`, {
           ...formData,
-          farmerId: userData.farmerId,
-          farmerName: userData.name
+          farmerId,
+          farmerName
         });
       }
 

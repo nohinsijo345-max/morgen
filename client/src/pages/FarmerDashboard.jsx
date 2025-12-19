@@ -23,6 +23,7 @@ import HarvestCountdownCard from '../components/HarvestCountdownCard';
 import PriceForecastCard from '../components/PriceForecastCard';
 import GlassCard from '../components/GlassCard';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
+import { UserSession } from '../utils/userSession';
 
 const FarmerDashboard = ({ user, onLogout }) => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -46,10 +47,39 @@ const FarmerDashboard = ({ user, onLogout }) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       const timestamp = new Date().getTime();
-      const response = await axios.get(`${API_URL}/api/dashboard/farmer/${user.farmerId}?t=${timestamp}`);
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId || user?.farmerId;
+      
+      if (!farmerId) {
+        console.error('No farmerId found in session or props');
+        setDashboardData({
+          totalCrops: 0,
+          totalCustomers: 0,
+          totalTransport: 0,
+          totalAuctions: 0,
+          recentActivity: []
+        });
+        setLoading(false);
+        return;
+      }
+      
+      console.log('✅ Fetching dashboard data for farmerId:', farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/dashboard/farmer/${farmerId}?t=${timestamp}`);
       setDashboardData(response.data);
+      console.log('✅ Dashboard data loaded:', response.data);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
+      // Set fallback data to prevent crashes
+      setDashboardData({
+        totalCrops: 0,
+        totalCustomers: 0,
+        totalTransport: 0,
+        totalAuctions: 0,
+        recentActivity: []
+      });
     } finally {
       setLoading(false);
     }
@@ -58,9 +88,31 @@ const FarmerDashboard = ({ user, onLogout }) => {
   const fetchAiDoctorStats = async () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.get(`${API_URL}/api/ai-doctor/stats/${user.farmerId}`);
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId || user?.farmerId;
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found for AI Doctor stats');
+        setAiDoctorStats({
+          totalConsultations: 0,
+          questionsAsked: 0,
+          imagesAnalyzed: 0,
+          lastConsultation: null,
+          isActive: false,
+          recentTopics: []
+        });
+        return;
+      }
+      
+      console.log('✅ Fetching AI Doctor stats for farmerId:', farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/ai-doctor/stats/${farmerId}`);
       setAiDoctorStats(response.data);
+      console.log('✅ AI Doctor stats loaded:', response.data);
     } catch (error) {
+      console.log('⚠️ AI Doctor stats not available, using fallback');
       setAiDoctorStats({
         totalConsultations: 0,
         questionsAsked: 0,

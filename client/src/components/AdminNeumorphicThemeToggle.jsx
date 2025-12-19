@@ -14,10 +14,12 @@ const AdminNeumorphicThemeToggle = ({ size = 'md' }) => {
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add('dark');
-      document.body.style.backgroundColor = '#0a0f1a';
+      document.body.style.backgroundColor = '#111827';
+      document.body.style.backgroundImage = 'none';
     } else {
       document.body.classList.remove('dark');
-      document.body.style.backgroundColor = '#f0f4f8';
+      document.body.style.backgroundColor = '#f8fafc';
+      document.body.style.backgroundImage = 'none';
     }
   }, [isDarkMode]);
 
@@ -29,29 +31,26 @@ const AdminNeumorphicThemeToggle = ({ size = 'md' }) => {
 
   const sizes = {
     sm: {
-      container: 'w-32 h-12',
-      knob: 'w-10 h-10',
-      text: 'text-xs',
+      container: 'w-24 h-10',
+      knob: 'w-8 h-8',
       icon: 'w-4 h-4',
-      slideDistance: '5rem' // 32 - 10 - padding = ~5rem
+      slideDistance: '4rem'
     },
     md: {
-      container: 'w-40 h-14',
-      knob: 'w-12 h-12',
-      text: 'text-sm',
+      container: 'w-28 h-12',
+      knob: 'w-10 h-10',
       icon: 'w-5 h-5',
-      slideDistance: '6.5rem' // 40 - 12 - padding = ~6.5rem
+      slideDistance: '4.5rem'
     },
     lg: {
-      container: 'w-48 h-16',
-      knob: 'w-14 h-14',
-      text: 'text-base',
+      container: 'w-32 h-14',
+      knob: 'w-12 h-12',
       icon: 'w-6 h-6',
-      slideDistance: '8rem' // 48 - 14 - padding = ~8rem
+      slideDistance: '5rem'
     }
   };
 
-  const { container, knob, text, icon, slideDistance } = sizes[size] || sizes.md;
+  const { container, knob, icon, slideDistance } = sizes[size] || sizes.md;
 
   return (
     <div className="flex items-center justify-center">
@@ -74,59 +73,42 @@ const AdminNeumorphicThemeToggle = ({ size = 'md' }) => {
         `}
         style={{
           boxShadow: isDarkMode
-            ? 'inset 8px 8px 16px #060a12, inset -8px -8px 16px #0e1422'
-            : 'inset 8px 8px 16px #d1d9e0, inset -8px -8px 16px #ffffff'
+            ? 'inset 1px 1px 2px rgba(6, 10, 18, 0.2), inset -1px -1px 2px rgba(14, 20, 34, 0.1)'
+            : 'inset 1px 1px 2px rgba(209, 217, 224, 0.2), inset -1px -1px 2px rgba(255, 255, 255, 0.6)'
         }}
         disabled={isAnimating}
       >
-        {/* Light Mode Text - Left Side */}
-        <div 
-          className={`
-            absolute 
-            left-3 
-            top-1/2 
-            transform 
-            -translate-y-1/2 
-            ${text} 
-            font-bold 
-            tracking-wide
-            transition-all 
-            duration-500 
-            ease-in-out
-            pointer-events-none
-            select-none
-            ${isDarkMode 
-              ? 'opacity-30 text-[#64748b]' 
-              : 'opacity-100 text-[#475569]'
-            }
-          `}
-        >
-          LIGHT
-        </div>
-
-        {/* Dark Mode Text - Right Side */}
-        <div 
-          className={`
-            absolute 
-            right-3 
-            top-1/2 
-            transform 
-            -translate-y-1/2 
-            ${text} 
-            font-bold 
-            tracking-wide
-            transition-all 
-            duration-500 
-            ease-in-out
-            pointer-events-none
-            select-none
-            ${isDarkMode 
-              ? 'opacity-100 text-[#94a3b8]' 
-              : 'opacity-30 text-[#64748b]'
-            }
-          `}
-        >
-          DARK
+        {/* Background Icons */}
+        <div className="absolute inset-0 flex items-center justify-between px-2">
+          {/* Sun Icon - Left Side */}
+          <Sun 
+            className={`
+              w-4 h-4
+              transition-all 
+              duration-500 
+              ease-in-out
+              ${isDarkMode 
+                ? 'opacity-30 text-[#64748b]' 
+                : 'opacity-70 text-[#3b82f6]'
+              }
+            `}
+            strokeWidth={2}
+          />
+          
+          {/* Moon Icon - Right Side */}
+          <Moon 
+            className={`
+              w-4 h-4
+              transition-all 
+              duration-500 
+              ease-in-out
+              ${isDarkMode 
+                ? 'opacity-70 text-[#60a5fa]' 
+                : 'opacity-30 text-[#64748b]'
+              }
+            `}
+            strokeWidth={2}
+          />
         </div>
 
         {/* Sliding Knob */}
@@ -154,16 +136,12 @@ const AdminNeumorphicThemeToggle = ({ size = 'md' }) => {
               : 'translateX(0)',
             boxShadow: isDarkMode
               ? `
-                  8px 8px 16px #060a12,
-                  -8px -8px 16px #384047,
-                  inset 2px 2px 4px #384047,
-                  inset -2px -2px 4px #060a12
+                  1px 1px 2px rgba(6, 10, 18, 0.3),
+                  -1px -1px 2px rgba(56, 64, 71, 0.15)
                 `
               : `
-                  8px 8px 16px #d1d9e0,
-                  -8px -8px 16px #ffffff,
-                  inset 2px 2px 4px #ffffff,
-                  inset -2px -2px 4px #d1d9e0
+                  1px 1px 2px rgba(209, 217, 224, 0.3),
+                  -1px -1px 2px rgba(255, 255, 255, 0.7)
                 `
           }}
         >

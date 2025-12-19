@@ -20,6 +20,7 @@ import useSocket from '../../hooks/useSocket';
 import { useTheme } from '../../context/ThemeContext';
 import FarmerHeader from '../../components/FarmerHeader';
 import GlassCard from '../../components/GlassCard';
+import { UserSession } from '../../utils/userSession';
 
 const CustomerSupport = () => {
   const navigate = useNavigate();
@@ -53,9 +54,9 @@ const CustomerSupport = () => {
     fetchTickets();
     
     // Join farmer room for real-time updates
-    const user = JSON.parse(localStorage.getItem('farmerUser'));
-    if (user && socket) {
-      joinFarmer(user.farmerId);
+    const userData = UserSession.getCurrentUser('farmer');
+    if (userData && socket) {
+      joinFarmer(userData.farmerId);
     }
     
     // Set up socket connection status
@@ -64,7 +65,7 @@ const CustomerSupport = () => {
         console.log('🔌 Customer Support connected to Socket.IO');
         setIsConnected(true);
         if (user) {
-          joinFarmer(user.farmerId);
+          joinFarmer(userData.farmerId);
         }
       });
       
@@ -137,9 +138,9 @@ const CustomerSupport = () => {
     try {
       if (showRefreshIndicator) setIsRefreshing(true);
       
-      const user = JSON.parse(localStorage.getItem('farmerUser'));
+      const userData = UserSession.getCurrentUser('farmer');
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.get(`${API_URL}/api/support/tickets/farmer/${user.farmerId}`);
+      const response = await axios.get(`${API_URL}/api/support/tickets/farmer/${userData.farmerId}`);
       
       // Check if there are new messages
       const hasNewMessages = selectedTicket && response.data.find(t => 
@@ -196,12 +197,12 @@ const CustomerSupport = () => {
     if (!newTicket.subject.trim() || !newTicket.message.trim()) return;
     
     try {
-      const user = JSON.parse(localStorage.getItem('farmerUser'));
+      const userData = UserSession.getCurrentUser('farmer');
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
       const response = await axios.post(`${API_URL}/api/support/tickets`, {
-        farmerId: user.farmerId,
-        farmerName: user.name,
+        farmerId: userData.farmerId,
+        farmerName: userData.name,
         ...newTicket
       });
       

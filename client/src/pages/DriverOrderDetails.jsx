@@ -20,19 +20,39 @@ const DriverOrderDetails = ({ user, onBack }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
+  // Debug logging to see what user data we're receiving
+  console.log('🚛 DriverOrderDetails - Received user data:', user);
 
   useEffect(() => {
+    if (!user) {
+      console.error('❌ No user data provided to DriverOrderDetails');
+      return;
+    }
+    
+    if (!user.driverId) {
+      console.error('❌ No driverId found in user data:', user);
+      return;
+    }
+    
     fetchOrders();
     fetchNotifications();
-  }, []);
+  }, [user]);
 
   const fetchOrders = async () => {
     try {
+      if (!user?.driverId) {
+        console.error('❌ Cannot fetch orders: No driverId available');
+        setLoading(false);
+        return;
+      }
+
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      console.log('🚛 Fetching orders for driverId:', user.driverId);
       const response = await axios.get(`${API_URL}/api/driver/bookings/${user.driverId}`);
       setOrders(response.data);
+      console.log('✅ Orders fetched successfully:', response.data);
     } catch (error) {
-      console.error('Failed to fetch orders:', error);
+      console.error('❌ Failed to fetch orders:', error);
     } finally {
       setLoading(false);
     }

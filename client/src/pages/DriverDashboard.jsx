@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Truck, 
   Calendar,
@@ -18,6 +19,7 @@ import {
 import axios from 'axios';
 
 const DriverDashboard = ({ user, onLogout }) => {
+  const navigate = useNavigate();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showBookingsModal, setShowBookingsModal] = useState(false);
@@ -538,7 +540,7 @@ const DriverDashboard = ({ user, onLogout }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/driver-orders'}
+              onClick={() => navigate('/driver/orders')}
               className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 text-center hover:shadow-lg transition-all"
             >
               <Calendar className="w-8 h-8 text-blue-600 mx-auto mb-2" />

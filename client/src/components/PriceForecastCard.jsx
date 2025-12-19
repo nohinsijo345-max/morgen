@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, Minus, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 import GlassCard from './GlassCard';
+import { UserSession } from '../utils/userSession';
 
 const PriceForecastCard = ({ onClick }) => {
   const [forecasts, setForecasts] = useState([]);
@@ -21,23 +22,28 @@ const PriceForecastCard = ({ onClick }) => {
 
   const fetchForecasts = async () => {
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        // Add cache-busting parameter to ensure fresh data
-        const timestamp = new Date().getTime();
-        const response = await axios.get(`${API_URL}/api/price-forecast/forecast/${userData.farmerId}?t=${timestamp}`);
-        setForecasts(response.data.forecasts || []);
-        setLastUpdated(response.data.lastUpdated);
-        setIsAiGenerated(response.data.aiGenerated || false);
-        
-        const updateSource = response.data.fromCache ? 'cache' : 'fresh AI';
-        console.log(`📊 Price forecasts refreshed from ${updateSource}:`, new Date().toLocaleTimeString());
-        
-        if (response.data.aiGenerated && !response.data.fromCache) {
-          console.log('🤖 Fresh AI-powered forecasts generated');
-        }
+      const farmerId = UserSession.getFarmerId();
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session for price forecasts');
+        return;
+      }
+      
+      console.log('✅ Fetching price forecasts for farmerId:', farmerId);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      // Add cache-busting parameter to ensure fresh data
+      const timestamp = new Date().getTime();
+      const response = await axios.get(`${API_URL}/api/price-forecast/forecast/${farmerId}?t=${timestamp}`);
+      setForecasts(response.data.forecasts || []);
+      setLastUpdated(response.data.lastUpdated);
+      setIsAiGenerated(response.data.aiGenerated || false);
+      
+      const updateSource = response.data.fromCache ? 'cache' : 'fresh AI';
+      console.log(`📊 Price forecasts refreshed from ${updateSource}:`, new Date().toLocaleTimeString());
+      
+      if (response.data.aiGenerated && !response.data.fromCache) {
+        console.log('🤖 Fresh AI-powered forecasts generated');
       }
     } catch (error) {
       console.error('Failed to fetch price forecasts:', error);

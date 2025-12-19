@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Timer, Calendar, Plus } from 'lucide-react';
 import axios from 'axios';
+import { UserSession } from '../utils/userSession';
+import { useTheme } from '../context/ThemeContext';
 
 const HarvestCountdownCard = ({ onClick }) => {
   const [countdowns, setCountdowns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     fetchCountdowns();
@@ -16,16 +19,21 @@ const HarvestCountdownCard = ({ onClick }) => {
 
   const fetchCountdowns = async () => {
     try {
-      const farmerUser = localStorage.getItem('farmerUser');
-      if (farmerUser) {
-        const userData = JSON.parse(farmerUser);
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        // Add cache-busting parameter to ensure fresh data
-        const timestamp = new Date().getTime();
-        const response = await axios.get(`${API_URL}/api/harvest/countdowns/${userData.farmerId}?t=${timestamp}`);
-        setCountdowns(response.data);
-        console.log('Harvest countdowns refreshed:', new Date().toLocaleTimeString());
+      const farmerId = UserSession.getFarmerId();
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found in session for harvest countdowns');
+        return;
       }
+      
+      console.log('✅ Fetching harvest countdowns for farmerId:', farmerId);
+      
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      // Add cache-busting parameter to ensure fresh data
+      const timestamp = new Date().getTime();
+      const response = await axios.get(`${API_URL}/api/harvest/countdowns/${farmerId}?t=${timestamp}`);
+      setCountdowns(response.data);
+      console.log('Harvest countdowns refreshed:', new Date().toLocaleTimeString());
     } catch (error) {
       console.error('Failed to fetch countdowns:', error);
     } finally {
@@ -46,9 +54,13 @@ const HarvestCountdownCard = ({ onClick }) => {
   };
 
   const mostRecentCountdown = countdowns.length > 0 ? countdowns[0] : null;
+  
+  // Fixed empty state colors based on theme
   const bgGradient = mostRecentCountdown 
     ? getStatusColor(mostRecentCountdown.daysLeft)
-    : 'from-[#e1e2d0]/40 to-[#e1e2d0]/20';
+    : isDarkMode 
+      ? 'from-transparent to-transparent' // Transparent on dark theme
+      : 'from-white to-white'; // White on light theme
 
   return (
     <motion.div
@@ -58,21 +70,23 @@ const HarvestCountdownCard = ({ onClick }) => {
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
       onClick={onClick}
-      className={`bg-gradient-to-br ${bgGradient} rounded-3xl p-3 shadow-2xl cursor-pointer relative overflow-hidden group h-full flex flex-col`}
+      className={`bg-gradient-to-br ${bgGradient} rounded-3xl p-3 shadow-2xl cursor-pointer relative overflow-hidden group h-full flex flex-col ${
+        !mostRecentCountdown ? (isDarkMode ? 'border border-gray-700' : 'border border-gray-200') : ''
+      }`}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-1.5 relative z-10">
         <div className="flex items-center gap-1.5">
-          <div className={`w-8 h-8 ${mostRecentCountdown ? 'bg-white/20' : 'bg-[#082829]'} rounded-lg flex items-center justify-center shadow-lg`}>
-            <Timer className={`w-4 h-4 ${mostRecentCountdown ? 'text-white' : 'text-[#e1e2d0]'}`} />
+          <div className={`w-8 h-8 ${mostRecentCountdown ? 'bg-white/20' : (isDarkMode ? 'bg-[#14452f]' : 'bg-[#082829]')} rounded-lg flex items-center justify-center shadow-lg`}>
+            <Timer className={`w-4 h-4 ${mostRecentCountdown ? 'text-white' : (isDarkMode ? 'text-[#e1e2d0]' : 'text-[#e1e2d0]')}`} />
           </div>
           <div>
-            <h2 className={`text-sm font-bold ${mostRecentCountdown ? 'text-white' : 'text-[#082829]'}`}>Harvest Countdown</h2>
-            <p className={`${mostRecentCountdown ? 'text-white/80' : 'text-[#082829]/60'} text-[10px]`}>Track your crops</p>
+            <h2 className={`text-sm font-bold ${mostRecentCountdown ? 'text-white' : (isDarkMode ? 'text-gray-300' : 'text-[#082829]')}`}>Harvest Countdown</h2>
+            <p className={`${mostRecentCountdown ? 'text-white/80' : (isDarkMode ? 'text-gray-400' : 'text-[#082829]/60')} text-[10px]`}>Track your crops</p>
           </div>
         </div>
-        <div className={`w-6 h-6 rounded-full ${mostRecentCountdown ? 'bg-white/20' : 'bg-[#082829]/10'} flex items-center justify-center`}>
-          <Calendar className={`w-3 h-3 ${mostRecentCountdown ? 'text-white' : 'text-[#082829]'}`} />
+        <div className={`w-6 h-6 rounded-full ${mostRecentCountdown ? 'bg-white/20' : (isDarkMode ? 'bg-gray-700' : 'bg-[#082829]/10')} flex items-center justify-center`}>
+          <Calendar className={`w-3 h-3 ${mostRecentCountdown ? 'text-white' : (isDarkMode ? 'text-gray-400' : 'text-[#082829]')}`} />
         </div>
       </div>
 
@@ -81,7 +95,7 @@ const HarvestCountdownCard = ({ onClick }) => {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            className={`w-8 h-8 border-2 ${mostRecentCountdown ? 'border-white/20 border-t-white' : 'border-[#082829]/20 border-t-[#082829]'} rounded-full`}
+            className={`w-8 h-8 border-2 ${mostRecentCountdown ? 'border-white/20 border-t-white' : (isDarkMode ? 'border-gray-600 border-t-gray-400' : 'border-[#082829]/20 border-t-[#082829]')} rounded-full`}
           />
         </div>
       ) : mostRecentCountdown ? (
@@ -94,11 +108,11 @@ const HarvestCountdownCard = ({ onClick }) => {
         </div>
       ) : (
         <div className="text-center flex-1 flex flex-col items-center justify-center relative z-10">
-          <div className="w-12 h-12 mx-auto mb-2 bg-[#082829]/10 rounded-full flex items-center justify-center">
-            <Plus className="w-6 h-6 text-[#082829]/40" />
+          <div className={`w-12 h-12 mx-auto mb-2 ${isDarkMode ? 'bg-gray-700' : 'bg-[#082829]/10'} rounded-full flex items-center justify-center`}>
+            <Plus className={`w-6 h-6 ${isDarkMode ? 'text-gray-400' : 'text-[#082829]/40'}`} />
           </div>
-          <p className="text-[#082829]/60 mb-1 font-medium text-sm">No active countdowns</p>
-          <p className="text-[#082829]/40 text-xs">Tap to set your first harvest</p>
+          <p className={`${isDarkMode ? 'text-gray-400' : 'text-[#082829]/60'} mb-1 font-medium text-sm`}>No active countdowns</p>
+          <p className={`${isDarkMode ? 'text-gray-500' : 'text-[#082829]/40'} text-xs`}>Tap to set your first harvest</p>
         </div>
       )}
     </motion.div>

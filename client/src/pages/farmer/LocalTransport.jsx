@@ -10,7 +10,9 @@ import {
   Clock,
   Users,
   Package,
-  ArrowLeft
+  ArrowLeft,
+  History,
+  ShoppingBag
 } from 'lucide-react';
 import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
@@ -105,6 +107,33 @@ const LocalTransport = () => {
             </div>
           </div>
         </GlassCard>
+
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/order-tracking')}
+            className="w-full p-4 rounded-2xl border shadow-lg transition-all flex items-center gap-3 hover:shadow-xl"
+            style={{ 
+              backgroundColor: colors.backgroundCard, 
+              borderColor: colors.border,
+              boxShadow: `0 4px 12px ${colors.primary}15`
+            }}
+          >
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-md"
+                 style={{ backgroundColor: colors.primary }}>
+              <MapPin className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+            </div>
+            <div className="text-left flex-1">
+              <div className="font-semibold text-base" style={{ color: colors.textPrimary }}>Track Orders</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>Live tracking of your transport bookings</div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm font-medium" style={{ color: colors.primary }}>View All →</div>
+            </div>
+          </motion.button>
+        </div>
 
         {/* Vehicle Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

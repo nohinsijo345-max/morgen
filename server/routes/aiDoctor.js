@@ -118,7 +118,7 @@ router.post('/chat/:farmerId/message', async (req, res) => {
 
     // Add user message
     const userMessage = {
-      id: messageId || `msg_${Date.now()}_user`,
+      id: messageId || `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_user`,
       role: 'user',
       content: message.trim(),
       timestamp: new Date()
@@ -127,8 +127,14 @@ router.post('/chat/:farmerId/message', async (req, res) => {
     chat.messages.push(userMessage);
     chat.sessionStats.questionsAsked += 1;
 
+    // Create unique context for each request to prevent caching
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const timestamp = new Date().toISOString();
+
     // Prepare AI context with farmer information
     const farmerContext = `
+REQUEST ID: ${requestId}
+TIMESTAMP: ${timestamp}
 FARMER PROFILE:
 - Name: ${chat.farmerName}
 - Location: ${chat.farmerContext.location.city}, ${chat.farmerContext.location.district}, ${chat.farmerContext.location.state}
@@ -531,11 +537,13 @@ Just describe your farming concern or upload a plant photo for instant analysis!
     }
 
     // Add AI response
+    // Create AI response message with unique ID
     const assistantMessage = {
-      id: `msg_${Date.now()}_assistant`,
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_assistant`,
       role: 'assistant',
       content: aiResponse,
-      timestamp: new Date()
+      timestamp: new Date(),
+      requestId: requestId // Add request ID for tracking
     };
     
     chat.messages.push(assistantMessage);
@@ -551,10 +559,11 @@ Just describe your farming concern or upload a plant photo for instant analysis!
     
     // Fallback response
     const fallbackMessage = {
-      id: `msg_${Date.now()}_assistant`,
+      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_assistant`,
       role: 'assistant',
       content: "🌱 I'm here to help with your agricultural questions! I can assist with plant diseases, crop management, soil health, pest control, and farming best practices. Please feel free to ask me anything related to your farming needs.",
-      timestamp: new Date()
+      timestamp: new Date(),
+      requestId: requestId // Add request ID for tracking
     };
 
     res.json({
