@@ -13,6 +13,7 @@ import {
   Eye
 } from 'lucide-react';
 import axios from 'axios';
+import AdminGlassCard from '../../../components/AdminGlassCard';
 
 const CancellationRequestsManagement = () => {
   const [cancellationRequests, setCancellationRequests] = useState([]);
@@ -113,12 +114,9 @@ const CancellationRequestsManagement = () => {
       <div className="space-y-4">
         {cancellationRequests.length > 0 ? (
           cancellationRequests.map((booking, index) => (
-            <motion.div
+            <AdminGlassCard
               key={booking._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg hover:shadow-xl transition-all"
+              delay={index * 0.1}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
@@ -214,7 +212,7 @@ const CancellationRequestsManagement = () => {
                   </motion.button>
                 </div>
               </div>
-            </motion.div>
+            </AdminGlassCard>
           ))
         ) : (
           <motion.div
@@ -239,7 +237,7 @@ const CancellationRequestsManagement = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+            className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl border border-white/20"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-[#2C5F7C]">Review Cancellation Request</h3>

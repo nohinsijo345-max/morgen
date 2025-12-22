@@ -520,7 +520,7 @@ const DriverOrderDetails = ({ user, onBack }) => {
                         }
                       }}
                       disabled={selectedOrder.status !== 'order_processing' && selectedOrder.status !== 'order_accepted'}
-                      className="bg-gradient-to-r from-amber-600 to-orange-700 hover:from-amber-700 hover:to-orange-800 disabled:from-amber-500 disabled:to-orange-600 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 disabled:from-orange-300 disabled:to-orange-400 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
                       🚚 Start Pickup
                     </motion.button>
@@ -535,7 +535,7 @@ const DriverOrderDetails = ({ user, onBack }) => {
                         }
                       }}
                       disabled={selectedOrder.status !== 'pickup_started'}
-                      className="bg-gradient-to-r from-yellow-700 to-amber-800 hover:from-yellow-800 hover:to-amber-900 disabled:from-yellow-500 disabled:to-amber-600 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-300 disabled:to-orange-400 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
                       📦 Mark Picked Up
                     </motion.button>
@@ -550,7 +550,7 @@ const DriverOrderDetails = ({ user, onBack }) => {
                         }
                       }}
                       disabled={selectedOrder.status !== 'order_picked_up'}
-                      className="bg-gradient-to-r from-orange-600 to-red-700 hover:from-orange-700 hover:to-red-800 disabled:from-orange-500 disabled:to-red-600 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 disabled:from-orange-300 disabled:to-orange-400 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
                       🚛 In Transit
                     </motion.button>
@@ -565,7 +565,7 @@ const DriverOrderDetails = ({ user, onBack }) => {
                         }
                       }}
                       disabled={selectedOrder.status !== 'in_transit'}
-                      className="bg-gradient-to-r from-amber-700 to-yellow-800 hover:from-amber-800 hover:to-yellow-900 disabled:from-amber-500 disabled:to-yellow-600 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                      className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-orange-300 disabled:to-orange-400 disabled:cursor-not-allowed disabled:opacity-70 text-white px-3 py-2.5 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                     >
                       ✅ Mark Delivered
                     </motion.button>
@@ -600,7 +600,7 @@ const DriverOrderDetails = ({ user, onBack }) => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleAcceptOrder(selectedOrder.bookingId)}
-                    className="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl transition-colors flex items-center justify-center gap-2"
                   >
                     <CheckCircle className="w-4 h-4" />
                     Accept Order

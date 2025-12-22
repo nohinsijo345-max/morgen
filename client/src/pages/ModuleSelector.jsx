@@ -22,18 +22,18 @@ const ModuleSelector = () => {
   const heroRef = useRef(null);
   const cardsRef = useRef(null);
   
-  // Scroll-based animations - ultra smooth, no glitches
+  // Scroll-based animations - simplified to prevent glitching
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
   
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, -20]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.9]);
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, -10]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0.95]);
   
-  // In-view animations - immediate and smooth
-  const heroInView = useInView(heroRef, { once: true, margin: "0px" });
-  const cardsInView = useInView(cardsRef, { once: true, margin: "0px" });
+  // In-view animations - simplified
+  const heroInView = useInView(heroRef, { once: true, margin: "-50px" });
+  const cardsInView = useInView(cardsRef, { once: true, margin: "-100px" });
 
   console.log('ModuleSelector rendering...');
 
@@ -142,28 +142,28 @@ const ModuleSelector = () => {
         {/* Floating Orbs - Reduced complexity */}
         <motion.div
           animate={{ 
-            y: [0, -20, 0],
-            x: [0, 15, 0],
-            scale: [1, 1.05, 1]
+            y: [0, -15, 0],
+            x: [0, 10, 0],
+            scale: [1, 1.02, 1]
           }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-20 left-20 w-48 h-48 rounded-full blur-3xl"
           style={{ 
             backgroundColor: currentColors.accent,
-            opacity: isDarkMode ? 0.08 : 0.12
+            opacity: isDarkMode ? 0.06 : 0.1
           }}
         />
         <motion.div
           animate={{ 
-            y: [0, 25, 0],
-            x: [0, -20, 0],
-            scale: [1, 0.95, 1]
+            y: [0, 20, 0],
+            x: [0, -15, 0],
+            scale: [1, 0.98, 1]
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           className="absolute bottom-20 right-20 w-64 h-64 rounded-full blur-3xl"
           style={{ 
             backgroundColor: currentColors.accentSecondary,
-            opacity: isDarkMode ? 0.06 : 0.1
+            opacity: isDarkMode ? 0.04 : 0.08
           }}
         />
       </div>
@@ -562,7 +562,7 @@ const ModuleSelector = () => {
               boxShadow: `0 4px 15px ${currentColors.accent}15`
             }}
           >
-            © 2025 Morgen Agricultural Platform. Empowering agriculture through technology.
+            © 2026 Morgen Agricultural Platform. Empowering agriculture through technology.
           </motion.p>
         </motion.footer>
       </main>

@@ -31,22 +31,22 @@ const NeumorphicThemeToggle = ({ size = 'md' }) => {
 
   const sizes = {
     sm: {
-      container: 'w-24 h-10',
+      container: 'w-20 h-10',
       knob: 'w-8 h-8',
       icon: 'w-4 h-4',
-      slideDistance: '4rem'
+      slideDistance: '2.5rem'
     },
     md: {
-      container: 'w-28 h-12',
-      knob: 'w-10 h-10',
-      icon: 'w-5 h-5',
-      slideDistance: '4.5rem'
+      container: 'w-20 h-10',
+      knob: 'w-8 h-8',
+      icon: 'w-4 h-4',
+      slideDistance: '2.5rem'
     },
     lg: {
-      container: 'w-32 h-14',
-      knob: 'w-12 h-12',
-      icon: 'w-6 h-6',
-      slideDistance: '5rem'
+      container: 'w-20 h-10',
+      knob: 'w-8 h-8',
+      icon: 'w-4 h-4',
+      slideDistance: '2.5rem'
     }
   };
 

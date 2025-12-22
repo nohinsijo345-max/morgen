@@ -12,6 +12,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import axios from 'axios';
+import AdminGlassCard from '../../../components/AdminGlassCard';
 
 const OrderDetailsManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -200,12 +201,9 @@ const OrderDetailsManagement = () => {
       <div className="space-y-4">
         {orders.length > 0 ? (
           orders.map((order, index) => (
-            <motion.div
+            <AdminGlassCard
               key={order._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg hover:shadow-xl transition-all"
+              delay={index * 0.1}
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-4">
@@ -371,7 +369,7 @@ const OrderDetailsManagement = () => {
                   </motion.button>
                 </div>
               </div>
-            </motion.div>
+            </AdminGlassCard>
           ))
         ) : (
           <motion.div
@@ -396,7 +394,7 @@ const OrderDetailsManagement = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+            className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto shadow-2xl border border-white/20"
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-[#2C5F7C]">Order Details</h3>
@@ -542,7 +540,7 @@ const OrderDetailsManagement = () => {
                       <select
                         value={selectedDriverId}
                         onChange={(e) => setSelectedDriverId(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                        className="flex-1 px-3 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/30 text-sm transition-all"
                         disabled={assigningDriver}
                       >
                         <option value="">Select a driver...</option>

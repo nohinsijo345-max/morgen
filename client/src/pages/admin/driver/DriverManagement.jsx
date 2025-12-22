@@ -9,13 +9,13 @@ import {
   Mail,
   MapPin,
   Star,
-  Eye,
   Search,
   Filter,
   Truck
 } from 'lucide-react';
 import axios from 'axios';
 import VehicleAssignment from './VehicleAssignment';
+import AdminGlassCard from '../../../components/AdminGlassCard';
 
 const DriverManagement = () => {
   const [drivers, setDrivers] = useState([]);
@@ -187,7 +187,7 @@ const DriverManagement = () => {
       </div>
 
       {/* Search and Filter */}
-      <div className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg">
+      <AdminGlassCard>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#4A7C99] w-5 h-5" />
@@ -196,7 +196,7 @@ const DriverManagement = () => {
               placeholder="Search drivers by name, ID, or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white/50 border border-[#5B9FBF]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 bg-white/20 backdrop-blur-sm border border-[#5B9FBF]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent focus:bg-white/30 transition-all"
             />
           </div>
           
@@ -205,7 +205,7 @@ const DriverManagement = () => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="pl-10 pr-8 py-3 bg-white/50 border border-[#5B9FBF]/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent appearance-none"
+              className="pl-10 pr-8 py-3 bg-white/20 backdrop-blur-sm border border-[#5B9FBF]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent focus:bg-white/30 appearance-none transition-all"
             >
               <option value="all">All Drivers</option>
               <option value="active">Active Only</option>
@@ -213,17 +213,14 @@ const DriverManagement = () => {
             </select>
           </div>
         </div>
-      </div>
+      </AdminGlassCard>
 
       {/* Drivers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredDrivers.map((driver, index) => (
-          <motion.div
+          <AdminGlassCard
             key={driver._id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg hover:shadow-xl transition-all"
+            delay={index * 0.1}
           >
             {/* Driver Header */}
             <div className="flex items-center gap-4 mb-4">
@@ -322,7 +319,7 @@ const DriverManagement = () => {
                 <Trash2 className="w-4 h-4" />
               </motion.button>
             </div>
-          </motion.div>
+          </AdminGlassCard>
         ))}
       </div>
 
@@ -366,7 +363,7 @@ const DriverManagement = () => {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/20"
           >
             <h3 className="text-2xl font-bold text-[#2C5F7C] mb-6">
               {selectedDriver ? 'Edit Driver' : 'Add New Driver'}
@@ -383,7 +380,7 @@ const DriverManagement = () => {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   />
                 </div>
 
@@ -396,7 +393,7 @@ const DriverManagement = () => {
                     required
                     value={formData.driverId}
                     onChange={(e) => setFormData({...formData, driverId: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                     placeholder="DRV001"
                   />
                 </div>
@@ -410,7 +407,7 @@ const DriverManagement = () => {
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   />
                 </div>
 
@@ -423,7 +420,7 @@ const DriverManagement = () => {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   />
                 </div>
 
@@ -436,7 +433,7 @@ const DriverManagement = () => {
                     required
                     value={formData.licenseNumber}
                     onChange={(e) => setFormData({...formData, licenseNumber: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   />
                 </div>
 
@@ -448,7 +445,7 @@ const DriverManagement = () => {
                     required
                     value={formData.vehicleType}
                     onChange={(e) => setFormData({...formData, vehicleType: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   >
                     <option value="">Select Vehicle Type</option>
                     {vehicleTypes.map(type => (
@@ -467,7 +464,7 @@ const DriverManagement = () => {
                     required
                     value={formData.district}
                     onChange={(e) => setFormData({...formData, district: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   >
                     <option value="">Select District</option>
                     {districts.map(district => (
@@ -488,7 +485,7 @@ const DriverManagement = () => {
                     onChange={(e) => setFormData({...formData, pinCode: e.target.value.replace(/\D/g, '').slice(0, 6)})}
                     maxLength="6"
                     placeholder="6-digit PIN code"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   />
                 </div>
 
@@ -501,7 +498,7 @@ const DriverManagement = () => {
                     required={!selectedDriver}
                     value={formData.password}
                     onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400"
+                    className="w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/30 transition-all"
                   />
                 </div>
               </div>

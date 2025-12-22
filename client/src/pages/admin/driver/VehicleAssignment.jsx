@@ -97,7 +97,7 @@ const VehicleAssignment = ({ isOpen, onClose, driver, onAssignmentUpdate }) => {
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[80vh] overflow-hidden shadow-2xl"
+          className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 max-w-4xl w-full max-h-[80vh] overflow-hidden shadow-2xl border border-white/20"
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -191,7 +191,7 @@ const VehicleAssignment = ({ isOpen, onClose, driver, onAssignmentUpdate }) => {
                     placeholder="Search vehicles..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B9FBF]"
+                    className="w-full pl-10 pr-4 py-2 bg-white/20 backdrop-blur-sm border border-[#5B9FBF]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5B9FBF] focus:bg-white/30 transition-all"
                   />
                 </div>
                 

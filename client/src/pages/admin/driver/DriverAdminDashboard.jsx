@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { useAdminTheme } from '../../../context/AdminThemeContext';
+import AdminGlassCard from '../../../components/AdminGlassCard';
 
 const DriverAdminDashboard = ({ onNavigate }) => {
   const { colors } = useAdminTheme();
@@ -94,11 +95,7 @@ const DriverAdminDashboard = ({ onNavigate }) => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-        >
+        <AdminGlassCard delay={0}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
               <Users className="w-6 h-6 text-white" />
@@ -111,14 +108,9 @@ const DriverAdminDashboard = ({ onNavigate }) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-        >
+        <AdminGlassCard delay={0.1}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
               <Truck className="w-6 h-6 text-white" />
@@ -131,14 +123,9 @@ const DriverAdminDashboard = ({ onNavigate }) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-        >
+        <AdminGlassCard delay={0.2}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
               <Calendar className="w-6 h-6 text-white" />
@@ -151,14 +138,9 @@ const DriverAdminDashboard = ({ onNavigate }) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-        >
+        <AdminGlassCard delay={0.3}>
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
               <IndianRupee className="w-6 h-6 text-white" />
@@ -172,16 +154,11 @@ const DriverAdminDashboard = ({ onNavigate }) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </AdminGlassCard>
       </div>
 
       {/* Quick Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-      >
+      <AdminGlassCard delay={0.4}>
         <h2 className="text-xl font-semibold text-[#2C5F7C] mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <motion.button
@@ -224,17 +201,12 @@ const DriverAdminDashboard = ({ onNavigate }) => {
             <div className="text-sm font-medium text-red-900">Cancellation Requests</div>
           </motion.button>
         </div>
-      </motion.div>
+      </AdminGlassCard>
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Bookings */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-        >
+        <AdminGlassCard delay={0.5}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-[#2C5F7C]">Recent Bookings</h3>
             <div className="flex items-center gap-2 text-sm text-[#4A7C99]">
@@ -246,13 +218,13 @@ const DriverAdminDashboard = ({ onNavigate }) => {
           <div className="space-y-3">
             {recentBookings.length > 0 ? (
               recentBookings.map((booking) => (
-                <div key={booking._id} className="flex items-center justify-between p-3 bg-white/40 rounded-xl border border-[#5B9FBF]/10">
+                <div key={booking._id} className="flex items-center justify-between p-3 bg-white/20 backdrop-blur-sm border border-[#5B9FBF]/30 rounded-xl hover:bg-white/30 transition-all">
                   <div className="flex-1">
-                    <div className="font-medium text-[#2C5F7C] text-sm">{booking.bookingId}</div>
-                    <div className="text-xs text-[#4A7C99]">{booking.farmerName}</div>
+                    <div className="font-medium text-white text-sm">{booking.bookingId}</div>
+                    <div className="text-xs text-gray-200">{booking.farmerName}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-semibold text-[#2C5F7C]">₹{booking.finalAmount}</div>
+                    <div className="text-sm font-semibold text-white">₹{booking.finalAmount}</div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
                       {booking.status}
                     </span>
@@ -266,15 +238,10 @@ const DriverAdminDashboard = ({ onNavigate }) => {
               </div>
             )}
           </div>
-        </motion.div>
+        </AdminGlassCard>
 
         {/* Recent Drivers */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-        >
+        <AdminGlassCard delay={0.6}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-[#2C5F7C]">Recent Drivers</h3>
             <div className="flex items-center gap-2 text-sm text-[#4A7C99]">
@@ -286,7 +253,7 @@ const DriverAdminDashboard = ({ onNavigate }) => {
           <div className="space-y-3">
             {recentDrivers.length > 0 ? (
               recentDrivers.map((driver) => (
-                <div key={driver._id} className="flex items-center justify-between p-3 bg-white/40 rounded-xl border border-[#5B9FBF]/10">
+                <div key={driver._id} className="flex items-center justify-between p-3 bg-white/20 backdrop-blur-sm border border-[#5B9FBF]/30 rounded-xl hover:bg-white/30 transition-all">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
                       <span className="text-white text-xs font-bold">
@@ -294,12 +261,12 @@ const DriverAdminDashboard = ({ onNavigate }) => {
                       </span>
                     </div>
                     <div>
-                      <div className="font-medium text-[#2C5F7C] text-sm">{driver.name}</div>
-                      <div className="text-xs text-[#4A7C99]">{driver.driverId}</div>
+                      <div className="font-medium text-white text-sm">{driver.name}</div>
+                      <div className="text-xs text-gray-200">{driver.driverId}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-[#4A7C99] capitalize">{driver.vehicleType}</div>
+                    <div className="text-xs text-gray-200 capitalize">{driver.vehicleType}</div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       driver.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
@@ -315,16 +282,11 @@ const DriverAdminDashboard = ({ onNavigate }) => {
               </div>
             )}
           </div>
-        </motion.div>
+        </AdminGlassCard>
       </div>
 
       {/* Performance Metrics */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-        className="bg-white/60 backdrop-blur-xl rounded-2xl p-6 border border-[#5B9FBF]/20 shadow-lg"
-      >
+      <AdminGlassCard delay={0.7}>
         <h3 className="text-lg font-semibold text-[#2C5F7C] mb-4">Performance Overview</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -363,7 +325,7 @@ const DriverAdminDashboard = ({ onNavigate }) => {
             </div>
           </div>
         </div>
-      </motion.div>
+      </AdminGlassCard>
     </div>
   );
 };

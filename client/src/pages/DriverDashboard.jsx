@@ -941,7 +941,7 @@ const DriverDashboard = ({ user, onLogout }) => {
                           }
                         }}
                         disabled={booking.status !== 'order_processing' && booking.status !== 'order_accepted'}
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                        className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                       >
                         🚚 Start Pickup
                       </motion.button>
@@ -956,7 +956,7 @@ const DriverDashboard = ({ user, onLogout }) => {
                           }
                         }}
                         disabled={booking.status !== 'pickup_started'}
-                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                       >
                         📦 Mark Picked Up
                       </motion.button>
@@ -971,7 +971,7 @@ const DriverDashboard = ({ user, onLogout }) => {
                           }
                         }}
                         disabled={booking.status !== 'order_picked_up'}
-                        className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                        className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                       >
                         🚛 In Transit
                       </motion.button>
@@ -986,7 +986,7 @@ const DriverDashboard = ({ user, onLogout }) => {
                           }
                         }}
                         disabled={booking.status !== 'in_transit'}
-                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
+                        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg text-sm font-medium transition-all shadow-md hover:shadow-lg disabled:shadow-none"
                       >
                         ✅ Mark Delivered
                       </motion.button>

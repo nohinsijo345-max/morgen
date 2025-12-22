@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { CheckCircle, Package, Calendar, ArrowRight, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 const BookingSuccessAnimation = ({ 
   bookingData, 
@@ -9,6 +10,7 @@ const BookingSuccessAnimation = ({
   onGoToDashboard 
 }) => {
   const navigate = useNavigate();
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <motion.div
@@ -22,8 +24,52 @@ const BookingSuccessAnimation = ({
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.5, opacity: 0, y: 50 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden"
+        className={`rounded-2xl p-6 max-w-sm w-full shadow-2xl relative overflow-hidden ${
+          isDarkMode 
+            ? 'bg-gray-900/90 backdrop-blur-xl border border-gray-700/50' 
+            : 'bg-white'
+        }`}
+        style={isDarkMode ? {
+          background: 'rgba(17, 24, 39, 0.95)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          border: '1px solid rgba(75, 85, 99, 0.3)',
+          boxShadow: `
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+          `
+        } : {}}
       >
+        {/* Glass Edge Reflections for Dark Mode */}
+        {isDarkMode && (
+          <>
+            {/* Top edge light reflection */}
+            <div 
+              className="absolute top-0 left-0 right-0 h-[1px] pointer-events-none"
+              style={{
+                background: `linear-gradient(90deg, 
+                  transparent 0%, 
+                  rgba(255, 255, 255, 0.15) 20%,
+                  rgba(255, 255, 255, 0.25) 50%,
+                  rgba(255, 255, 255, 0.15) 80%,
+                  transparent 100%)`
+              }}
+            />
+            
+            {/* Left edge light reflection */}
+            <div 
+              className="absolute top-0 left-0 bottom-0 w-[1px] pointer-events-none"
+              style={{
+                background: `linear-gradient(180deg, 
+                  rgba(255, 255, 255, 0.2) 0%, 
+                  rgba(255, 255, 255, 0.08) 50%,
+                  transparent 100%)`
+              }}
+            />
+          </>
+        )}
+
         {/* Background Animation */}
         <motion.div
           animate={{ 
@@ -31,7 +77,11 @@ const BookingSuccessAnimation = ({
             rotate: [0, 180, 360]
           }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-green-200 to-blue-200 rounded-full opacity-20"
+          className={`absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20 ${
+            isDarkMode 
+              ? 'bg-gradient-to-br from-green-400/30 to-blue-400/30' 
+              : 'bg-gradient-to-br from-green-200 to-blue-200'
+          }`}
         />
         
         <motion.div
@@ -40,7 +90,11 @@ const BookingSuccessAnimation = ({
             rotate: [360, 180, 0]
           }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-10 -left-10 w-24 h-24 bg-gradient-to-br from-purple-200 to-pink-200 rounded-full opacity-20"
+          className={`absolute -bottom-10 -left-10 w-24 h-24 rounded-full opacity-20 ${
+            isDarkMode 
+              ? 'bg-gradient-to-br from-purple-400/30 to-pink-400/30' 
+              : 'bg-gradient-to-br from-purple-200 to-pink-200'
+          }`}
         />
 
         {/* Success Icon Animation */}
@@ -64,7 +118,9 @@ const BookingSuccessAnimation = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-xl font-bold text-green-800 mb-1"
+            className={`text-xl font-bold mb-1 ${
+              isDarkMode ? 'text-green-400' : 'text-green-800'
+            }`}
           >
             Booking Confirmed!
           </motion.h2>
@@ -73,7 +129,9 @@ const BookingSuccessAnimation = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-sm text-green-600"
+            className={`text-sm ${
+              isDarkMode ? 'text-green-300' : 'text-green-600'
+            }`}
           >
             Your transport has been booked successfully
           </motion.p>
@@ -86,32 +144,54 @@ const BookingSuccessAnimation = ({
           transition={{ delay: 0.5 }}
           className="space-y-3 mb-4"
         >
-          <div className="bg-green-50 rounded-xl p-3 border border-green-200">
+          <div className={`rounded-xl p-3 border ${
+            isDarkMode 
+              ? 'bg-green-900/20 border-green-700/30 backdrop-blur-sm' 
+              : 'bg-green-50 border-green-200'
+          }`}>
             <div className="flex items-center gap-2 mb-2">
-              <Package className="w-4 h-4 text-green-600" />
-              <span className="font-semibold text-green-800 text-sm">Booking Details</span>
+              <Package className={`w-4 h-4 ${
+                isDarkMode ? 'text-green-400' : 'text-green-600'
+              }`} />
+              <span className={`font-semibold text-sm ${
+                isDarkMode ? 'text-green-300' : 'text-green-800'
+              }`}>Booking Details</span>
             </div>
             
             <div className="space-y-1 text-xs">
               <div className="flex justify-between">
-                <span className="text-green-700">Booking ID:</span>
-                <span className="font-semibold text-green-800">{bookingData.bookingId}</span>
+                <span className={isDarkMode ? 'text-green-200' : 'text-green-700'}>Booking ID:</span>
+                <span className={`font-semibold ${
+                  isDarkMode ? 'text-green-100' : 'text-green-800'
+                }`}>{bookingData.bookingId}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-700">Tracking ID:</span>
-                <span className="font-semibold text-green-800">{bookingData.trackingId}</span>
+                <span className={isDarkMode ? 'text-green-200' : 'text-green-700'}>Tracking ID:</span>
+                <span className={`font-semibold ${
+                  isDarkMode ? 'text-green-100' : 'text-green-800'
+                }`}>{bookingData.trackingId}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-700">Total Amount:</span>
-                <span className="font-semibold text-green-800">₹{bookingData.finalAmount}</span>
+                <span className={isDarkMode ? 'text-green-200' : 'text-green-700'}>Total Amount:</span>
+                <span className={`font-semibold ${
+                  isDarkMode ? 'text-green-100' : 'text-green-800'
+                }`}>₹{bookingData.finalAmount}</span>
               </div>
             </div>
           </div>
 
-          <div className="bg-blue-50 rounded-xl p-3 border border-blue-200">
+          <div className={`rounded-xl p-3 border ${
+            isDarkMode 
+              ? 'bg-blue-900/20 border-blue-700/30 backdrop-blur-sm' 
+              : 'bg-blue-50 border-blue-200'
+          }`}>
             <div className="flex items-center gap-2 mb-2">
-              <Calendar className="w-4 h-4 text-blue-600" />
-              <span className="font-semibold text-blue-800 text-sm">Expected Delivery</span>
+              <Calendar className={`w-4 h-4 ${
+                isDarkMode ? 'text-blue-400' : 'text-blue-600'
+              }`} />
+              <span className={`font-semibold text-sm ${
+                isDarkMode ? 'text-blue-300' : 'text-blue-800'
+              }`}>Expected Delivery</span>
             </div>
             
             <div className="text-center">
@@ -119,7 +199,9 @@ const BookingSuccessAnimation = ({
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.7, type: "spring" }}
-                className="text-lg font-bold text-blue-800"
+                className={`text-lg font-bold ${
+                  isDarkMode ? 'text-blue-200' : 'text-blue-800'
+                }`}
               >
                 {new Date(bookingData.expectedDeliveryDate).toLocaleDateString('en-IN', {
                   weekday: 'short',
@@ -127,7 +209,9 @@ const BookingSuccessAnimation = ({
                   day: 'numeric'
                 })}
               </motion.div>
-              <div className="text-xs text-blue-600">
+              <div className={`text-xs ${
+                isDarkMode ? 'text-blue-300' : 'text-blue-600'
+              }`}>
                 Estimated delivery date
               </div>
             </div>
@@ -156,7 +240,9 @@ const BookingSuccessAnimation = ({
                 repeat: Infinity,
                 repeatDelay: Math.random() * 3
               }}
-              className="absolute w-2 h-2 bg-green-400 rounded-full"
+              className={`absolute w-2 h-2 rounded-full ${
+                isDarkMode ? 'bg-green-400/60' : 'bg-green-400'
+              }`}
             />
           ))}
         </div>
@@ -183,7 +269,11 @@ const BookingSuccessAnimation = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onGoToDashboard}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm"
+            className={`w-full py-2.5 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm ${
+              isDarkMode 
+                ? 'bg-gray-800/60 hover:bg-gray-700/60 text-gray-200 border border-gray-600/30' 
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            }`}
           >
             <Home className="w-4 h-4" />
             Back to Dashboard
@@ -211,11 +301,12 @@ const BookingSuccessAnimation = ({
                 delay: Math.random() * 2,
                 ease: "easeOut"
               }}
-              className={`absolute w-3 h-3 ${
-                i % 4 === 0 ? 'bg-green-400' :
-                i % 4 === 1 ? 'bg-blue-400' :
-                i % 4 === 2 ? 'bg-purple-400' : 'bg-pink-400'
-              } rounded-full`}
+              className={`absolute w-3 h-3 rounded-full ${
+                i % 4 === 0 ? (isDarkMode ? 'bg-green-400/80' : 'bg-green-400') :
+                i % 4 === 1 ? (isDarkMode ? 'bg-blue-400/80' : 'bg-blue-400') :
+                i % 4 === 2 ? (isDarkMode ? 'bg-purple-400/80' : 'bg-purple-400') : 
+                (isDarkMode ? 'bg-pink-400/80' : 'bg-pink-400')
+              }`}
             />
           ))}
         </div>
