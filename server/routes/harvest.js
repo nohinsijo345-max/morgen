@@ -77,6 +77,14 @@ router.get('/countdowns/:farmerId', async (req, res) => {
         console.log(`🔔 Sent 3-day reminder for ${crop.name}`);
       }
       
+      // Calculate total days from planted to harvest
+      let totalDays = 90; // Default fallback
+      if (crop.plantedDate && crop.harvestDate) {
+        const planted = new Date(crop.plantedDate);
+        const harvest = new Date(crop.harvestDate);
+        totalDays = Math.ceil((harvest - planted) / (1000 * 60 * 60 * 24));
+      }
+      
       countdowns.push({
         _id: crop._id,
         cropName: crop.name,
@@ -86,6 +94,7 @@ router.get('/countdowns/:farmerId', async (req, res) => {
         plantedDate: crop.plantedDate,
         harvestDate: crop.harvestDate,
         daysLeft: Math.max(0, daysLeft), // Don't show negative days
+        totalDays: Math.max(1, totalDays), // Ensure at least 1 day for progress calculation
         status: crop.status,
         autoNotified: crop.autoNotified,
         lastUpdated: new Date()

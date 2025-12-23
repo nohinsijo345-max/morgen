@@ -18,6 +18,16 @@ const UserSchema = new mongoose.Schema({
   pinCode: { type: String },
   panchayat: { type: String },
   
+  // Profile Image
+  profileImage: { 
+    type: String, 
+    default: null 
+  },
+  profileImageUploadedAt: { 
+    type: Date, 
+    default: null 
+  },
+  
   // Farmer specific
   landSize: { type: Number },
   crops: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Crop' }],

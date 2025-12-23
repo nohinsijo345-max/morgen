@@ -1,6 +1,43 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Configure multer for profile image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, '../uploads/profile-images');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename: farmerId_timestamp.extension
+    const farmerId = req.params.farmerId || req.body.farmerId || 'unknown';
+    const timestamp = Date.now();
+    const extension = path.extname(file.originalname);
+    cb(null, `${farmerId}_${timestamp}${extension}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Check file type
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
 
 // Generate next Farmer ID
 const generateFarmerId = async () => {
@@ -352,6 +389,89 @@ router.post('/reset-password', async (req, res) => {
   } catch (err) {
     console.error("❌ Password reset error:", err);
     res.status(500).json({ error: "Failed to reset password", details: err.message });
+  }
+});
+
+// UPLOAD PROFILE IMAGE
+router.post('/profile-image/:farmerId', upload.single('profileImage'), async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+
+    // Find the user
+    const user = await User.findOne({ farmerId: farmerId.toUpperCase() });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Delete old profile image if exists
+    if (user.profileImage) {
+      const oldImagePath = path.join(__dirname, '../uploads/profile-images', path.basename(user.profileImage));
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+        console.log('🗑️ Deleted old profile image:', oldImagePath);
+      }
+    }
+
+    // Update user with new profile image
+    const imageUrl = `/uploads/profile-images/${req.file.filename}`;
+    user.profileImage = imageUrl;
+    user.profileImageUploadedAt = new Date();
+    await user.save();
+
+    console.log('📸 Profile image uploaded for:', farmerId, '- URL:', imageUrl);
+
+    res.json({
+      success: true,
+      message: 'Profile image uploaded successfully',
+      profileImage: imageUrl,
+      uploadedAt: user.profileImageUploadedAt
+    });
+
+  } catch (error) {
+    console.error('❌ Profile image upload error:', error);
+    res.status(500).json({ error: 'Failed to upload profile image', details: error.message });
+  }
+});
+
+// DELETE PROFILE IMAGE
+router.delete('/profile-image/:farmerId', async (req, res) => {
+  try {
+    const { farmerId } = req.params;
+
+    // Find the user
+    const user = await User.findOne({ farmerId: farmerId.toUpperCase() });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Delete profile image file if exists
+    if (user.profileImage) {
+      const imagePath = path.join(__dirname, '../uploads/profile-images', path.basename(user.profileImage));
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+        console.log('🗑️ Deleted profile image file:', imagePath);
+      }
+    }
+
+    // Update user to remove profile image
+    user.profileImage = null;
+    user.profileImageUploadedAt = null;
+    await user.save();
+
+    console.log('🗑️ Profile image deleted for:', farmerId);
+
+    res.json({
+      success: true,
+      message: 'Profile image deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Profile image deletion error:', error);
+    res.status(500).json({ error: 'Failed to delete profile image', details: error.message });
   }
 });
 

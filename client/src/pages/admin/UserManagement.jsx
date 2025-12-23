@@ -262,13 +262,43 @@ const UserManagement = () => {
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                 >
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      {user.subsidyRequested && (
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full" title="Subsidy Requested" />
-                      )}
-                      <div>
-                        <div className="font-semibold" style={{ color: colors.textPrimary }}>{user.name}</div>
-                        <div className="text-xs" style={{ color: colors.textSecondary }}>{user.farmerId || user.role || 'N/A'}</div>
+                    <div className="flex items-center gap-3">
+                      {/* Profile Image */}
+                      <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2" style={{ borderColor: colors.glassBorder }}>
+                        {user.profileImage ? (
+                          <img
+                            src={user.profileImage.startsWith('http') 
+                              ? user.profileImage 
+                              : `${import.meta.env.VITE_API_URL || 'http://localhost:5050'}${user.profileImage}`
+                            }
+                            alt={`${user.name}'s profile`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div 
+                          className="w-full h-full flex items-center justify-center text-xs font-bold"
+                          style={{ 
+                            backgroundColor: colors.primary,
+                            color: '#ffffff',
+                            display: user.profileImage ? 'none' : 'flex'
+                          }}
+                        >
+                          {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        {user.subsidyRequested && (
+                          <div className="w-2 h-2 bg-yellow-500 rounded-full" title="Subsidy Requested" />
+                        )}
+                        <div>
+                          <div className="font-semibold" style={{ color: colors.textPrimary }}>{user.name}</div>
+                          <div className="text-xs" style={{ color: colors.textSecondary }}>{user.farmerId || user.role || 'N/A'}</div>
+                        </div>
                       </div>
                     </div>
                   </td>

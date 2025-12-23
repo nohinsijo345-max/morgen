@@ -74,6 +74,28 @@ const HarvestCountdownCard = ({ onClick }) => {
         !mostRecentCountdown ? (isDarkMode ? 'border border-gray-700' : 'border border-gray-200') : ''
       }`}
     >
+      {/* Edge Glass Reflection */}
+      <motion.div
+        initial={{ x: '-100%' }}
+        animate={{ x: '100%' }}
+        transition={{ 
+          duration: 3, 
+          repeat: Infinity, 
+          repeatDelay: 4,
+          ease: "easeInOut" 
+        }}
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: mostRecentCountdown 
+            ? 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)'
+            : isDarkMode 
+              ? 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)'
+              : 'linear-gradient(90deg, transparent 0%, rgba(8,40,41,0.2) 50%, transparent 100%)',
+          transform: 'skewX(-20deg)',
+          zIndex: 1
+        }}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-1.5 relative z-10">
         <div className="flex items-center gap-1.5">

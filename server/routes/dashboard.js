@@ -83,7 +83,8 @@ router.get('/farmer/:farmerId', async (req, res) => {
         farmerId: farmer.farmerId,
         email: farmer.email,
         district: farmer.district,
-        landSize: farmer.landSize
+        landSize: farmer.landSize,
+        profileImage: farmer.profileImage
       },
       weather,
       crops: crops.slice(0, 3), // Next 3 crops to harvest

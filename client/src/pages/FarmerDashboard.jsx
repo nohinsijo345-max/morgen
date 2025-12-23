@@ -70,6 +70,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
       const response = await axios.get(`${API_URL}/api/dashboard/farmer/${farmerId}?t=${timestamp}`);
       setDashboardData(response.data);
       console.log('✅ Dashboard data loaded:', response.data);
+      console.log('🖼️ Profile image in dashboard data:', response.data?.farmer?.profileImage);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       // Set fallback data to prevent crashes
@@ -235,10 +236,51 @@ const FarmerDashboard = ({ user, onLogout }) => {
           {/* Welcome Card */}
           <GlassCard delay={0.1} hoverScale={1.01} className="h-fit self-start p-5">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center shadow-lg"
-                   style={{ backgroundColor: colors.primary }}>
-                <User className="w-7 h-7" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+              <div className="relative flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl overflow-hidden shadow-lg border-2"
+                     style={{ borderColor: `${colors.primary}40` }}>
+                  {(dashboardData?.farmer?.profileImage || user?.profileImage) ? (
+                    <img
+                      src={(() => {
+                        const profileImage = dashboardData?.farmer?.profileImage || user?.profileImage;
+                        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+                        const imageUrl = profileImage?.startsWith('http') 
+                          ? profileImage 
+                          : `${API_URL}${profileImage}`;
+                        console.log('🖼️ Profile image URL in hello card:', imageUrl);
+                        console.log('🖼️ Dashboard farmer profileImage:', dashboardData?.farmer?.profileImage);
+                        console.log('🖼️ User prop profileImage:', user?.profileImage);
+                        return imageUrl;
+                      })()}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.error('❌ Profile image load error in hello card:', e);
+                        console.log('❌ Failed URL:', e.target.src);
+                        console.log('❌ Dashboard farmer data:', dashboardData?.farmer);
+                        console.log('❌ User prop data:', user);
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                      onLoad={() => {
+                        console.log('✅ Profile image loaded successfully in hello card');
+                      }}
+                    />
+                  ) : null}
+                  
+                  {/* Fallback Avatar */}
+                  <div 
+                    className="w-full h-full flex items-center justify-center"
+                    style={{ 
+                      display: (dashboardData?.farmer?.profileImage || user?.profileImage) ? 'none' : 'flex',
+                      backgroundColor: colors.primary 
+                    }}
+                  >
+                    <User className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                  </div>
+                </div>
               </div>
+              
               <div>
                 <motion.h2 
                   initial={{ opacity: 0, x: -20 }}
@@ -247,7 +289,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                   className="text-2xl font-bold"
                   style={{ color: colors.textPrimary }}
                 >
-                  Hello, {dashboardData?.farmer?.name || 'Farmer'}
+                  Hello, {dashboardData?.farmer?.name || user?.name || 'Farmer'}
                 </motion.h2>
                 <p style={{ color: colors.textSecondary }} className="text-sm">Welcome back to your dashboard</p>
               </div>

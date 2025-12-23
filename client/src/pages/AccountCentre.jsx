@@ -21,6 +21,7 @@ import axios from 'axios';
 import { indiaStates, indiaDistricts, cropTypes } from '../data/indiaLocations';
 import { useTheme } from '../context/ThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
+import ProfileImageCard from '../components/ProfileImageCard';
 import { UserSession } from '../utils/userSession';
 
 const AccountCentre = () => {
@@ -287,6 +288,13 @@ const AccountCentre = () => {
     }
   };
 
+  const handleImageUpdate = (newImageUrl) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      profileImage: newImageUrl
+    }));
+  };
+
   const addCrop = (crop) => {
     if (crop && !selectedCropTypes.includes(crop)) {
       setSelectedCropTypes([...selectedCropTypes, crop]);
@@ -374,6 +382,12 @@ const AccountCentre = () => {
       <div className="relative z-10 p-6">
         <div className="max-w-4xl mx-auto">
 
+          {/* Profile Image Card - New at the top */}
+          <ProfileImageCard 
+            user={user} 
+            onImageUpdate={handleImageUpdate}
+          />
+
           {/* Success/Error Messages */}
           {success && (
             <motion.div
@@ -421,16 +435,35 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300 relative overflow-hidden"
             style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
-                <User className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
-              </div>
-              Contact Information
-              <span className="text-sm font-normal ml-auto" style={{ color: colors.success }}>(Updates Instantly)</span>
-            </h2>
+            {/* Edge Glass Reflection */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '100%' }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                repeatDelay: 6,
+                ease: "easeInOut" 
+              }}
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: `linear-gradient(90deg, transparent 0%, ${colors.primary}20 50%, transparent 100%)`,
+                transform: 'skewX(-20deg)',
+                zIndex: 1
+              }}
+            />
+
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                  <User className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                </div>
+                Contact Information
+                <span className="text-sm font-normal ml-auto" style={{ color: colors.success }}>(Updates Instantly)</span>
+              </h2>
 
             <div className="space-y-4">
               <div>
@@ -482,6 +515,7 @@ const AccountCentre = () => {
                 {saving ? 'Saving...' : 'Save Changes'}
               </motion.button>
             </div>
+          </div>
           </motion.div>
 
           {/* Section 2: Approval Required Fields */}
@@ -489,16 +523,35 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300 relative overflow-hidden"
             style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
-                <MapPin className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
-              </div>
-              Profile Information
-              <span className="text-sm font-normal ml-auto" style={{ color: colors.warning }}>(Requires Approval)</span>
-            </h2>
+            {/* Edge Glass Reflection */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '100%' }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                repeatDelay: 7,
+                ease: "easeInOut" 
+              }}
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: `linear-gradient(90deg, transparent 0%, ${colors.primary}20 50%, transparent 100%)`,
+                transform: 'skewX(-20deg)',
+                zIndex: 1
+              }}
+            />
+
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                  <MapPin className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                </div>
+                Profile Information
+                <span className="text-sm font-normal ml-auto" style={{ color: colors.warning }}>(Requires Approval)</span>
+              </h2>
 
             <div className="space-y-4">
               <div>
@@ -677,6 +730,7 @@ const AccountCentre = () => {
                 {pendingRequest ? 'Request Pending' : saving ? 'Submitting...' : 'Request Approval for Changes'}
               </motion.button>
             </div>
+          </div>
           </motion.div>
 
           {/* Section 3: Customer Support */}
@@ -684,15 +738,34 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300 relative overflow-hidden"
             style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
-                <Phone className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
-              </div>
-              Customer Support
-            </h2>
+            {/* Edge Glass Reflection */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '100%' }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                repeatDelay: 8,
+                ease: "easeInOut" 
+              }}
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: `linear-gradient(90deg, transparent 0%, ${colors.primary}20 50%, transparent 100%)`,
+                transform: 'skewX(-20deg)',
+                zIndex: 1
+              }}
+            />
+
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                  <Phone className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                </div>
+                Customer Support
+              </h2>
 
             <p className="mb-6" style={{ color: colors.textSecondary }}>
               Need help? Our support team is here to assist you with any questions or issues about transport, weather, crops, or technical problems.
@@ -708,6 +781,7 @@ const AccountCentre = () => {
               <Phone className="w-5 h-5" />
               Contact Support Team
             </motion.button>
+          </div>
           </motion.div>
 
           {/* Section 4: Password Reset */}
@@ -715,15 +789,34 @@ const AccountCentre = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl transition-colors duration-300"
+            className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl transition-colors duration-300 relative overflow-hidden"
             style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
-                <Lock className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
-              </div>
-              Security
-            </h2>
+            {/* Edge Glass Reflection */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '100%' }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                repeatDelay: 9,
+                ease: "easeInOut" 
+              }}
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: `linear-gradient(90deg, transparent 0%, ${colors.primary}20 50%, transparent 100%)`,
+                transform: 'skewX(-20deg)',
+                zIndex: 1
+              }}
+            />
+
+            <div className="relative z-10">
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                  <Lock className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                </div>
+                Security
+              </h2>
 
             {!showPasswordSection ? (
               <button
@@ -838,6 +931,7 @@ const AccountCentre = () => {
                 </div>
               </div>
             )}
+          </div>
           </motion.div>
         </div>
       </div>

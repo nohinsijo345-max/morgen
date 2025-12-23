@@ -4,7 +4,10 @@ import {
   ArrowLeft, Timer, Plus, Edit2, Trash2, Calendar,
   Sprout, Package, Clock, CheckCircle, AlertCircle
 } from 'lucide-react';
+import axios from 'axios';
 import { UserSession } from '../../utils/userSession';
+import { useTheme } from '../../context/ThemeContext';
+import NeumorphicThemeToggle from '../../components/NeumorphicThemeToggle';
 
 const HarvestCountdown = () => {
   const [countdowns, setCountdowns] = useState([]);
@@ -20,6 +23,8 @@ const HarvestCountdown = () => {
     plantedDate: '',
     harvestDate: ''
   });
+  
+  const { isDarkMode, colors } = useTheme();
 
   useEffect(() => {
     fetchCountdowns();
@@ -47,12 +52,14 @@ const HarvestCountdown = () => {
       console.log('✅ Fetching preset crops for farmerId:', farmerId);
       
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const url = `${API_URL}/api/harvest/crop-preferences/${farmerId}`;
-      console.log('Fetching crops from:', url);
-      const response = await axios.get(url);
-      console.log('Fetched preset crops response:', response.data);
-      console.log('Crops array length:', response.data?.length);
-      setPresetCrops(response.data || []);
+      
+      // First try to get crops from user profile
+      const profileResponse = await axios.get(`${API_URL}/api/auth/profile/${farmerId}`);
+      const userCropTypes = profileResponse.data?.cropTypes || [];
+      
+      console.log('✅ User crop types from profile:', userCropTypes);
+      setPresetCrops(userCropTypes);
+      
     } catch (error) {
       console.error('Failed to fetch preset crops:', error);
       console.error('Error response:', error.response);
@@ -172,30 +179,35 @@ const HarvestCountdown = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#e1e2d0] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
+           style={{ backgroundColor: colors.background }}>
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-16 h-16 border-4 border-[#082829]/20 border-t-[#082829] rounded-full"
+          className="w-16 h-16 border-4 rounded-full"
+          style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#e1e2d0] relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden transition-colors duration-300"
+         style={{ backgroundColor: colors.background }}>
 
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0], opacity: [0.03, 0.05, 0.03] }}
           transition={{ duration: 20, repeat: Infinity }}
-          className="absolute -top-40 -right-40 w-96 h-96 bg-[#082829] rounded-full blur-3xl"
+          className="absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: colors.primary }}
         />
         <motion.div
           animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0], opacity: [0.03, 0.05, 0.03] }}
           transition={{ duration: 25, repeat: Infinity }}
-          className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#082829] rounded-full blur-3xl"
+          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: colors.primary }}
         />
       </div>
 
@@ -211,30 +223,44 @@ const HarvestCountdown = () => {
               whileHover={{ scale: 1.05, x: -5 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => window.history.back()}
-              className="w-12 h-12 bg-white/40 backdrop-blur-xl rounded-2xl border border-[#082829]/20 flex items-center justify-center shadow-lg hover:bg-white/60 transition-all"
+              className="w-12 h-12 backdrop-blur-xl rounded-2xl border flex items-center justify-center shadow-lg transition-all"
+              style={{ 
+                backgroundColor: colors.surface, 
+                borderColor: colors.border,
+                color: colors.textPrimary
+              }}
             >
-              <ArrowLeft className="w-5 h-5 text-[#082829]" />
+              <ArrowLeft className="w-5 h-5" />
             </motion.button>
             <div>
-              <h1 className="text-4xl font-bold text-[#082829] flex items-center gap-3">
-                <Timer className="w-10 h-10 text-[#082829]" />
+              <h1 className="text-4xl font-bold flex items-center gap-3" style={{ color: colors.textPrimary }}>
+                <Timer className="w-10 h-10" style={{ color: colors.primary }} />
                 Harvest Countdown
               </h1>
-              <p className="text-[#082829]/60 mt-1">Manage your crop harvest schedules</p>
+              <p className="mt-1" style={{ color: colors.textSecondary }}>Manage your crop harvest schedules</p>
             </div>
           </div>
           
-          {countdowns.length < 3 && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => { setEditingCountdown(null); resetForm(); setShowModal(true); }}
-              className="flex items-center gap-2 bg-gradient-to-r from-[#082829] to-[#0a3a3c] text-white px-6 py-3 rounded-xl shadow-xl hover:shadow-2xl transition-all"
-            >
-              <Plus className="w-5 h-5" />
-              <span className="font-semibold">New Countdown</span>
-            </motion.button>
-          )}
+          <div className="flex items-center gap-4">
+            {/* Theme Toggle */}
+            <NeumorphicThemeToggle size="sm" />
+            
+            {countdowns.length < 3 && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { setEditingCountdown(null); resetForm(); setShowModal(true); }}
+                className="flex items-center gap-2 px-6 py-3 rounded-xl shadow-xl transition-all font-semibold"
+                style={{ 
+                  backgroundColor: colors.primary, 
+                  color: isDarkMode ? '#0d1117' : '#ffffff' 
+                }}
+              >
+                <Plus className="w-5 h-5" />
+                <span>New Countdown</span>
+              </motion.button>
+            )}
+          </div>
         </motion.div>
 
         {/* Countdowns Grid */}
@@ -246,8 +272,30 @@ const HarvestCountdown = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white/40 backdrop-blur-xl rounded-3xl p-6 border border-[#082829]/20 shadow-2xl relative overflow-hidden group"
+                className="backdrop-blur-xl rounded-3xl p-6 border shadow-2xl relative overflow-hidden group"
+                style={{ 
+                  backgroundColor: colors.backgroundCard, 
+                  borderColor: colors.cardBorder 
+                }}
               >
+                {/* Edge Glass Reflection */}
+                <motion.div
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '100%' }}
+                  transition={{ 
+                    duration: 3, 
+                    repeat: Infinity, 
+                    repeatDelay: 5 + index,
+                    ease: "easeInOut" 
+                  }}
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: `linear-gradient(90deg, transparent 0%, ${colors.primary}20 50%, transparent 100%)`,
+                    transform: 'skewX(-20deg)',
+                    zIndex: 1
+                  }}
+                />
+
                 {/* Status indicator */}
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${getStatusColor(countdown.daysLeft)} opacity-10 rounded-full blur-2xl`} />
 
@@ -260,50 +308,95 @@ const HarvestCountdown = () => {
                         {getStatusIcon(countdown.daysLeft)}
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-[#082829]">{countdown.cropName}</h3>
-                        <p className="text-[#082829]/60 text-sm capitalize">{countdown.category}</p>
+                        <h3 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{countdown.cropName}</h3>
+                        <p className="text-sm capitalize" style={{ color: colors.textSecondary }}>{countdown.category}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Countdown Display */}
+                  {/* Countdown Display with Circular Progress */}
                   <div className="text-center my-6">
-                    <motion.div
-                      key={countdown.daysLeft}
-                      initial={{ scale: 1.1 }}
-                      animate={{ scale: 1 }}
-                      className={`inline-block bg-gradient-to-r ${getStatusColor(countdown.daysLeft)} rounded-2xl px-8 py-6 shadow-xl`}
-                    >
-                      <div className="text-6xl font-bold text-white mb-1">{countdown.daysLeft}</div>
-                      <div className="text-white/90 text-sm font-medium">Days to Harvest</div>
-                    </motion.div>
+                    <div className="relative inline-block">
+                      {/* Circular Progress Ring */}
+                      <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
+                        {/* Background Circle */}
+                        <circle
+                          cx="60"
+                          cy="60"
+                          r="50"
+                          fill="none"
+                          stroke={isDarkMode ? colors.surface : colors.border}
+                          strokeWidth="8"
+                        />
+                        {/* Progress Circle */}
+                        <circle
+                          cx="60"
+                          cy="60"
+                          r="50"
+                          fill="none"
+                          stroke={`url(#gradient-${countdown._id})`}
+                          strokeWidth="8"
+                          strokeLinecap="round"
+                          strokeDasharray={`${Math.max(0, Math.min(100, (countdown.daysLeft / countdown.totalDays) * 314))} 314`}
+                          className="transition-all duration-1000 ease-out"
+                        />
+                        {/* Gradient Definition */}
+                        <defs>
+                          <linearGradient id={`gradient-${countdown._id}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor={countdown.daysLeft <= 3 ? '#ef4444' : countdown.daysLeft <= 7 ? '#f59e0b' : '#10b981'} />
+                            <stop offset="100%" stopColor={countdown.daysLeft <= 3 ? '#f97316' : countdown.daysLeft <= 7 ? '#f97316' : '#059669'} />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      
+                      {/* Center Content */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <motion.div
+                          key={countdown.daysLeft}
+                          initial={{ scale: 1.1 }}
+                          animate={{ scale: 1 }}
+                          className="text-4xl font-bold" 
+                          style={{ color: colors.textPrimary }}
+                        >
+                          {countdown.daysLeft}
+                        </motion.div>
+                        <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>
+                          Days Left
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Details */}
                   <div className="space-y-3 mb-4">
-                    <div className="flex items-center justify-between bg-white/30 rounded-xl p-3">
-                      <div className="flex items-center gap-2 text-[#082829]/70">
+                    <div className="flex items-center justify-between rounded-xl p-3"
+                         style={{ backgroundColor: colors.surface }}>
+                      <div className="flex items-center gap-2" style={{ color: colors.textSecondary }}>
                         <Package className="w-4 h-4" />
                         <span className="text-sm">Quantity</span>
                       </div>
-                      <span className="text-[#082829] font-semibold">{countdown.quantity} {countdown.unit}</span>
+                      <span className="font-semibold" style={{ color: colors.textPrimary }}>
+                        {countdown.quantity} {countdown.unit}
+                      </span>
                     </div>
-                    <div className="flex items-center justify-between bg-white/30 rounded-xl p-3">
-                      <div className="flex items-center gap-2 text-[#082829]/70">
+                    <div className="flex items-center justify-between rounded-xl p-3"
+                         style={{ backgroundColor: colors.surface }}>
+                      <div className="flex items-center gap-2" style={{ color: colors.textSecondary }}>
                         <Calendar className="w-4 h-4" />
                         <span className="text-sm">Harvest Date</span>
                       </div>
-                      <span className="text-[#082829] font-semibold">
+                      <span className="font-semibold" style={{ color: colors.textPrimary }}>
                         {new Date(countdown.harvestDate).toLocaleDateString()}
                       </span>
                     </div>
                     {countdown.plantedDate && (
-                      <div className="flex items-center justify-between bg-white/30 rounded-xl p-3">
-                        <div className="flex items-center gap-2 text-[#082829]/70">
+                      <div className="flex items-center justify-between rounded-xl p-3"
+                           style={{ backgroundColor: colors.surface }}>
+                        <div className="flex items-center gap-2" style={{ color: colors.textSecondary }}>
                           <Sprout className="w-4 h-4" />
                           <span className="text-sm">Planted</span>
                         </div>
-                        <span className="text-[#082829] font-semibold">
+                        <span className="font-semibold" style={{ color: colors.textPrimary }}>
                           {new Date(countdown.plantedDate).toLocaleDateString()}
                         </span>
                       </div>
@@ -316,7 +409,11 @@ const HarvestCountdown = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleEdit(countdown)}
-                      className="flex-1 flex items-center justify-center gap-2 bg-[#082829] text-white py-2 rounded-xl font-medium hover:bg-[#0a3a3c] transition-colors"
+                      className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl font-medium transition-colors"
+                      style={{ 
+                        backgroundColor: colors.primary, 
+                        color: isDarkMode ? '#0d1117' : '#ffffff' 
+                      }}
                     >
                       <Edit2 className="w-4 h-4" />
                       Edit
@@ -340,16 +437,21 @@ const HarvestCountdown = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-20"
           >
-            <div className="w-32 h-32 mx-auto mb-6 bg-[#082829]/10 rounded-full flex items-center justify-center">
-              <Timer className="w-16 h-16 text-[#082829]/40" />
+            <div className="w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center"
+                 style={{ backgroundColor: colors.surface }}>
+              <Timer className="w-16 h-16" style={{ color: colors.textMuted }} />
             </div>
-            <h3 className="text-2xl font-bold text-[#082829] mb-2">No Active Countdowns</h3>
-            <p className="text-[#082829]/60 mb-6">Start tracking your harvest schedules</p>
+            <h3 className="text-2xl font-bold mb-2" style={{ color: colors.textPrimary }}>No Active Countdowns</h3>
+            <p className="mb-6" style={{ color: colors.textSecondary }}>Start tracking your harvest schedules</p>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => { setEditingCountdown(null); resetForm(); setShowModal(true); }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-[#082829] to-[#0a3a3c] text-white px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transition-all font-semibold"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl shadow-xl transition-all font-semibold"
+              style={{ 
+                backgroundColor: colors.primary, 
+                color: isDarkMode ? '#0d1117' : '#ffffff' 
+              }}
             >
               <Plus className="w-5 h-5" />
               Create Your First Countdown
@@ -374,16 +476,18 @@ const HarvestCountdown = () => {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+              className="rounded-3xl p-8 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+              style={{ backgroundColor: colors.backgroundCard }}
             >
-              <h2 className="text-3xl font-bold text-[#082829] mb-6">
+              <h2 className="text-3xl font-bold mb-6" style={{ color: colors.textPrimary }}>
                 {editingCountdown ? 'Edit Countdown' : 'New Harvest Countdown'}
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Crop Selection - Only from preset crops */}
                 <div>
-                  <label className="block text-[#082829] font-semibold mb-2 flex items-center justify-between">
+                  <label className="block font-semibold mb-2 flex items-center justify-between"
+                         style={{ color: colors.textPrimary }}>
                     <span>Select Crop *</span>
                     <button
                       type="button"
@@ -391,7 +495,8 @@ const HarvestCountdown = () => {
                         console.log('Manually refreshing crops...');
                         fetchPresetCrops();
                       }}
-                      className="text-xs text-[#082829]/60 hover:text-[#082829] underline"
+                      className="text-xs underline"
+                      style={{ color: colors.textSecondary }}
                     >
                       Refresh Crops
                     </button>
@@ -400,7 +505,12 @@ const HarvestCountdown = () => {
                     required
                     value={formData.cropName}
                     onChange={(e) => setFormData({ ...formData, cropName: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#082829]/20 focus:border-[#082829] outline-none transition-colors bg-white"
+                    className="w-full px-4 py-3 rounded-xl border-2 outline-none transition-colors"
+                    style={{ 
+                      backgroundColor: colors.surface, 
+                      borderColor: colors.border, 
+                      color: colors.textPrimary 
+                    }}
                   >
                     <option value="">Choose from your registered crops</option>
                     {presetCrops.length > 0 ? (
