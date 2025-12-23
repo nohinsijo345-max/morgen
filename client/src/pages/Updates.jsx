@@ -18,6 +18,24 @@ const Updates = () => {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme, colors } = useTheme();
 
+  // Determine correct dashboard URL based on user type
+  const getDashboardUrl = () => {
+    // Check if buyer is logged in
+    const buyerUser = UserSession.getCurrentUser('buyer');
+    if (buyerUser) {
+      return '/buyer/dashboard';
+    }
+    
+    // Check if farmer is logged in
+    const farmerUser = UserSession.getCurrentUser('farmer');
+    if (farmerUser) {
+      return '/dashboard';
+    }
+    
+    // Default to farmer dashboard
+    return '/dashboard';
+  };
+
   useEffect(() => {
     const currentUser = UserSession.getCurrentUser('farmer');
     if (currentUser) {
@@ -109,7 +127,7 @@ const Updates = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(getDashboardUrl())}
                 className="p-2 rounded-xl transition-all"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
               >
@@ -118,7 +136,7 @@ const Updates = () => {
               
               <motion.div 
                 className="flex items-center gap-3 cursor-pointer"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(getDashboardUrl())}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -140,7 +158,7 @@ const Updates = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(getDashboardUrl())}
                 className="p-2.5 rounded-xl transition-all"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
               >

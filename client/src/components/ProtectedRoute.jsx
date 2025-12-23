@@ -22,6 +22,7 @@ const ProtectedRoute = ({
     // User is authenticated but trying to access login page, redirect to dashboard
     const dashboardRoutes = {
       farmer: '/dashboard',
+      buyer: '/buyer/dashboard',
       driver: '/driver/dashboard',
       admin: '/admin'
     };

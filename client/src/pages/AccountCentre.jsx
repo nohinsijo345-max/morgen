@@ -34,6 +34,24 @@ const AccountCentre = () => {
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme, colors } = useTheme();
   
+  // Determine correct dashboard URL based on user type
+  const getDashboardUrl = () => {
+    // Check if buyer is logged in
+    const buyerUser = UserSession.getCurrentUser('buyer');
+    if (buyerUser) {
+      return '/buyer/dashboard';
+    }
+    
+    // Check if farmer is logged in
+    const farmerUser = UserSession.getCurrentUser('farmer');
+    if (farmerUser) {
+      return '/dashboard';
+    }
+    
+    // Default to farmer dashboard
+    return '/dashboard';
+  };
+  
   // Editable fields (no approval needed)
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -343,7 +361,7 @@ const AccountCentre = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(getDashboardUrl())}
                 className="p-2 rounded-xl transition-all"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
               >
@@ -368,7 +386,7 @@ const AccountCentre = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate(getDashboardUrl())}
                 className="p-2.5 rounded-xl transition-all"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
               >

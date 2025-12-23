@@ -87,8 +87,8 @@ const ModuleSelector = () => {
       title: 'Buyer Portal',
       description: 'Access marketplace, auction rooms, and direct farmer connections',
       icon: ShoppingBag,
-      gradient: 'from-blue-400 to-indigo-600',
-      route: '/buyer/auction',
+      gradient: 'from-red-400 to-pink-600',
+      route: '/buyer-login',
       features: ['Live Auctions', 'Direct Purchase', 'Quality Assurance', 'Bulk Orders']
     },
     {

@@ -6,7 +6,117 @@ const Auction = require('../models/Auction');
 const Vehicle = require('../models/Vehicle');
 const Driver = require('../models/Driver');
 const Booking = require('../models/Booking');
+const User = require('../models/User');
 const bcrypt = require('bcrypt');
+
+// GET ADMIN BUYER DASHBOARD DATA
+router.get('/buyer/dashboard', async (req, res) => {
+  try {
+    // Get buyer statistics
+    const totalBuyers = await User.countDocuments({ role: 'buyer' });
+    const activeBuyers = await User.countDocuments({ role: 'buyer', isActive: true });
+    
+    // Get recent buyers (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const recentBuyers = await User.find({
+      role: 'buyer',
+      createdAt: { $gte: thirtyDaysAgo }
+    })
+    .select('name buyerId email city state createdAt')
+    .sort({ createdAt: -1 })
+    .limit(10);
+
+    // Get top buyers by spending
+    const topBuyers = await User.find({ role: 'buyer' })
+      .select('name buyerId totalSpent totalPurchases')
+      .sort({ totalSpent: -1 })
+      .limit(10);
+
+    // Calculate total orders and revenue from buyers
+    const buyerStats = await User.aggregate([
+      { $match: { role: 'buyer' } },
+      {
+        $group: {
+          _id: null,
+          totalOrders: { $sum: '$totalPurchases' },
+          totalRevenue: { $sum: '$totalSpent' }
+        }
+      }
+    ]);
+
+    const stats = buyerStats[0] || { totalOrders: 0, totalRevenue: 0 };
+
+    res.json({
+      totalBuyers,
+      activeBuyers,
+      totalOrders: stats.totalOrders,
+      totalRevenue: stats.totalRevenue,
+      pendingApprovals: 0, // Will be implemented with profile change requests
+      recentBuyers,
+      topBuyers
+    });
+
+  } catch (error) {
+    console.error('Admin buyer dashboard error:', error);
+    res.status(500).json({ error: 'Failed to load admin buyer dashboard' });
+  }
+});
+
+// GET ALL BUYERS
+router.get('/buyers', async (req, res) => {
+  try {
+    const buyers = await User.find({ role: 'buyer' })
+      .select('-pin')
+      .sort({ createdAt: -1 });
+    
+    res.json(buyers);
+  } catch (error) {
+    console.error('Failed to fetch buyers:', error);
+    res.status(500).json({ error: 'Failed to fetch buyers' });
+  }
+});
+
+// UPDATE BUYER STATUS
+router.patch('/buyers/:buyerId/status', async (req, res) => {
+  try {
+    const { buyerId } = req.params;
+    const { isActive } = req.body;
+
+    const buyer = await User.findByIdAndUpdate(
+      buyerId,
+      { isActive },
+      { new: true }
+    ).select('-pin');
+
+    if (!buyer) {
+      return res.status(404).json({ error: 'Buyer not found' });
+    }
+
+    res.json(buyer);
+  } catch (error) {
+    console.error('Failed to update buyer status:', error);
+    res.status(500).json({ error: 'Failed to update buyer status' });
+  }
+});
+
+// DELETE BUYER
+router.delete('/buyers/:buyerId', async (req, res) => {
+  try {
+    const { buyerId } = req.params;
+
+    const buyer = await User.findByIdAndDelete(buyerId);
+    if (!buyer) {
+      return res.status(404).json({ error: 'Buyer not found' });
+    }
+
+    res.json({ message: 'Buyer deleted successfully' });
+  } catch (error) {
+    console.error('Failed to delete buyer:', error);
+    res.status(500).json({ error: 'Failed to delete buyer' });
+  }
+});
 
 // Set MSP for a crop category
 router.post('/msp/set', async (req, res) => {

@@ -10,6 +10,24 @@ import axios from 'axios';
 import { WeatherIcon, SmallWeatherIcon } from '../components/PremiumWeatherElements';
 import { UserSession } from '../utils/userSession';
 
+// Determine correct dashboard URL based on user type
+const getDashboardUrl = () => {
+  // Check if buyer is logged in
+  const buyerUser = UserSession.getCurrentUser('buyer');
+  if (buyerUser) {
+    return '/buyer/dashboard';
+  }
+  
+  // Check if farmer is logged in
+  const farmerUser = UserSession.getCurrentUser('farmer');
+  if (farmerUser) {
+    return '/dashboard';
+  }
+  
+  // Default to farmer dashboard
+  return '/dashboard';
+};
+
 // Determine if it's currently night time
 const useTimeOfDay = () => {
   const [isNight, setIsNight] = useState(() => {
@@ -276,7 +294,7 @@ const Weather = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => window.history.back()}
+          onClick={() => window.location.href = getDashboardUrl()}
           className={`w-11 h-11 flex items-center justify-center ${theme.cardBg} backdrop-blur-xl rounded-2xl border ${theme.cardBorder} shadow-lg`}
         >
           <ArrowLeft className={`w-5 h-5 ${theme.textPrimary}`} />

@@ -147,6 +147,11 @@ const bookingSchema = new mongoose.Schema({
     required: false,
     default: 'No description provided'
   },
+  buyerPhoneNumber: {
+    type: String,
+    required: false,
+    default: null
+  },
   cancellationReason: String,
   cancelledBy: String,
   cancelledAt: Date,

@@ -48,6 +48,10 @@ const UserSchema = new mongoose.Schema({
   // Buyer specific
   totalPurchases: { type: Number, default: 0 },
   maxBidLimit: { type: Number, default: 10000 },
+  totalBids: { type: Number, default: 0 },
+  activeBids: { type: Number, default: 0 },
+  wonBids: { type: Number, default: 0 },
+  totalSpent: { type: Number, default: 0 },
   
   // Location
   location: {

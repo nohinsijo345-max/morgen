@@ -449,7 +449,8 @@ router.post('/bookings', async (req, res) => {
       pickupTime,
       distance,
       notes,
-      cargoDescription
+      cargoDescription,
+      buyerPhoneNumber // Optional buyer phone number for cross-platform tracking
     } = req.body;
 
     console.log('Booking request received:', {
@@ -461,7 +462,8 @@ router.post('/bookings', async (req, res) => {
       toLocation,
       pickupDate,
       pickupTime,
-      distance
+      distance,
+      buyerPhoneNumber: buyerPhoneNumber || 'Not provided'
     });
 
     // Validation
@@ -531,7 +533,8 @@ router.post('/bookings', async (req, res) => {
       handlingFee,
       finalAmount,
       notes,
-      cargoDescription
+      cargoDescription,
+      buyerPhoneNumber: buyerPhoneNumber || null // Store buyer phone number if provided
     });
 
     console.log('Attempting to save booking...');
@@ -571,6 +574,28 @@ router.post('/bookings', async (req, res) => {
       details: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
+  }
+});
+
+// Get bookings for buyer by phone number
+router.get('/bookings/buyer/phone/:phoneNumber', async (req, res) => {
+  try {
+    const { phoneNumber } = req.params;
+    console.log('🔍 Fetching bookings for buyer phone:', phoneNumber);
+    
+    // Find bookings where buyerPhoneNumber matches
+    const bookings = await Booking.find({ 
+      buyerPhoneNumber: phoneNumber,
+      buyerPhoneNumber: { $ne: null } // Ensure buyerPhoneNumber is not null
+    })
+      .populate('vehicleId')
+      .sort({ createdAt: -1 });
+    
+    console.log(`📦 Found ${bookings.length} bookings for buyer phone: ${phoneNumber}`);
+    res.json(bookings);
+  } catch (error) {
+    console.error('Failed to fetch buyer bookings by phone:', error);
+    res.status(500).json({ error: 'Failed to fetch buyer bookings' });
   }
 });
 

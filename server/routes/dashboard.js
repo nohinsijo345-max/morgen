@@ -7,6 +7,64 @@ const Customer = require('../models/Customer');
 const Crop = require('../models/Crop');
 const axios = require('axios');
 
+// Get buyer dashboard data
+router.get('/buyer/:buyerId', async (req, res) => {
+  try {
+    const { buyerId } = req.params;
+    
+    // Find buyer
+    const buyer = await User.findOne({ buyerId }).select('-pin');
+    if (!buyer) {
+      return res.status(404).json({ error: 'Buyer not found' });
+    }
+
+    // Get weather data for buyer's location
+    const weather = await getWeatherData(buyer.district, buyer.city, buyer.pinCode);
+    
+    // Get buyer-specific updates (from admin to buyer, gov to buyer)
+    const updates = await Update.find({
+      $or: [
+        { targetRole: 'buyer' },
+        { targetRole: 'all' }
+      ]
+    })
+    .sort({ createdAt: -1 })
+    .limit(10);
+
+    // Get buyer statistics
+    const dashboardData = {
+      buyer: {
+        name: buyer.name,
+        email: buyer.email,
+        phone: buyer.phone,
+        profileImage: buyer.profileImage,
+        totalPurchases: buyer.totalPurchases || 0,
+        totalBids: buyer.totalBids || 0,
+        activeBids: buyer.activeBids || 0,
+        wonBids: buyer.wonBids || 0,
+        totalSpent: buyer.totalSpent || 0,
+        maxBidLimit: buyer.maxBidLimit || 10000,
+        averageRating: buyer.averageRating || 0,
+        reputationScore: buyer.reputationScore || 0
+      },
+      weather,
+      totalFarmers: 0, // Will be populated when farmer-buyer relationships are implemented
+      totalOrders: buyer.totalPurchases || 0,
+      totalBids: buyer.totalBids || 0,
+      activeBids: buyer.activeBids || 0,
+      recentActivity: [], // Will be populated with actual activity data
+      updates
+    };
+
+    console.log(`✅ Buyer dashboard data loaded for ${buyerId}`);
+    res.json(dashboardData);
+    
+  } catch (error) {
+    console.error('❌ Buyer dashboard error:', error);
+    res.status(500).json({ error: 'Failed to load buyer dashboard data' });
+  }
+});
+
 // Get farmer dashboard data
 router.get('/farmer/:farmerId', async (req, res) => {
   try {

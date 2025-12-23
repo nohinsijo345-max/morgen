@@ -49,7 +49,8 @@ const TransportBooking = () => {
     pickupTime: '',
     distance: 10,
     notes: '',
-    cargoDescription: ''
+    cargoDescription: '',
+    buyerPhoneNumber: '' // Optional buyer phone number for cross-platform tracking
   });
   
 
@@ -606,8 +607,34 @@ const TransportBooking = () => {
           </div>
         </GlassCard>
 
+        {/* Buyer Phone Number - Optional */}
+        <GlassCard delay={0.42} className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Package className="w-5 h-5" style={{ color: colors.primary }} />
+            <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Buyer Phone Number (Optional)</h3>
+          </div>
+          <input
+            type="tel"
+            placeholder="Enter buyer's phone number for cross-platform tracking"
+            value={bookingData.buyerPhoneNumber}
+            onChange={(e) => handleInputChange('buyerPhoneNumber', e.target.value)}
+            className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
+            style={{ 
+              backgroundColor: colors.cardBackground,
+              border: `1px solid ${colors.cardBorder}`,
+              color: colors.textPrimary,
+              '--tw-ring-color': colors.primary
+            }}
+            maxLength="15"
+            pattern="[0-9+\-\s\(\)]+"
+          />
+          <div className="mt-2 text-sm" style={{ color: colors.textSecondary }}>
+            If provided, the buyer with this phone number can also track this order from their dashboard.
+          </div>
+        </GlassCard>
+
         {/* Notes */}
-        <GlassCard delay={0.45} className="mb-6">
+        <GlassCard delay={0.47} className="mb-6">
           <h3 className="text-lg font-semibold mb-4" style={{ color: colors.textPrimary }}>Additional Notes</h3>
           <textarea
             placeholder="Any special instructions or requirements..."

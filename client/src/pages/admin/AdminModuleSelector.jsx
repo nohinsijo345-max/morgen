@@ -58,7 +58,7 @@ const AdminModuleSelector = ({ onModuleSelect }) => {
       color: 'from-rose-500 to-pink-600',
       bgColor: 'bg-rose-50',
       iconColor: 'text-rose-600',
-      available: false
+      available: true
     }
   ];
 

@@ -9,6 +9,8 @@ import TransportManagement from './admin/TransportManagement';
 import CustomerSupportManagement from './admin/CustomerSupportManagement';
 import AdminModuleSelector from './admin/AdminModuleSelector';
 import DriverAdmin from './admin/driver/DriverAdmin';
+import AdminBuyerDashboard from './admin/buyer/AdminBuyerDashboard';
+import AdminBuyerLayout from './admin/buyer/AdminBuyerLayout';
 
 const Admin = ({ onLogout }) => {
   const [selectedModule, setSelectedModule] = useState(null);
@@ -57,6 +59,15 @@ const Admin = ({ onLogout }) => {
         onLogout={onLogout} 
         onBack={handleBackToModules}
       />
+    );
+  }
+
+  // Show Buyer Admin module
+  if (selectedModule === 'buyer') {
+    return (
+      <AdminBuyerLayout currentPage="dashboard">
+        <AdminBuyerDashboard />
+      </AdminBuyerLayout>
     );
   }
 

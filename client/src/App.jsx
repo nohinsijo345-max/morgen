@@ -3,15 +3,22 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./styles/neumorphic-theme.css";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AdminThemeProvider } from "./context/AdminThemeContext";
+import { BuyerThemeProvider } from "./context/BuyerThemeContext";
 import { SessionManager, startSessionMonitoring } from "./utils/sessionManager";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SessionExpiryWarning from "./components/SessionExpiryWarning";
 import ModuleSelector from "./pages/ModuleSelector";
 import Login from "./pages/Login";
 import AdminLogin from "./pages/AdminLogin";
+import BuyerLogin from "./pages/BuyerLogin";
+import BuyerRegister from "./pages/BuyerRegister";
+import BuyerForgotPassword from "./pages/BuyerForgotPassword";
 import ForgotPassword from "./pages/ForgotPassword";
 import FarmerDashboard from "./pages/FarmerDashboard";
+import BuyerDashboard from "./pages/BuyerDashboard";
 import Admin from "./pages/Admin";
+import AdminBuyerDashboard from "./pages/admin/buyer/AdminBuyerDashboard";
+import BuyerManagement from "./pages/admin/buyer/BuyerManagement";
 import Updates from "./pages/Updates";
 import AccountCentre from "./pages/AccountCentre";
 import Weather from "./pages/Weather";
@@ -22,6 +29,9 @@ import LocalTransport from "./pages/farmer/LocalTransport";
 import VehicleDetails from "./pages/farmer/VehicleDetails";
 import TransportBooking from "./pages/farmer/TransportBooking";
 import OrderTracking from "./pages/farmer/OrderTracking";
+import BuyerOrderTracking from "./pages/buyer/BuyerOrderTracking";
+import MyFarmers from "./pages/buyer/MyFarmers";
+import MyCustomers from "./pages/farmer/MyCustomers";
 import OrderHistory from "./pages/farmer/OrderHistory";
 import CustomerSupport from "./pages/farmer/CustomerSupport";
 import AIPlantDoctor from "./pages/farmer/AIPlantDoctor";
@@ -31,6 +41,7 @@ import DriverOrderDetails from "./pages/DriverOrderDetails";
 
 export default function App() {
   const [farmerUser, setFarmerUser] = useState(null);
+  const [buyerUser, setBuyerUser] = useState(null);
   const [adminUser, setAdminUser] = useState(null);
   const [driverUser, setDriverUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,13 +50,16 @@ export default function App() {
     // Load sessions using SessionManager (with expiry check)
     console.log('🔧 Loading sessions on app start...');
     const farmer = SessionManager.getUserSession('farmer');
+    const buyer = SessionManager.getUserSession('buyer');
     const admin = SessionManager.getUserSession('admin');
     const driver = SessionManager.getUserSession('driver');
     
-    console.log('🔧 Loaded sessions:', { farmer: !!farmer, admin: !!admin, driver: !!driver });
+    console.log('🔧 Loaded sessions:', { farmer: !!farmer, buyer: !!buyer, admin: !!admin, driver: !!driver });
     if (farmer) console.log('🔧 Farmer session data:', farmer);
+    if (buyer) console.log('🔧 Buyer session data:', buyer);
     
     setFarmerUser(farmer);
+    setBuyerUser(buyer);
     setAdminUser(admin);
     setDriverUser(driver);
     setLoading(false);
@@ -54,6 +68,7 @@ export default function App() {
     const stopMonitoring = startSessionMonitoring((userType) => {
       console.log(`${userType} session expired - auto logout`);
       if (userType === 'farmer') setFarmerUser(null);
+      if (userType === 'buyer') setBuyerUser(null);
       if (userType === 'admin') setAdminUser(null);
       if (userType === 'driver') setDriverUser(null);
     });
@@ -65,6 +80,12 @@ export default function App() {
     console.log('🔧 Setting farmer session with data:', userData);
     setFarmerUser(userData);
     SessionManager.setUserSession('farmer', userData);
+  };
+
+  const handleBuyerLogin = (userData) => {
+    console.log('🔧 Setting buyer session with data:', userData);
+    setBuyerUser(userData);
+    SessionManager.setUserSession('buyer', userData);
   };
 
   const handleAdminLogin = (userData) => {
@@ -80,6 +101,11 @@ export default function App() {
   const handleFarmerLogout = () => {
     setFarmerUser(null);
     SessionManager.clearUserSession('farmer');
+  };
+
+  const handleBuyerLogout = () => {
+    setBuyerUser(null);
+    SessionManager.clearUserSession('buyer');
   };
 
   const handleAdminLogout = () => {
@@ -98,29 +124,37 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        {/* Session Expiry Warnings */}
-        {farmerUser && (
-          <SessionExpiryWarning 
-            userType="farmer" 
-            onLogout={handleFarmerLogout}
-            onExtend={() => console.log('Farmer session extended')}
-          />
-        )}
-        {adminUser && (
-          <SessionExpiryWarning 
-            userType="admin" 
-            onLogout={handleAdminLogout}
-            onExtend={() => console.log('Admin session extended')}
-          />
-        )}
-        {driverUser && (
-          <SessionExpiryWarning 
-            userType="driver" 
-            onLogout={handleDriverLogout}
-            onExtend={() => console.log('Driver session extended')}
-          />
-        )}
+      <BuyerThemeProvider>
+        <BrowserRouter>
+          {/* Session Expiry Warnings */}
+          {farmerUser && (
+            <SessionExpiryWarning 
+              userType="farmer" 
+              onLogout={handleFarmerLogout}
+              onExtend={() => console.log('Farmer session extended')}
+            />
+          )}
+          {buyerUser && (
+            <SessionExpiryWarning 
+              userType="buyer" 
+              onLogout={handleBuyerLogout}
+              onExtend={() => console.log('Buyer session extended')}
+            />
+          )}
+          {adminUser && (
+            <SessionExpiryWarning 
+              userType="admin" 
+              onLogout={handleAdminLogout}
+              onExtend={() => console.log('Admin session extended')}
+            />
+          )}
+          {driverUser && (
+            <SessionExpiryWarning 
+              userType="driver" 
+              onLogout={handleDriverLogout}
+              onExtend={() => console.log('Driver session extended')}
+            />
+          )}
 
         <Routes>
         {/* Module Selector - Always accessible */}
@@ -135,6 +169,30 @@ export default function App() {
           element={
             <ProtectedRoute userType="farmer" requireAuth={false}>
               <Login onLogin={handleFarmerLogin} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer-login" 
+          element={
+            <ProtectedRoute userType="buyer" requireAuth={false}>
+              <BuyerLogin onLogin={handleBuyerLogin} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer-register" 
+          element={
+            <ProtectedRoute userType="buyer" requireAuth={false}>
+              <BuyerRegister />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/forgot-password" 
+          element={
+            <ProtectedRoute userType="buyer" requireAuth={false}>
+              <BuyerForgotPassword />
             </ProtectedRoute>
           } 
         />
@@ -268,11 +326,80 @@ export default function App() {
             </ProtectedRoute>
           } 
         />
+        
+        <Route 
+          path="/my-customers" 
+          element={
+            <ProtectedRoute userType="farmer">
+              <MyCustomers />
+            </ProtectedRoute>
+          } 
+        />
         <Route 
           path="/ai-doctor" 
           element={
             <ProtectedRoute userType="farmer">
               <AIPlantDoctor />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Protected Buyer Routes */}
+        <Route 
+          path="/buyer/dashboard" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <BuyerDashboard user={buyerUser} onLogout={handleBuyerLogout} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/updates" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <Updates />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/account" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <AccountCentre />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/leaderboard" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <Leaderboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/order-tracking" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <BuyerOrderTracking />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/live-bidding" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <div className="min-h-screen flex items-center justify-center">
+                <h1 className="text-2xl font-bold">Live Bidding - Coming Soon</h1>
+              </div>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/my-farmers" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <MyFarmers />
             </ProtectedRoute>
           } 
         />
@@ -284,6 +411,38 @@ export default function App() {
             <ProtectedRoute userType="admin">
               <AdminThemeProvider>
                 <Admin onLogout={handleAdminLogout} />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/dashboard" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <AdminBuyerDashboard />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/management" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <BuyerManagement />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/*" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <div className="min-h-screen flex items-center justify-center">
+                  <h1 className="text-2xl font-bold">Admin Buyer Feature - Coming Soon</h1>
+                </div>
               </AdminThemeProvider>
             </ProtectedRoute>
           } 
@@ -314,6 +473,7 @@ export default function App() {
         />
         </Routes>
       </BrowserRouter>
+      </BuyerThemeProvider>
     </ThemeProvider>
   );
 }

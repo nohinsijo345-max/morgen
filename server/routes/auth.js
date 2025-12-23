@@ -39,6 +39,30 @@ const upload = multer({
   }
 });
 
+// Generate next Buyer ID
+const generateBuyerId = async () => {
+  try {
+    // Find the last buyer by sorting buyerId in descending order
+    const lastBuyer = await User.findOne({ 
+      buyerId: { $regex: /^MGB\d+$/ } 
+    }).sort({ buyerId: -1 });
+    
+    if (!lastBuyer || !lastBuyer.buyerId) {
+      return 'MGB001';
+    }
+    
+    // Extract number from MGB001, MGB002, etc.
+    const lastNumber = parseInt(lastBuyer.buyerId.replace('MGB', ''));
+    const nextNumber = lastNumber + 1;
+    
+    // Pad with zeros (MGB001, MGB002, ..., MGB999)
+    return `MGB${String(nextNumber).padStart(3, '0')}`;
+  } catch (err) {
+    console.error('Error generating buyer ID:', err);
+    return 'MGB001';
+  }
+};
+
 // Generate next Farmer ID
 const generateFarmerId = async () => {
   try {
@@ -63,6 +87,16 @@ const generateFarmerId = async () => {
   }
 };
 
+// Get next Buyer ID (for frontend to display)
+router.get('/next-buyer-id', async (req, res) => {
+  try {
+    const nextId = await generateBuyerId();
+    res.json({ buyerId: nextId });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to generate Buyer ID' });
+  }
+});
+
 // Get next Farmer ID (for frontend to display)
 router.get('/next-farmer-id', async (req, res) => {
   try {
@@ -70,6 +104,197 @@ router.get('/next-farmer-id', async (req, res) => {
     res.json({ farmerId: nextId });
   } catch (err) {
     res.status(500).json({ error: 'Failed to generate Farmer ID' });
+  }
+});
+
+// BUYER REGISTER API
+router.post('/buyer/register', async (req, res) => {
+  try {
+    const { name, pin, phone, email, state, district, city, pinCode, maxBidLimit } = req.body;
+
+    // Validation
+    if (!name || !pin || !phone) {
+      return res.status(400).json({ error: "Name, PIN, and Phone are required" });
+    }
+
+    // Validate phone number (10 digits)
+    if (!/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
+    }
+
+    // Validate email format
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Validate PIN (4 digits)
+    if (!/^\d{4}$/.test(pin)) {
+      return res.status(400).json({ error: "PIN must be exactly 4 digits" });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      $or: [{ phone }, ...(email ? [{ email }] : [])] 
+    });
+    
+    if (existingUser) {
+      if (existingUser.phone === phone) {
+        return res.status(400).json({ error: "Phone number already registered" });
+      }
+      if (email && existingUser.email === email) {
+        return res.status(400).json({ error: "Email already registered" });
+      }
+    }
+
+    // Auto-generate Buyer ID
+    const buyerId = await generateBuyerId();
+
+    // Hash the PIN
+    const hashedPin = await bcrypt.hash(pin, 10);
+
+    const newUser = new User({
+      name,
+      role: 'buyer',
+      buyerId,
+      pin: hashedPin,
+      phone,
+      email,
+      state,
+      district,
+      city,
+      pinCode,
+      maxBidLimit: maxBidLimit || 10000
+    });
+
+    const savedUser = await newUser.save();
+    console.log("✅ Buyer registered:", savedUser.buyerId);
+    
+    // Don't send the hashed PIN back
+    const userResponse = {
+      name: savedUser.name,
+      role: savedUser.role,
+      buyerId: savedUser.buyerId,
+      phone: savedUser.phone,
+      email: savedUser.email,
+      state: savedUser.state,
+      district: savedUser.district,
+      city: savedUser.city,
+      pinCode: savedUser.pinCode,
+      maxBidLimit: savedUser.maxBidLimit
+    };
+    
+    res.status(201).json(userResponse);
+  } catch (err) {
+    console.error("❌ Buyer register error:", err);
+    res.status(500).json({ error: "Failed to register buyer", details: err.message });
+  }
+});
+
+// BUYER LOGIN API
+router.post('/buyer/login', async (req, res) => {
+  try {
+    const { buyerId, pin } = req.body;
+
+    if (!buyerId || !pin) {
+      return res.status(400).json({ error: "Buyer ID and PIN are required" });
+    }
+
+    const user = await User.findOne({ buyerId });
+
+    if (!user) {
+      return res.status(404).json({ error: "Invalid Buyer ID" });
+    }
+
+    // Compare hashed PIN
+    const isValidPin = await bcrypt.compare(pin, user.pin);
+
+    if (!isValidPin) {
+      return res.status(400).json({ error: "Invalid PIN" });
+    }
+
+    // Update last login time
+    user.lastLogin = new Date();
+    await user.save();
+
+    console.log("✅ Buyer login successful for:", user.buyerId);
+    
+    // Return user data without PIN
+    res.status(200).json({ 
+      role: user.role,
+      name: user.name,
+      buyerId: user.buyerId,
+      email: user.email,
+      phone: user.phone,
+      state: user.state,
+      district: user.district,
+      city: user.city,
+      pinCode: user.pinCode,
+      maxBidLimit: user.maxBidLimit,
+      totalPurchases: user.totalPurchases,
+      totalBids: user.totalBids,
+      activeBids: user.activeBids
+    });
+  } catch (err) {
+    console.error("❌ Buyer login error:", err);
+    res.status(500).json({ error: "Login failed", details: err.message });
+  }
+});
+
+// BUYER RESET PASSWORD API
+router.post('/buyer/reset-password', async (req, res) => {
+  try {
+    const { buyerId, email, phone, newPin } = req.body;
+
+    // Validation
+    if (!buyerId || !email || !phone || !newPin) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // Validate PIN (4 digits)
+    if (!/^\d{4}$/.test(newPin)) {
+      return res.status(400).json({ error: "PIN must be exactly 4 digits" });
+    }
+
+    // Validate phone number (10 digits)
+    if (!/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
+    }
+
+    // Validate email format
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Find user with matching buyerId, email, and phone
+    const user = await User.findOne({ 
+      buyerId: buyerId.toUpperCase(),
+      email: email,
+      phone: phone,
+      role: 'buyer'
+    });
+
+    if (!user) {
+      return res.status(404).json({ 
+        error: "No buyer account found with these details. Please verify your Buyer ID, email, and phone number." 
+      });
+    }
+
+    // Hash the new PIN
+    const hashedPin = await bcrypt.hash(newPin, 10);
+
+    // Update the PIN
+    user.pin = hashedPin;
+    await user.save();
+
+    console.log(`✅ Buyer PIN reset successful for ${user.buyerId}`);
+    
+    res.status(200).json({ 
+      message: "PIN reset successful",
+      buyerId: user.buyerId
+    });
+  } catch (err) {
+    console.error("❌ Buyer PIN reset error:", err);
+    res.status(500).json({ error: "Failed to reset PIN", details: err.message });
   }
 });
 
