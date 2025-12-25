@@ -323,7 +323,7 @@ router.get('/users', async (req, res) => {
   try {
     const User = require('../models/User');
     const users = await User.find()
-      .select('name farmerId phone email createdAt lastLogin subsidyRequested subsidyStatus role isActive district landSize cropTypes')
+      .select('name farmerId buyerId phone email createdAt lastLogin subsidyRequested subsidyStatus role isActive district city state pinCode landSize cropTypes profileImage')
       .sort({ createdAt: -1 });
     res.json(users);
   } catch (err) {
@@ -404,20 +404,45 @@ router.delete('/messages/:messageId', async (req, res) => {
   }
 });
 
+// Get buyer profile requests count
+router.get('/buyer-profile-requests-count', async (req, res) => {
+  try {
+    const ProfileChangeRequest = require('../models/ProfileChangeRequest');
+    const requests = await ProfileChangeRequest.find({ status: 'pending' })
+      .populate('userId', 'role');
+    
+    const buyerRequestsCount = requests.filter(req => req.userId?.role === 'buyer').length;
+    
+    res.json({ count: buyerRequestsCount });
+  } catch (err) {
+    console.error('Failed to fetch buyer profile requests count:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get all profile change requests
 router.get('/profile-requests', async (req, res) => {
   try {
     const ProfileChangeRequest = require('../models/ProfileChangeRequest');
     const requests = await ProfileChangeRequest.find({ status: 'pending' })
-      .populate('userId', 'name farmerId email phone')
+      .populate('userId', 'name farmerId buyerId email phone role')
       .sort({ requestedAt: -1 });
     
-    // Format response to include farmer details
+    // Format response to include user details (farmer or buyer)
     const formattedRequests = requests.map(req => ({
       _id: req._id,
-      farmer: {
+      user: {
         name: req.userId?.name,
         farmerId: req.userId?.farmerId,
+        buyerId: req.userId?.buyerId,
+        email: req.userId?.email,
+        phone: req.userId?.phone,
+        role: req.userId?.role
+      },
+      // Keep backward compatibility with 'farmer' field for existing admin UI
+      farmer: {
+        name: req.userId?.name,
+        farmerId: req.userId?.farmerId || req.userId?.buyerId,
         email: req.userId?.email,
         phone: req.userId?.phone
       },
@@ -521,7 +546,34 @@ router.post('/profile-requests/:requestId/approve', async (req, res) => {
     await update.save();
     
     console.log(`✅ Profile change request approved for user ${request.userId._id}:`, request.changes);
-    console.log(`📢 Notification sent to farmer about approval`);
+    
+    // Determine if this is a buyer or farmer for appropriate messaging
+    const userRole = request.userId.role || 'farmer';
+    const userIdField = userRole === 'buyer' ? 'buyerId' : 'farmerId';
+    const userIdValue = request.userId[userIdField];
+    
+    // If this is a buyer, also create a buyer-specific notification
+    if (userRole === 'buyer') {
+      try {
+        const axios = require('axios');
+        const API_URL = process.env.API_URL || 'http://localhost:5050';
+        
+        await axios.post(`${API_URL}/api/buyer-notifications/account-notification`, {
+          buyerId: userIdValue,
+          type: 'profile_updated',
+          details: {
+            changes: changesList
+          }
+        });
+        
+        console.log(`📢 Buyer notification sent to ${userIdValue} about profile approval`);
+      } catch (notificationError) {
+        console.error('Failed to send buyer notification:', notificationError.message);
+        // Don't fail the main request if notification fails
+      }
+    }
+    
+    console.log(`📢 Notification sent to ${userRole} ${userIdValue} about profile approval`);
     
     res.json({ message: 'Profile change request approved successfully', request });
   } catch (err) {
@@ -565,7 +617,34 @@ router.post('/profile-requests/:requestId/reject', async (req, res) => {
     await update.save();
     
     console.log(`✅ Profile change request rejected for user ${request.userId._id}`);
-    console.log(`📢 Notification sent to farmer about rejection`);
+    
+    // Determine if this is a buyer or farmer for appropriate messaging
+    const userRole = request.userId.role || 'farmer';
+    const userIdField = userRole === 'buyer' ? 'buyerId' : 'farmerId';
+    const userIdValue = request.userId[userIdField];
+    
+    // If this is a buyer, also create a buyer-specific notification
+    if (userRole === 'buyer') {
+      try {
+        const axios = require('axios');
+        const API_URL = process.env.API_URL || 'http://localhost:5050';
+        
+        await axios.post(`${API_URL}/api/buyer-notifications/account-notification`, {
+          buyerId: userIdValue,
+          type: 'profile_rejected',
+          details: {
+            reason: reason || 'Request rejected by admin'
+          }
+        });
+        
+        console.log(`📢 Buyer notification sent to ${userIdValue} about profile rejection`);
+      } catch (notificationError) {
+        console.error('Failed to send buyer notification:', notificationError.message);
+        // Don't fail the main request if notification fails
+      }
+    }
+    
+    console.log(`📢 Notification sent to ${userRole} ${userIdValue} about profile rejection`);
     
     res.json({ message: 'Profile change request rejected', request });
   } catch (err) {
@@ -1098,6 +1177,240 @@ router.patch('/support/tickets/:ticketId/status', async (req, res) => {
     res.json({ message: 'Ticket status updated', ticket });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update ticket status' });
+  }
+});
+
+// ============================================
+// BUYER CUSTOMER SUPPORT MANAGEMENT ROUTES
+// ============================================
+
+// Get buyer support tickets only
+router.get('/support/buyer-tickets', async (req, res) => {
+  try {
+    const tickets = await CustomerSupport.find({ userType: 'buyer' })
+      .sort({ updatedAt: -1 });
+    
+    // Populate buyer names from User collection
+    const User = require('../models/User');
+    const ticketsWithBuyerNames = await Promise.all(
+      tickets.map(async (ticket) => {
+        const buyer = await User.findOne({ buyerId: ticket.buyerId }).select('name');
+        return {
+          ...ticket.toObject(),
+          buyerName: buyer?.name || ticket.buyerId
+        };
+      })
+    );
+    
+    res.json(ticketsWithBuyerNames);
+  } catch (error) {
+    console.error('Failed to fetch buyer support tickets:', error);
+    res.status(500).json({ error: 'Failed to fetch buyer support tickets' });
+  }
+});
+
+// Send bulk message to buyers
+router.post('/support/bulk-message-buyers', async (req, res) => {
+  try {
+    const { message, type } = req.body;
+    
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+    
+    const User = require('../models/User');
+    const Update = require('../models/Update');
+    
+    // Determine which buyers to target
+    let buyerQuery = { role: 'buyer', isActive: true };
+    
+    if (type === 'active') {
+      // Buyers with recent activity (last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      buyerQuery.lastLogin = { $gte: thirtyDaysAgo };
+    } else if (type === 'new') {
+      // New buyers (registered in last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      buyerQuery.createdAt = { $gte: thirtyDaysAgo };
+    }
+    // 'all' type uses the base query
+    
+    const buyers = await User.find(buyerQuery).select('_id buyerId name');
+    
+    if (buyers.length === 0) {
+      return res.status(404).json({ error: 'No buyers found matching the criteria' });
+    }
+    
+    // Create notifications for all matching buyers
+    const notifications = buyers.map(buyer => ({
+      userId: buyer._id,
+      title: 'Important Message from Admin',
+      message: message.trim(),
+      category: 'system',
+      isActive: true,
+      createdAt: new Date()
+    }));
+    
+    await Update.insertMany(notifications);
+    
+    // Also create buyer-specific notifications
+    try {
+      const axios = require('axios');
+      const API_URL = process.env.API_URL || 'http://localhost:5050';
+      
+      for (const buyer of buyers) {
+        await axios.post(`${API_URL}/api/buyer-notifications/system-notification`, {
+          buyerId: buyer.buyerId,
+          type: 'admin_message',
+          details: {
+            message: message.trim()
+          }
+        });
+      }
+      
+      console.log(`📢 Buyer-specific notifications sent to ${buyers.length} buyers`);
+    } catch (notificationError) {
+      console.error('Failed to send buyer-specific notifications:', notificationError.message);
+      // Don't fail the main request if buyer notifications fail
+    }
+    
+    // Emit real-time notification via Socket.IO to all buyers
+    const io = req.app.get('io');
+    if (io) {
+      buyers.forEach(buyer => {
+        io.to(`buyer-${buyer.buyerId}`).emit('new-notification', {
+          title: 'Important Message from Admin',
+          message: message.trim(),
+          category: 'system',
+          timestamp: new Date()
+        });
+      });
+    }
+    
+    console.log(`✅ Bulk message sent to ${buyers.length} buyers (type: ${type})`);
+    
+    res.json({ 
+      message: `Bulk message sent successfully to ${buyers.length} buyers`,
+      recipientCount: buyers.length,
+      type: type
+    });
+  } catch (error) {
+    console.error('Failed to send bulk message to buyers:', error);
+    res.status(500).json({ error: 'Failed to send bulk message' });
+  }
+});
+
+// Save buyer settings
+router.post('/buyer/settings', async (req, res) => {
+  try {
+    const settings = req.body;
+    
+    // Here you would typically save to a settings collection
+    // For now, we'll just return success
+    console.log('✅ Buyer settings saved:', settings);
+    
+    res.json({ 
+      message: 'Buyer settings saved successfully',
+      settings: settings
+    });
+  } catch (error) {
+    console.error('Failed to save buyer settings:', error);
+    res.status(500).json({ error: 'Failed to save buyer settings' });
+  }
+});
+
+// Send bid message to buyers
+router.post('/buyer/bid-message', async (req, res) => {
+  try {
+    const { message, type } = req.body;
+    
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+    
+    const User = require('../models/User');
+    const Update = require('../models/Update');
+    
+    // Determine which buyers to target based on type
+    let buyerQuery = { role: 'buyer', isActive: true };
+    
+    if (type === 'active') {
+      // Active bidders (buyers with recent bids)
+      buyerQuery.activeBids = { $gt: 0 };
+    } else if (type === 'winners') {
+      // Recent winners (buyers who won bids recently)
+      buyerQuery.wonBids = { $gt: 0 };
+    } else if (type === 'high-value') {
+      // High-value buyers (buyers with high total spent)
+      buyerQuery.totalSpent = { $gte: 50000 };
+    }
+    // 'all' type uses the base query
+    
+    const buyers = await User.find(buyerQuery).select('_id buyerId name totalSpent');
+    
+    if (buyers.length === 0) {
+      return res.status(404).json({ error: 'No buyers found matching the criteria' });
+    }
+    
+    // Create bid-specific notifications
+    const notifications = buyers.map(buyer => ({
+      userId: buyer._id,
+      title: 'New Bidding Opportunity',
+      message: message.trim(),
+      category: 'bidding',
+      isActive: true,
+      createdAt: new Date()
+    }));
+    
+    await Update.insertMany(notifications);
+    
+    // Also create buyer-specific notifications
+    try {
+      const axios = require('axios');
+      const API_URL = process.env.API_URL || 'http://localhost:5050';
+      
+      for (const buyer of buyers) {
+        await axios.post(`${API_URL}/api/buyer-notifications/bidding-notification`, {
+          buyerId: buyer.buyerId,
+          type: 'bid_opportunity',
+          details: {
+            message: message.trim(),
+            targetType: type
+          }
+        });
+      }
+      
+      console.log(`📢 Bid notifications sent to ${buyers.length} buyers`);
+    } catch (notificationError) {
+      console.error('Failed to send buyer bid notifications:', notificationError.message);
+      // Don't fail the main request if buyer notifications fail
+    }
+    
+    // Emit real-time notification via Socket.IO to all targeted buyers
+    const io = req.app.get('io');
+    if (io) {
+      buyers.forEach(buyer => {
+        io.to(`buyer-${buyer.buyerId}`).emit('new-notification', {
+          title: 'New Bidding Opportunity',
+          message: message.trim(),
+          category: 'bidding',
+          timestamp: new Date()
+        });
+      });
+    }
+    
+    console.log(`✅ Bid message sent to ${buyers.length} buyers (type: ${type})`);
+    
+    res.json({ 
+      message: `Bid message sent successfully to ${buyers.length} buyers`,
+      recipientCount: buyers.length,
+      type: type
+    });
+  } catch (error) {
+    console.error('Failed to send bid message to buyers:', error);
+    res.status(500).json({ error: 'Failed to send bid message' });
   }
 });
 

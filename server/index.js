@@ -50,6 +50,22 @@ app.use('/api/driver', require('./routes/driver'));
 app.use('/api/support', require('./routes/customerSupport'));
 app.use('/api/modules', require('./routes/modules'));
 app.use('/api/ai-doctor', require('./routes/aiDoctor'));
+app.use('/api/buyer-notifications', require('./routes/buyerNotifications'));
+
+// Test route to verify server is working
+app.get('/api/test-connections', (req, res) => {
+  res.json({ message: 'Connections route test working', timestamp: new Date() });
+});
+
+// Load connections route
+try {
+  const connectionsRoute = require('./routes/connections');
+  app.use('/api/connections', connectionsRoute);
+  console.log('✅ Connections route loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load connections route:', error.message);
+}
+
 app.use('/api', require('./routes/health'));
 
 // Serve client in production if present
@@ -81,6 +97,12 @@ io.on('connection', (socket) => {
   socket.on('join-farmer', (farmerId) => {
     socket.join(`farmer-${farmerId}`);
     console.log(`🌾 Farmer ${farmerId} connected: ${socket.id}`);
+  });
+  
+  // Join buyer room for notifications
+  socket.on('join-buyer', (buyerId) => {
+    socket.join(`buyer-${buyerId}`);
+    console.log(`🛒 Buyer ${buyerId} connected: ${socket.id}`);
   });
   
   // Join admin room for notifications

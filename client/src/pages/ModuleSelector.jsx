@@ -212,44 +212,62 @@ const ModuleSelector = () => {
             </motion.div>
 
             {/* Theme Toggle - Fixed functionality and removed labels */}
-            <motion.button
-              onClick={toggleTheme}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative w-20 h-10 rounded-full p-1 transition-all duration-300 backdrop-blur-sm border-2"
-              style={{ 
-                backgroundColor: currentColors.cardBackground,
-                borderColor: currentColors.cardBorder,
-                boxShadow: `inset 0 2px 4px ${currentColors.accent}20, 0 4px 8px ${currentColors.accent}10`
-              }}
-            >
-              <motion.div
-                animate={{ x: isDarkMode ? 40 : 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg relative overflow-hidden"
-                style={{ backgroundColor: currentColors.accent }}
+            <div className="flex items-center gap-4">
+              {/* Discrete Admin Access - Only visible on hover */}
+              <motion.button
+                onClick={() => navigate('/admin-login')}
+                whileHover={{ scale: 1.05, opacity: 1 }}
+                whileTap={{ scale: 0.95 }}
+                className="opacity-20 hover:opacity-100 transition-all duration-300 text-xs px-3 py-1 rounded-lg backdrop-blur-sm border"
+                style={{ 
+                  backgroundColor: currentColors.cardBackground,
+                  borderColor: currentColors.cardBorder,
+                  color: currentColors.textSecondary
+                }}
+                title="Admin Access"
               >
-                {/* Background glow effect */}
+                Admin
+              </motion.button>
+
+              <motion.button
+                onClick={toggleTheme}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative w-20 h-10 rounded-full p-1 transition-all duration-300 backdrop-blur-sm border-2"
+                style={{ 
+                  backgroundColor: currentColors.cardBackground,
+                  borderColor: currentColors.cardBorder,
+                  boxShadow: `inset 0 2px 4px ${currentColors.accent}20, 0 4px 8px ${currentColors.accent}10`
+                }}
+              >
                 <motion.div
-                  animate={{ 
-                    opacity: [0.5, 1, 0.5],
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute inset-0 rounded-full"
-                  style={{ backgroundColor: currentColors.accent, opacity: 0.3 }}
-                />
-                
-                {/* Icon - Fixed moon orientation */}
-                <div className="relative z-10">
-                  {isDarkMode ? (
-                    <Moon className="w-4 h-4 text-white" />
-                  ) : (
-                    <Sun className="w-4 h-4 text-white" />
-                  )}
-                </div>
-              </motion.div>
-            </motion.button>
+                  animate={{ x: isDarkMode ? 40 : 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg relative overflow-hidden"
+                  style={{ backgroundColor: currentColors.accent }}
+                >
+                  {/* Background glow effect */}
+                  <motion.div
+                    animate={{ 
+                      opacity: [0.5, 1, 0.5],
+                      scale: [1, 1.2, 1]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute inset-0 rounded-full"
+                    style={{ backgroundColor: currentColors.accent, opacity: 0.3 }}
+                  />
+                  
+                  {/* Icon - Fixed moon orientation */}
+                  <div className="relative z-10">
+                    {isDarkMode ? (
+                      <Moon className="w-4 h-4 text-white" />
+                    ) : (
+                      <Sun className="w-4 h-4 text-white" />
+                    )}
+                  </div>
+                </motion.div>
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.header>

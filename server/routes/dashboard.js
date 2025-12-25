@@ -21,11 +21,12 @@ router.get('/buyer/:buyerId', async (req, res) => {
     // Get weather data for buyer's location
     const weather = await getWeatherData(buyer.district, buyer.city, buyer.pinCode);
     
-    // Get buyer-specific updates (from admin to buyer, gov to buyer)
+    // Get buyer-specific updates (notifications for this specific buyer)
     const updates = await Update.find({
       $or: [
-        { targetRole: 'buyer' },
-        { targetRole: 'all' }
+        { userId: buyer._id }, // Direct notifications to this buyer
+        { targetRole: 'buyer' }, // General buyer notifications
+        { targetRole: 'all' } // General notifications for all users
       ]
     })
     .sort({ createdAt: -1 })

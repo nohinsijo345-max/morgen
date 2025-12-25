@@ -4,8 +4,22 @@ const ThemeContext = createContext();
 
 export const useTheme = () => {
   const context = useContext(ThemeContext);
+  // Return default values if context is not available
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    return {
+      isDarkMode: true,
+      toggleTheme: () => {},
+      colors: {
+        primary: '#4CAF50',
+        primaryLight: '#81C784',
+        primaryDark: '#388E3C',
+        background: '#1A1A1A',
+        surface: '#2D2D2D',
+        textPrimary: '#FFFFFF',
+        textSecondary: '#B0B0B0',
+        border: '#404040',
+      }
+    };
   }
   return context;
 };

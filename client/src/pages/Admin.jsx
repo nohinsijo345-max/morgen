@@ -13,17 +13,29 @@ import AdminBuyerDashboard from './admin/buyer/AdminBuyerDashboard';
 import AdminBuyerLayout from './admin/buyer/AdminBuyerLayout';
 
 const Admin = ({ onLogout }) => {
+  // Always start with module selector for admin
   const [selectedModule, setSelectedModule] = useState(null);
   const [activePage, setActivePage] = useState('dashboard');
 
   const handleModuleSelect = (moduleId) => {
     setSelectedModule(moduleId);
     setActivePage('dashboard'); // Reset to dashboard when switching modules
+    // Store the selected module
+    sessionStorage.setItem('selectedAdminModule', moduleId);
   };
 
   const handleBackToModules = () => {
-    setSelectedModule(null);
+    setSelectedModule(null); // This will show the module selector
     setActivePage('dashboard');
+    // Clear stored module selection
+    sessionStorage.removeItem('selectedAdminModule');
+  };
+
+  const handleLogout = () => {
+    // Clear admin session storage
+    sessionStorage.removeItem('selectedAdminModule');
+    // Call parent logout
+    onLogout();
   };
 
   const renderPage = () => {
@@ -56,7 +68,7 @@ const Admin = ({ onLogout }) => {
   if (selectedModule === 'driver') {
     return (
       <DriverAdmin 
-        onLogout={onLogout} 
+        onLogout={handleLogout} 
         onBack={handleBackToModules}
       />
     );
@@ -65,7 +77,11 @@ const Admin = ({ onLogout }) => {
   // Show Buyer Admin module
   if (selectedModule === 'buyer') {
     return (
-      <AdminBuyerLayout currentPage="dashboard">
+      <AdminBuyerLayout 
+        currentPage="dashboard"
+        onLogout={handleLogout}
+        onBack={handleBackToModules}
+      >
         <AdminBuyerDashboard />
       </AdminBuyerLayout>
     );
@@ -77,7 +93,7 @@ const Admin = ({ onLogout }) => {
       <AdminLayout
         activePage={activePage}
         onNavigate={setActivePage}
-        onLogout={onLogout}
+        onLogout={handleLogout}
         onBack={handleBackToModules}
       >
         {renderPage()}

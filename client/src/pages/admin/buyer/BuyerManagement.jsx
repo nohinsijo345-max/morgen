@@ -260,11 +260,32 @@ const BuyerManagement = () => {
                       >
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div 
-                              className="w-10 h-10 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: colors.primary }}
-                            >
-                              <Users className="w-5 h-5 text-white" />
+                            {/* Profile Image */}
+                            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2" style={{ borderColor: colors.border }}>
+                              {buyer.profileImage ? (
+                                <img
+                                  src={buyer.profileImage.startsWith('http') 
+                                    ? buyer.profileImage 
+                                    : `${import.meta.env.VITE_API_URL || 'http://localhost:5050'}${buyer.profileImage}`
+                                  }
+                                  alt={`${buyer.name}'s profile`}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    e.target.nextSibling.style.display = 'flex';
+                                  }}
+                                />
+                              ) : null}
+                              <div 
+                                className="w-full h-full flex items-center justify-center text-xs font-bold"
+                                style={{ 
+                                  backgroundColor: colors.primary,
+                                  color: '#ffffff',
+                                  display: buyer.profileImage ? 'none' : 'flex'
+                                }}
+                              >
+                                {buyer.name?.charAt(0)?.toUpperCase() || 'B'}
+                              </div>
                             </div>
                             <div>
                               <p className="font-semibold" style={{ color: colors.textPrimary }}>

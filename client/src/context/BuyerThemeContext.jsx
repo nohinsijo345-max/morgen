@@ -4,8 +4,37 @@ const BuyerThemeContext = createContext();
 
 export const useBuyerTheme = () => {
   const context = useContext(BuyerThemeContext);
+  // Return default values if context is not available (for pages outside BuyerThemeProvider)
   if (!context) {
-    throw new Error('useBuyerTheme must be used within a BuyerThemeProvider');
+    return {
+      isDarkMode: false,
+      toggleTheme: () => {},
+      colors: {
+        primary: '#FF4757',
+        primaryLight: '#FF6B7A',
+        primaryDark: '#E63946',
+        secondary: '#FF8A95',
+        accent: '#FFA8B0',
+        background: '#FAFBFC',
+        backgroundCard: '#FFFFFF',
+        surface: '#F8F9FA',
+        textPrimary: '#2C3E50',
+        textSecondary: '#6C757D',
+        textMuted: '#ADB5BD',
+        border: '#E9ECEF',
+        cardBorder: '#F1F3F4',
+        headerBg: 'rgba(255, 255, 255, 0.95)',
+        headerBorder: '#E9ECEF',
+        success: '#28A745',
+        warning: '#FFC107',
+        error: '#DC3545',
+        info: '#17A2B8',
+        gradientStart: '#FF4757',
+        gradientEnd: '#FF6B7A',
+        glassBackground: 'rgba(255, 71, 87, 0.05)',
+        glassBorder: 'rgba(255, 71, 87, 0.15)',
+      }
+    };
   }
   return context;
 };

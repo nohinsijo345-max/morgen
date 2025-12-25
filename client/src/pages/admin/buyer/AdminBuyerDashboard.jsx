@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   ShoppingBag, 
@@ -15,11 +16,13 @@ import {
 import axios from 'axios';
 import { useAdminTheme } from '../../../context/AdminThemeContext';
 import AdminGlassCard from '../../../components/AdminGlassCard';
+import AdminBuyerLayout from './AdminBuyerLayout';
 
 const AdminBuyerDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { colors } = useAdminTheme();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
@@ -49,14 +52,16 @@ const AdminBuyerDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.background }}>
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-16 h-16 border-4 rounded-full"
-          style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
-        />
-      </div>
+      <AdminBuyerLayout currentPage="dashboard">
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.background }}>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-16 h-16 border-4 rounded-full"
+            style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
+          />
+        </div>
+      </AdminBuyerLayout>
     );
   }
 
@@ -65,14 +70,14 @@ const AdminBuyerDashboard = () => {
       title: 'Buyer Management',
       description: 'Manage buyer accounts and profiles',
       icon: Users,
-      href: '/admin/buyer/management',
+      path: '/admin/buyer/management',
       color: colors.primary
     },
     {
       title: 'Profile Approvals',
       description: 'Review pending buyer profile changes',
       icon: UserCheck,
-      href: '/admin/buyer/profile-requests',
+      path: '/admin/buyer/profile-requests',
       color: '#10B981',
       badge: dashboardData?.pendingApprovals || 0
     },
@@ -80,28 +85,28 @@ const AdminBuyerDashboard = () => {
       title: 'Order Management',
       description: 'Monitor buyer orders and transactions',
       icon: Package,
-      href: '/admin/buyer/orders',
+      path: '/admin/buyer/orders',
       color: '#F59E0B'
     },
     {
       title: 'Bidding Analytics',
       description: 'View bidding statistics and trends',
       icon: Gavel,
-      href: '/admin/buyer/bidding',
+      path: '/admin/buyer/bidding',
       color: '#8B5CF6'
     },
     {
       title: 'Messages & Updates',
       description: 'Send updates and messages to buyers',
       icon: MessageSquare,
-      href: '/admin/buyer/messages',
+      path: '/admin/buyer/messages',
       color: '#EF4444'
     },
     {
       title: 'Settings',
       description: 'Configure buyer module settings',
       icon: Settings,
-      href: '/admin/buyer/settings',
+      path: '/admin/buyer/settings',
       color: '#6B7280'
     }
   ];
@@ -138,7 +143,7 @@ const AdminBuyerDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: colors.background }}>
+    <AdminBuyerLayout currentPage="dashboard">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -207,7 +212,7 @@ const AdminBuyerDashboard = () => {
                 transition={{ delay: 0.5 + index * 0.1 }}
                 whileHover={{ scale: 1.02, y: -5 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => window.location.href = action.href}
+                onClick={() => navigate(action.path)}
                 className="cursor-pointer"
               >
                 <AdminGlassCard className="p-6 h-full">
@@ -253,7 +258,7 @@ const AdminBuyerDashboard = () => {
                   Recent Buyers
                 </h3>
                 <button 
-                  onClick={() => window.location.href = '/admin/buyer/management'}
+                  onClick={() => navigate('/admin/buyer/management')}
                   className="text-sm font-medium" 
                   style={{ color: colors.primary }}
                 >
@@ -313,7 +318,7 @@ const AdminBuyerDashboard = () => {
                   Top Buyers
                 </h3>
                 <button 
-                  onClick={() => window.location.href = '/admin/buyer/analytics'}
+                  onClick={() => navigate('/admin/buyer/bidding')}
                   className="text-sm font-medium" 
                   style={{ color: colors.primary }}
                 >
@@ -362,7 +367,7 @@ const AdminBuyerDashboard = () => {
           </motion.div>
         </div>
       </div>
-    </div>
+    </AdminBuyerLayout>
   );
 };
 

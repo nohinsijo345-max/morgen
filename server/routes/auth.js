@@ -452,11 +452,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET USER PROFILE
-router.get('/profile/:farmerId', async (req, res) => {
+// GET USER PROFILE (Generic - supports both farmers and buyers)
+router.get('/profile/:userId', async (req, res) => {
   try {
-    const { farmerId } = req.params;
-    const user = await User.findOne({ farmerId }).select('-pin');
+    const { userId } = req.params;
+    
+    // Determine if it's a farmer or buyer based on ID format
+    let user;
+    if (userId.startsWith('MGB')) {
+      // Buyer ID format
+      user = await User.findOne({ buyerId: userId }).select('-pin');
+    } else {
+      // Farmer ID format
+      user = await User.findOne({ farmerId: userId }).select('-pin');
+    }
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -464,15 +473,15 @@ router.get('/profile/:farmerId', async (req, res) => {
     
     res.json(user);
   } catch (err) {
-    console.error('❌ Profile fetch error:', err);
+    console.error('❌ Generic profile fetch error:', err);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
 
-// UPDATE USER PROFILE (email, phone, cropTypes only)
-router.put('/profile/:farmerId', async (req, res) => {
+// UPDATE USER PROFILE (Generic - supports both farmers and buyers)
+router.put('/profile/:userId', async (req, res) => {
   try {
-    const { farmerId } = req.params;
+    const { userId } = req.params;
     const { email, phone, cropTypes } = req.body;
     
     // Phone validation if provided
@@ -480,10 +489,27 @@ router.put('/profile/:farmerId', async (req, res) => {
       return res.status(400).json({ error: "Phone number must be exactly 10 digits" });
     }
     
+    // Determine if it's a farmer or buyer based on ID format
+    let user;
+    let userIdField;
+    if (userId.startsWith('MGB')) {
+      // Buyer ID format
+      user = await User.findOne({ buyerId: userId });
+      userIdField = 'buyerId';
+    } else {
+      // Farmer ID format
+      user = await User.findOne({ farmerId: userId });
+      userIdField = 'farmerId';
+    }
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
     // Check if email/phone already exists for another user
     if (email || phone) {
       const existingUser = await User.findOne({
-        farmerId: { $ne: farmerId },
+        [userIdField]: { $ne: userId },
         $or: [
           ...(email ? [{ email }] : []),
           ...(phone ? [{ phone }] : [])
@@ -500,63 +526,77 @@ router.put('/profile/:farmerId', async (req, res) => {
       }
     }
     
+    // Update allowed fields
     const updateData = {};
-    if (email) updateData.email = email;
-    if (phone) updateData.phone = phone;
-    if (cropTypes) updateData.cropTypes = cropTypes;
-    
-    const updatedUser = await User.findOneAndUpdate(
-      { farmerId },
-      updateData,
-      { new: true }
-    ).select('-pin');
-    
-    if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+    if (email !== undefined) updateData.email = email;
+    if (phone !== undefined) updateData.phone = phone;
+    if (cropTypes !== undefined && !userId.startsWith('MGB')) {
+      // Only farmers can have crop types
+      updateData.cropTypes = cropTypes;
     }
     
-    console.log(`✅ Profile updated for ${farmerId}`);
+    const updatedUser = await User.findOneAndUpdate(
+      { [userIdField]: userId },
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-pin');
+    
+    console.log(`✅ Profile updated for ${userIdField}:`, userId);
     res.json(updatedUser);
+    
   } catch (err) {
-    console.error('❌ Profile update error:', err);
+    console.error('❌ Generic profile update error:', err);
     res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 
-// CHANGE PASSWORD (for logged-in users)
+// CHANGE PASSWORD (Generic - supports both farmers and buyers)
 router.post('/change-password', async (req, res) => {
   try {
-    const { farmerId, currentPin, newPin } = req.body;
-
-    if (!farmerId || !currentPin || !newPin) {
-      return res.status(400).json({ error: "All fields are required" });
+    const { farmerId, buyerId, currentPin, newPin } = req.body;
+    
+    if (!currentPin || !newPin) {
+      return res.status(400).json({ error: 'Current PIN and new PIN are required' });
     }
-
+    
     if (!/^\d{4}$/.test(newPin)) {
-      return res.status(400).json({ error: "New PIN must be exactly 4 digits" });
+      return res.status(400).json({ error: 'PIN must be exactly 4 digits' });
     }
-
-    const user = await User.findOne({ farmerId: farmerId.toUpperCase() });
+    
+    // Determine user type and find user
+    let user;
+    let userId;
+    if (buyerId) {
+      user = await User.findOne({ buyerId });
+      userId = buyerId;
+    } else if (farmerId) {
+      user = await User.findOne({ farmerId });
+      userId = farmerId;
+    } else {
+      return res.status(400).json({ error: 'Either farmerId or buyerId is required' });
+    }
+    
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
-
+    
     // Verify current PIN
     const isValidPin = await bcrypt.compare(currentPin, user.pin);
     if (!isValidPin) {
-      return res.status(400).json({ error: "Current PIN is incorrect" });
+      return res.status(400).json({ error: 'Current PIN is incorrect' });
     }
-
+    
     // Hash and update new PIN
     const hashedPin = await bcrypt.hash(newPin, 10);
     user.pin = hashedPin;
     await user.save();
-
-    console.log(`✅ Password changed for ${farmerId}`);
-    res.json({ message: 'Password changed successfully' });
+    
+    console.log(`✅ Password changed for user:`, userId);
+    res.json({ success: true, message: 'Password changed successfully' });
+    
   } catch (err) {
-    console.error('Password change error:', err);
-    res.status(500).json({ error: err.message });
+    console.error('❌ Password change error:', err);
+    res.status(500).json({ error: 'Failed to change password' });
   }
 });
 
@@ -617,17 +657,25 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-// UPLOAD PROFILE IMAGE
-router.post('/profile-image/:farmerId', upload.single('profileImage'), async (req, res) => {
+// UPLOAD PROFILE IMAGE (Generic - supports both farmers and buyers)
+router.post('/profile-image/:userId', upload.single('profileImage'), async (req, res) => {
   try {
-    const { farmerId } = req.params;
+    const { userId } = req.params;
 
     if (!req.file) {
       return res.status(400).json({ error: 'No image file provided' });
     }
 
-    // Find the user
-    const user = await User.findOne({ farmerId: farmerId.toUpperCase() });
+    // Determine user type and find user
+    let user;
+    if (userId.startsWith('MGB')) {
+      // Buyer ID format
+      user = await User.findOne({ buyerId: userId });
+    } else {
+      // Farmer ID format
+      user = await User.findOne({ farmerId: userId });
+    }
+    
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -647,7 +695,7 @@ router.post('/profile-image/:farmerId', upload.single('profileImage'), async (re
     user.profileImageUploadedAt = new Date();
     await user.save();
 
-    console.log('📸 Profile image uploaded for:', farmerId, '- URL:', imageUrl);
+    console.log('📸 Profile image uploaded for:', userId, '- URL:', imageUrl);
 
     res.json({
       success: true,
@@ -662,13 +710,21 @@ router.post('/profile-image/:farmerId', upload.single('profileImage'), async (re
   }
 });
 
-// DELETE PROFILE IMAGE
-router.delete('/profile-image/:farmerId', async (req, res) => {
+// DELETE PROFILE IMAGE (Generic - supports both farmers and buyers)
+router.delete('/profile-image/:userId', async (req, res) => {
   try {
-    const { farmerId } = req.params;
+    const { userId } = req.params;
 
-    // Find the user
-    const user = await User.findOne({ farmerId: farmerId.toUpperCase() });
+    // Determine user type and find user
+    let user;
+    if (userId.startsWith('MGB')) {
+      // Buyer ID format
+      user = await User.findOne({ buyerId: userId });
+    } else {
+      // Farmer ID format
+      user = await User.findOne({ farmerId: userId });
+    }
+    
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -687,7 +743,7 @@ router.delete('/profile-image/:farmerId', async (req, res) => {
     user.profileImageUploadedAt = null;
     await user.save();
 
-    console.log('🗑️ Profile image deleted for:', farmerId);
+    console.log('🗑️ Profile image deleted for:', userId);
 
     res.json({
       success: true,

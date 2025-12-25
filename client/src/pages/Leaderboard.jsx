@@ -4,34 +4,33 @@ import {
   Trophy, ArrowLeft, Award, TrendingUp, Star, 
   Crown, Medal, Sparkles, Home
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
+import { useBuyerTheme } from '../context/BuyerThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
+import BuyerNeumorphicThemeToggle from '../components/BuyerNeumorphicThemeToggle';
 import { UserSession } from '../utils/userSession';
 
 const Leaderboard = () => {
+  const location = useLocation();
+  const isBuyerRoute = location.pathname.startsWith('/buyer');
+  
+  // Get the appropriate theme based on route
+  const farmerTheme = useTheme();
+  const buyerTheme = useBuyerTheme();
+  const { isDarkMode, toggleTheme, colors } = isBuyerRoute ? buyerTheme : farmerTheme;
+  
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFarmer, setSelectedFarmer] = useState(null);
   const navigate = useNavigate();
-  const { isDarkMode, toggleTheme, colors } = useTheme();
 
   // Determine correct dashboard URL based on user type
   const getDashboardUrl = () => {
-    // Check if buyer is logged in
-    const buyerUser = UserSession.getCurrentUser('buyer');
-    if (buyerUser) {
+    if (isBuyerRoute) {
       return '/buyer/dashboard';
     }
-    
-    // Check if farmer is logged in
-    const farmerUser = UserSession.getCurrentUser('farmer');
-    if (farmerUser) {
-      return '/dashboard';
-    }
-    
-    // Default to farmer dashboard
     return '/dashboard';
   };
 
@@ -124,7 +123,11 @@ const Leaderboard = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <NeumorphicThemeToggle size="sm" />
+              {isBuyerRoute ? (
+                <BuyerNeumorphicThemeToggle size="sm" />
+              ) : (
+                <NeumorphicThemeToggle size="sm" />
+              )}
 
               <motion.button
                 whileHover={{ scale: 1.05 }}

@@ -6,7 +6,7 @@
 export const UserSession = {
   /**
    * Get current user session data
-   * @param {string} userType - 'farmer', 'admin', or 'driver'
+   * @param {string} userType - 'farmer', 'buyer', 'admin', or 'driver'
    * @returns {Object|null} User data or null if no session
    */
   getCurrentUser: (userType = 'farmer') => {
@@ -50,11 +50,29 @@ export const UserSession = {
   },
 
   /**
+   * Get buyerId from current buyer session
+   * @returns {string|null} buyerId or null if no session
+   */
+  getBuyerId: () => {
+    const user = UserSession.getCurrentUser('buyer');
+    return user?.buyerId || null;
+  },
+
+  /**
    * Get farmer name from current farmer session
    * @returns {string|null} farmer name or null if no session
    */
   getFarmerName: () => {
     const user = UserSession.getCurrentUser('farmer');
+    return user?.name || null;
+  },
+
+  /**
+   * Get buyer name from current buyer session
+   * @returns {string|null} buyer name or null if no session
+   */
+  getBuyerName: () => {
+    const user = UserSession.getCurrentUser('buyer');
     return user?.name || null;
   },
 
@@ -75,8 +93,24 @@ export const UserSession = {
   },
 
   /**
+   * Get buyer location data from current session
+   * @returns {Object|null} location data or null if no session
+   */
+  getBuyerLocation: () => {
+    const user = UserSession.getCurrentUser('buyer');
+    if (!user) return null;
+    
+    return {
+      state: user.state,
+      district: user.district,
+      city: user.city,
+      pinCode: user.pinCode
+    };
+  },
+
+  /**
    * Clear user session
-   * @param {string} userType - 'farmer', 'admin', or 'driver'
+   * @param {string} userType - 'farmer', 'buyer', 'admin', or 'driver'
    */
   clearSession: (userType = 'farmer') => {
     localStorage.removeItem(`${userType}User`);
@@ -86,7 +120,7 @@ export const UserSession = {
 
   /**
    * Check if user is logged in
-   * @param {string} userType - 'farmer', 'admin', or 'driver'
+   * @param {string} userType - 'farmer', 'buyer', 'admin', or 'driver'
    * @returns {boolean} true if logged in, false otherwise
    */
   isLoggedIn: (userType = 'farmer') => {
@@ -95,7 +129,7 @@ export const UserSession = {
 
   /**
    * Get session expiry time
-   * @param {string} userType - 'farmer', 'admin', or 'driver'
+   * @param {string} userType - 'farmer', 'buyer', 'admin', or 'driver'
    * @returns {Date|null} expiry date or null if no session
    */
   getSessionExpiry: (userType = 'farmer') => {
@@ -116,7 +150,7 @@ export const UserSession = {
 
   /**
    * Get time remaining in session (in milliseconds)
-   * @param {string} userType - 'farmer', 'admin', or 'driver'
+   * @param {string} userType - 'farmer', 'buyer', 'admin', or 'driver'
    * @returns {number} milliseconds remaining or 0 if expired/no session
    */
   getTimeRemaining: (userType = 'farmer') => {

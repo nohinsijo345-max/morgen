@@ -11,7 +11,7 @@ const UpdateSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['general', 'profile', 'transport', 'weather', 'market', 'government', 'auction', 'support'],
+    enum: ['general', 'profile', 'transport', 'weather', 'market', 'government', 'auction', 'support', 'order', 'bidding', 'account', 'system'],
     default: 'general'
   },
   priority: { 

@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import { 
   Camera, 
   Upload, 
@@ -10,10 +11,17 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
+import { useBuyerTheme } from '../context/BuyerThemeContext';
 import { UserSession } from '../utils/userSession';
 
 const ProfileImageCard = ({ user, onImageUpdate }) => {
-  const { colors, isDarkMode } = useTheme();
+  const location = useLocation();
+  const isBuyerRoute = location.pathname.startsWith('/buyer');
+  
+  // Get the appropriate theme based on route
+  const farmerTheme = useTheme();
+  const buyerTheme = useBuyerTheme();
+  const { colors, isDarkMode } = isBuyerRoute ? buyerTheme : farmerTheme;
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -42,11 +50,18 @@ const ProfileImageCard = ({ user, onImageUpdate }) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      // Get user session data
-      const userData = UserSession.getCurrentUser('farmer');
-      const farmerId = userData?.farmerId;
+      // Get user session data based on route
+      let userId = null;
       
-      if (!farmerId) {
+      if (isBuyerRoute) {
+        const buyerUser = UserSession.getCurrentUser('buyer');
+        userId = buyerUser?.buyerId || 'MGB002'; // Fallback for testing
+      } else {
+        const farmerUser = UserSession.getCurrentUser('farmer');
+        userId = farmerUser?.farmerId;
+      }
+      
+      if (!userId) {
         setError('No user session found. Please login again.');
         setUploading(false);
         return;
@@ -55,17 +70,10 @@ const ProfileImageCard = ({ user, onImageUpdate }) => {
       const formData = new FormData();
       formData.append('profileImage', file);
 
-      console.log('📤 Uploading image for farmerId:', farmerId);
-      console.log('📤 File details:', {
-        name: file.name,
-        size: file.size,
-        type: file.type
-      });
-      console.log('📤 API URL:', API_URL);
-      console.log('📤 Upload URL:', `${API_URL}/api/auth/profile-image/${farmerId}`);
+      console.log('📤 Uploading image for userId:', userId);
 
       const response = await axios.post(
-        `${API_URL}/api/auth/profile-image/${farmerId}`,
+        `${API_URL}/api/auth/profile-image/${userId}`,
         formData,
         {
           headers: {
@@ -87,9 +95,6 @@ const ProfileImageCard = ({ user, onImageUpdate }) => {
 
     } catch (err) {
       console.error('❌ Image upload error:', err);
-      console.error('Error response:', err.response?.data);
-      console.error('Error status:', err.response?.status);
-      console.error('Error message:', err.message);
       
       let errorMessage = 'Failed to upload image';
       if (err.response?.data?.error) {
@@ -121,17 +126,24 @@ const ProfileImageCard = ({ user, onImageUpdate }) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      // Get user session data
-      const userData = UserSession.getCurrentUser('farmer');
-      const farmerId = userData?.farmerId;
+      // Get user session data based on route
+      let userId = null;
       
-      if (!farmerId) {
+      if (isBuyerRoute) {
+        const buyerUser = UserSession.getCurrentUser('buyer');
+        userId = buyerUser?.buyerId || 'MGB002'; // Fallback for testing
+      } else {
+        const farmerUser = UserSession.getCurrentUser('farmer');
+        userId = farmerUser?.farmerId;
+      }
+      
+      if (!userId) {
         setError('No user session found. Please login again.');
         setUploading(false);
         return;
       }
 
-      await axios.delete(`${API_URL}/api/auth/profile-image/${farmerId}`);
+      await axios.delete(`${API_URL}/api/auth/profile-image/${userId}`);
 
       setSuccess('Profile image deleted successfully!');
       setTimeout(() => setSuccess(''), 3000);
@@ -326,22 +338,25 @@ const ProfileImageCard = ({ user, onImageUpdate }) => {
             {/* Text Overlay - Only when image exists */}
             {getProfileImageUrl() && (
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="text-3xl font-bold mb-3 drop-shadow-lg">
-                  {user?.name || 'Farmer Name'}
+                <h3 className="text-3xl font-bold mb-2 drop-shadow-lg">
+                  {user?.name || 'User Name'}
                 </h3>
-                <div className="space-y-2 text-lg">
+                <div className="space-y-1 text-lg">
                   <p className="font-semibold drop-shadow-md">
                     {user?.city || 'City'}, {user?.district || 'District'}
                   </p>
                   <p className="font-semibold drop-shadow-md">
                     {user?.phone || 'Phone Number'}
                   </p>
-                  <p className="font-semibold drop-shadow-md">
-                    {user?.cropTypes?.length > 0 
-                      ? user.cropTypes.slice(0, 2).join(', ') + (user.cropTypes.length > 2 ? '...' : '')
-                      : 'No crops added'
-                    }
-                  </p>
+                  {/* Only show crops for farmers */}
+                  {!isBuyerRoute && (
+                    <p className="font-semibold drop-shadow-md">
+                      {user?.cropTypes?.length > 0 
+                        ? user.cropTypes.slice(0, 2).join(', ') + (user.cropTypes.length > 2 ? '...' : '')
+                        : 'No crops added'
+                      }
+                    </p>
+                  )}
                 </div>
               </div>
             )}

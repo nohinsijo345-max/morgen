@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const messageSchema = new mongoose.Schema({
   sender: {
     type: String,
-    enum: ['farmer', 'admin'],
+    enum: ['farmer', 'buyer', 'admin'],
     required: true
   },
   message: {
@@ -28,12 +28,22 @@ const customerSupportSchema = new mongoose.Schema({
   },
   farmerId: {
     type: String,
-    required: true,
     ref: 'User'
   },
-  farmerName: {
+  buyerId: {
     type: String,
+    ref: 'User'
+  },
+  userType: {
+    type: String,
+    enum: ['farmer', 'buyer'],
     required: true
+  },
+  farmerName: {
+    type: String
+  },
+  buyerName: {
+    type: String
   },
   subject: {
     type: String,
@@ -41,7 +51,7 @@ const customerSupportSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['transport', 'weather', 'crops', 'auction', 'technical', 'billing', 'general'],
+    enum: ['transport', 'weather', 'crops', 'auction', 'technical', 'billing', 'general', 'bidding', 'orders'],
     default: 'general'
   },
   priority: {

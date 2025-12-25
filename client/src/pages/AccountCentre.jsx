@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ArrowLeft, 
   User, 
@@ -20,11 +20,24 @@ import {
 import axios from 'axios';
 import { indiaStates, indiaDistricts, cropTypes } from '../data/indiaLocations';
 import { useTheme } from '../context/ThemeContext';
+import { useBuyerTheme } from '../context/BuyerThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
+import BuyerNeumorphicThemeToggle from '../components/BuyerNeumorphicThemeToggle';
 import ProfileImageCard from '../components/ProfileImageCard';
 import { UserSession } from '../utils/userSession';
 
 const AccountCentre = () => {
+  const location = useLocation();
+  
+  // Determine if this is a buyer route
+  const isBuyerRoute = location.pathname.startsWith('/buyer');
+  
+  // Get the appropriate theme based on route
+  const farmerTheme = useTheme();
+  const buyerTheme = useBuyerTheme();
+  
+  // Use the correct theme based on route
+  const { isDarkMode, toggleTheme, colors } = isBuyerRoute ? buyerTheme : farmerTheme;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -32,7 +45,6 @@ const AccountCentre = () => {
   const [success, setSuccess] = useState('');
   const [pendingRequest, setPendingRequest] = useState(null);
   const navigate = useNavigate();
-  const { isDarkMode, toggleTheme, colors } = useTheme();
   
   // Determine correct dashboard URL based on user type
   const getDashboardUrl = () => {
@@ -91,19 +103,41 @@ const AccountCentre = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      // Get user session data using UserSession utility
-      const userData = UserSession.getCurrentUser('farmer');
-      const farmerId = userData?.farmerId;
+      console.log('🔍 Fetching user data for Account Centre...');
+      console.log('🔍 Is buyer route:', isBuyerRoute);
       
-      if (!farmerId) {
+      // Determine user type and ID based on route and session
+      let userId = null;
+      let userType = isBuyerRoute ? 'buyer' : 'farmer';
+      
+      if (isBuyerRoute) {
+        // Try to get buyer session
+        const buyerUser = UserSession.getCurrentUser('buyer');
+        userId = buyerUser?.buyerId;
+        console.log('🔍 Buyer session found:', buyerUser);
+        
+        // Fallback to MGB002 for testing
+        if (!userId) {
+          console.log('⚠️ No buyer session, using fallback MGB002');
+          userId = 'MGB002';
+        }
+      } else {
+        // Try to get farmer session
+        const farmerUser = UserSession.getCurrentUser('farmer');
+        userId = farmerUser?.farmerId;
+        console.log('🔍 Farmer session found:', farmerUser);
+      }
+      
+      if (!userId) {
+        console.error('❌ No user ID found');
         setError('No user session found. Please login again.');
         setLoading(false);
         return;
       }
       
-      console.log('✅ Fetching profile for farmerId:', farmerId);
+      console.log(`✅ Fetching profile for userId: ${userId}, userType: ${userType}`);
       
-      const response = await axios.get(`${API_URL}/api/auth/profile/${farmerId}`);
+      const response = await axios.get(`${API_URL}/api/auth/profile/${userId}`);
       console.log('✅ Profile data received:', response.data);
       
       setUser(response.data);
@@ -129,23 +163,29 @@ const AccountCentre = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      // Get user session data using UserSession utility
-      const userData = UserSession.getCurrentUser('farmer');
-      const farmerId = userData?.farmerId;
-      
-      if (!farmerId) {
-        console.log('⚠️ No farmerId found in session');
-        return;
+      // Get user ID based on route
+      let userId = null;
+      if (isBuyerRoute) {
+        const buyerUser = UserSession.getCurrentUser('buyer');
+        userId = buyerUser?.buyerId || 'MGB002';
+      } else {
+        const farmerUser = UserSession.getCurrentUser('farmer');
+        userId = farmerUser?.farmerId;
       }
       
-      console.log('✅ Checking pending requests for farmerId:', farmerId);
+      if (!userId) return;
       
-      const response = await axios.get(`${API_URL}/api/profile/pending-request/${farmerId}`);
-      setPendingRequest(response.data);
-      console.log('✅ Pending request found:', response.data);
+      const response = await axios.get(`${API_URL}/api/profile/pending-request/${userId}`, {
+        validateStatus: (status) => status < 500 // Don't throw for 404
+      });
+      
+      if (response.status === 200 && response.data) {
+        setPendingRequest(response.data);
+      } else {
+        setPendingRequest(null);
+      }
     } catch (error) {
-      // No pending request - this is expected
-      console.log('✅ No pending requests (expected)');
+      // Network error or server error - silently ignore
       setPendingRequest(null);
     }
   };
@@ -158,17 +198,23 @@ const AccountCentre = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      // Get user session data using UserSession utility
-      const userData = UserSession.getCurrentUser('farmer');
-      const farmerId = userData?.farmerId;
+      // Get user ID based on route
+      let userId = null;
+      if (isBuyerRoute) {
+        const buyerUser = UserSession.getCurrentUser('buyer');
+        userId = buyerUser?.buyerId || 'MGB002';
+      } else {
+        const farmerUser = UserSession.getCurrentUser('farmer');
+        userId = farmerUser?.farmerId;
+      }
       
-      if (!farmerId) {
-        setError('No user session found. Please login again.');
+      if (!userId) {
+        setError('No user session found');
         setSaving(false);
         return;
       }
       
-      await axios.put(`${API_URL}/api/auth/profile/${farmerId}`, {
+      await axios.put(`${API_URL}/api/auth/profile/${userId}`, {
         email,
         phone
       });
@@ -197,25 +243,35 @@ const AccountCentre = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      // Get user session data using UserSession utility
-      const userData = UserSession.getCurrentUser('farmer');
-      const farmerId = userData?.farmerId;
+      // Get user ID and type based on route
+      let userId = null;
+      let userType = isBuyerRoute ? 'buyer' : 'farmer';
       
-      if (!farmerId) {
-        setError('No user session found. Please login again.');
+      if (isBuyerRoute) {
+        const buyerUser = UserSession.getCurrentUser('buyer');
+        userId = buyerUser?.buyerId || 'MGB002';
+      } else {
+        const farmerUser = UserSession.getCurrentUser('farmer');
+        userId = farmerUser?.farmerId;
+      }
+      
+      if (!userId) {
+        setError('No user session found');
         setSaving(false);
         return;
       }
       
-      // Handle cropTypes separately - update immediately without approval
-      const userCropTypes = user?.cropTypes || [];
-      const hasChangedCropTypes = selectedCropTypes.length !== userCropTypes.length || 
-        selectedCropTypes.some(crop => !userCropTypes.includes(crop));
-      
-      if (hasChangedCropTypes) {
-        await axios.put(`${API_URL}/api/auth/profile/${farmerId}`, {
-          cropTypes: selectedCropTypes
-        });
+      // Handle cropTypes separately - update immediately without approval (only for farmers)
+      if (userType === 'farmer') {
+        const userCropTypes = user?.cropTypes || [];
+        const hasChangedCropTypes = selectedCropTypes.length !== userCropTypes.length || 
+          selectedCropTypes.some(crop => !userCropTypes.includes(crop));
+        
+        if (hasChangedCropTypes) {
+          await axios.put(`${API_URL}/api/auth/profile/${userId}`, {
+            cropTypes: selectedCropTypes
+          });
+        }
       }
 
       // Build changes object with only modified fields that require approval
@@ -225,11 +281,18 @@ const AccountCentre = () => {
       if (district && district !== (user?.district || '')) changes.district = district;
       if (city && city.trim() !== (user?.city || '').trim()) changes.city = city.trim();
       if (pinCode && pinCode.trim() !== (user?.pinCode || '').trim()) changes.pinCode = pinCode.trim();
-      if (landSize && parseFloat(landSize) !== (user?.landSize || 0)) changes.landSize = parseFloat(landSize);
       
-      // DO NOT include cropTypes in approval requests - they are handled separately
+      // Only include landSize for farmers
+      if (userType === 'farmer' && landSize && parseFloat(landSize) !== (user?.landSize || 0)) {
+        changes.landSize = parseFloat(landSize);
+      }
+      
+      // DO NOT include cropTypes in approval requests - they are handled separately for farmers only
 
       // Check if there are any changes requiring approval
+      const hasChangedCropTypes = userType === 'farmer' && selectedCropTypes.length !== (user?.cropTypes || []).length || 
+        selectedCropTypes.some(crop => !(user?.cropTypes || []).includes(crop));
+      
       if (Object.keys(changes).length === 0 && !hasChangedCropTypes) {
         setError('No changes detected. Please modify at least one field.');
         setSaving(false);
@@ -239,12 +302,15 @@ const AccountCentre = () => {
       // Submit approval request only if there are changes requiring approval
       if (Object.keys(changes).length > 0) {
         await axios.post(`${API_URL}/api/profile/request-change`, {
-          farmerId,
+          [userType === 'farmer' ? 'farmerId' : 'buyerId']: userId,
           changes
         });
-        setSuccess('Change request submitted! Crop types updated immediately.');
-      } else {
+        const cropMessage = userType === 'farmer' && hasChangedCropTypes ? ' Crop types updated immediately.' : '';
+        setSuccess('Change request submitted!' + cropMessage);
+      } else if (userType === 'farmer') {
         setSuccess('Crop types updated successfully!');
+      } else {
+        setSuccess('Profile updated successfully!');
       }
       
       // Refresh user data
@@ -277,18 +343,26 @@ const AccountCentre = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      // Get user session data using UserSession utility
-      const userData = UserSession.getCurrentUser('farmer');
-      const farmerId = userData?.farmerId;
+      // Get user ID and type based on route
+      let userId = null;
+      let userType = isBuyerRoute ? 'buyer' : 'farmer';
       
-      if (!farmerId) {
-        setError('No user session found. Please login again.');
+      if (isBuyerRoute) {
+        const buyerUser = UserSession.getCurrentUser('buyer');
+        userId = buyerUser?.buyerId || 'MGB002';
+      } else {
+        const farmerUser = UserSession.getCurrentUser('farmer');
+        userId = farmerUser?.farmerId;
+      }
+      
+      if (!userId) {
+        setError('No user session found');
         setSaving(false);
         return;
       }
       
       await axios.post(`${API_URL}/api/auth/change-password`, {
-        farmerId,
+        [userType === 'farmer' ? 'farmerId' : 'buyerId']: userId,
         currentPin,
         newPin
       });
@@ -381,7 +455,11 @@ const AccountCentre = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <NeumorphicThemeToggle size="sm" />
+              {isBuyerRoute ? (
+                <BuyerNeumorphicThemeToggle size="sm" />
+              ) : (
+                <NeumorphicThemeToggle size="sm" />
+              )}
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -602,7 +680,7 @@ const AccountCentre = () => {
                       color: colors.textPrimary,
                     }}
                   >
-                    <option value="">Select State</option>
+                    <option key="empty-state" value="">Select State</option>
                     {indiaStates.map(s => (
                       <option key={s.value} value={s.value}>{s.label}</option>
                     ))}
@@ -622,7 +700,7 @@ const AccountCentre = () => {
                       color: colors.textPrimary,
                     }}
                   >
-                    <option value="">Select District</option>
+                    <option key="empty-district" value="">Select District</option>
                     {availableDistricts.map(d => (
                       <option key={d.value} value={d.value}>{d.label}</option>
                     ))}
@@ -665,76 +743,82 @@ const AccountCentre = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
-                  <Home className="w-4 h-4" />
-                  Land Size (Acres)
-                </label>
-                <input
-                  type="number"
-                  step="0.1"
-                  value={landSize}
-                  onChange={(e) => setLandSize(e.target.value)}
-                  disabled={!!pendingRequest}
-                  className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
-                  style={{ 
-                    backgroundColor: colors.surface, 
-                    borderColor: colors.border, 
-                    color: colors.textPrimary,
-                  }}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
-                  <Wheat className="w-4 h-4" />
-                  Crop Types
-                  <span className="text-xs font-normal ml-auto" style={{ color: colors.success }}>(Updates Immediately)</span>
-                </label>
-                <div className="flex gap-2 mb-3">
-                  <select
-                    onChange={(e) => {
-                      addCrop(e.target.value);
-                      e.target.value = '';
-                    }}
+              {/* Only show land size for farmers */}
+              {!isBuyerRoute && (
+                <div>
+                  <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
+                    <Home className="w-4 h-4" />
+                    Land Size (Acres)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={landSize}
+                    onChange={(e) => setLandSize(e.target.value)}
                     disabled={!!pendingRequest}
-                    className="flex-1 px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
                     style={{ 
                       backgroundColor: colors.surface, 
                       borderColor: colors.border, 
                       color: colors.textPrimary,
                     }}
-                  >
-                    <option value="">Select Crop</option>
-                    {cropTypes.map(crop => (
-                      <option key={crop.value} value={crop.value}>{crop.label}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
-                
-                {selectedCropTypes.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCropTypes.map((crop, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
-                        style={{ backgroundColor: colors.primaryLight, color: colors.primary }}
-                      >
-                        <span>{cropTypes.find(c => c.value === crop)?.label || crop}</span>
-                        {!pendingRequest && (
-                          <button
-                            type="button"
-                            onClick={() => removeCrop(crop)}
-                            className="hover:opacity-70"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
+              )}
+
+              {/* Only show crop types for farmers */}
+              {!isBuyerRoute && (
+                <div>
+                  <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
+                    <Wheat className="w-4 h-4" />
+                    Crop Types
+                    <span className="text-xs font-normal ml-auto" style={{ color: colors.success }}>(Updates Immediately)</span>
+                  </label>
+                  <div className="flex gap-2 mb-3">
+                    <select
+                      onChange={(e) => {
+                        addCrop(e.target.value);
+                        e.target.value = '';
+                      }}
+                      disabled={!!pendingRequest}
+                      className="flex-1 px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
+                      style={{ 
+                        backgroundColor: colors.surface, 
+                        borderColor: colors.border, 
+                        color: colors.textPrimary,
+                      }}
+                    >
+                      <option key="empty-crop" value="">Select Crop</option>
+                      {cropTypes.map(crop => (
+                        <option key={crop.value} value={crop.value}>{crop.label}</option>
+                      ))}
+                    </select>
                   </div>
-                )}
-              </div>
+                  
+                  {selectedCropTypes.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCropTypes.map((crop) => (
+                        <div
+                          key={crop}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm"
+                          style={{ backgroundColor: colors.primaryLight, color: colors.primary }}
+                        >
+                          <span>{cropTypes.find(c => c.value === crop)?.label || crop}</span>
+                          {!pendingRequest && (
+                            <button
+                              type="button"
+                              onClick={() => removeCrop(crop)}
+                              className="hover:opacity-70"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -792,7 +876,14 @@ const AccountCentre = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => window.location.href = '/customer-support'}
+              onClick={() => {
+                if (isBuyerRoute) {
+                  // For buyers, we'll create a simple support page or redirect to contact
+                  window.location.href = '/buyer/customer-support';
+                } else {
+                  window.location.href = '/customer-support';
+                }
+              }}
               className="w-full font-semibold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
               style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
             >

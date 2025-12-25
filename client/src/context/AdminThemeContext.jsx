@@ -4,8 +4,22 @@ const AdminThemeContext = createContext();
 
 export const useAdminTheme = () => {
   const context = useContext(AdminThemeContext);
+  // Return default values if context is not available
   if (!context) {
-    throw new Error('useAdminTheme must be used within an AdminThemeProvider');
+    return {
+      isDarkMode: true,
+      toggleTheme: () => {},
+      colors: {
+        primary: '#4F46E5',
+        primaryLight: '#6366F1',
+        primaryDark: '#4338CA',
+        background: '#1A1A1A',
+        surface: '#2D2D2D',
+        textPrimary: '#FFFFFF',
+        textSecondary: '#B0B0B0',
+        border: '#404040',
+      }
+    };
   }
   return context;
 };

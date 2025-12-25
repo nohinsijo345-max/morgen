@@ -1,13 +1,23 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, ArrowLeft, Calendar, X, Trash2, AlertCircle, Home, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
+import { useBuyerTheme } from '../context/BuyerThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
+import BuyerNeumorphicThemeToggle from '../components/BuyerNeumorphicThemeToggle';
 import { UserSession } from '../utils/userSession';
 
 const Updates = () => {
+  const location = useLocation();
+  const isBuyerRoute = location.pathname.startsWith('/buyer');
+  
+  // Get the appropriate theme based on route
+  const farmerTheme = useTheme();
+  const buyerTheme = useBuyerTheme();
+  const { isDarkMode, toggleTheme, colors } = isBuyerRoute ? buyerTheme : farmerTheme;
+  
   const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedUpdate, setSelectedUpdate] = useState(null);
@@ -16,28 +26,21 @@ const Updates = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
-  const { isDarkMode, toggleTheme, colors } = useTheme();
 
   // Determine correct dashboard URL based on user type
   const getDashboardUrl = () => {
-    // Check if buyer is logged in
-    const buyerUser = UserSession.getCurrentUser('buyer');
-    if (buyerUser) {
+    if (isBuyerRoute) {
       return '/buyer/dashboard';
     }
-    
-    // Check if farmer is logged in
-    const farmerUser = UserSession.getCurrentUser('farmer');
-    if (farmerUser) {
-      return '/dashboard';
-    }
-    
-    // Default to farmer dashboard
     return '/dashboard';
   };
 
   useEffect(() => {
-    const currentUser = UserSession.getCurrentUser('farmer');
+    // Get user based on route
+    const currentUser = isBuyerRoute 
+      ? UserSession.getCurrentUser('buyer')
+      : UserSession.getCurrentUser('farmer');
+      
     if (currentUser) {
       setUser(currentUser);
       fetchUpdates();
@@ -45,7 +48,7 @@ const Updates = () => {
       console.log('⚠️ No user session found for updates');
       setLoading(false);
     }
-  }, []);
+  }, [isBuyerRoute]);
 
   const fetchUpdates = async () => {
     try {
@@ -153,7 +156,11 @@ const Updates = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <NeumorphicThemeToggle size="sm" />
+              {isBuyerRoute ? (
+                <BuyerNeumorphicThemeToggle size="sm" />
+              ) : (
+                <NeumorphicThemeToggle size="sm" />
+              )}
 
               <motion.button
                 whileHover={{ scale: 1.05 }}

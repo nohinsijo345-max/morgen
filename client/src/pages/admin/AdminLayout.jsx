@@ -82,9 +82,10 @@ const AdminLayout = ({ children, activePage, onNavigate, onLogout, onBack }) => 
     if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
     if (countdownRef.current) clearInterval(countdownRef.current);
     
-    // Clear admin session
+    // Clear admin session and module selection
     localStorage.removeItem('adminUser');
     sessionStorage.removeItem('adminUser');
+    sessionStorage.removeItem('selectedAdminModule');
     
     // Call parent logout function
     onLogout();

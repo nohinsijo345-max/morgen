@@ -7,7 +7,9 @@ const useSocket = () => {
   useEffect(() => {
     // Only initialize socket connection on customer support pages
     const currentPath = window.location.pathname;
-    const isCustomerSupportPage = currentPath.includes('/customer-support');
+    const isCustomerSupportPage = currentPath.includes('/customer-support') || 
+                                  currentPath.includes('/messages') ||
+                                  currentPath.includes('/support');
     
     if (!isCustomerSupportPage) {
       // Don't initialize socket if not on customer support page
@@ -20,9 +22,11 @@ const useSocket = () => {
     // Create socket with minimal retry attempts
     socketRef.current = io(API_URL, {
       transports: ['websocket', 'polling'],
-      timeout: 5000, // Reduced timeout
-      reconnection: false, // Disable auto-reconnection
-      autoConnect: false,
+      timeout: 3000, // Reduced timeout
+      reconnection: true, // Enable reconnection but with limits
+      reconnectionAttempts: 3, // Only try 3 times
+      reconnectionDelay: 1000, // Wait 1 second between attempts
+      autoConnect: true,
     });
 
     const socket = socketRef.current;
@@ -36,12 +40,13 @@ const useSocket = () => {
     });
 
     socket.on('connect_error', (error) => {
-      // Completely suppress connection errors
-      // Customer support will work without real-time features if server is offline
+      // Suppress connection errors but log them for debugging
+      console.warn('🔌 Socket.IO connection failed (this is normal if server is offline):', error.message);
     });
 
-    // Only attempt connection if we're actually on customer support page
-    socket.connect();
+    socket.on('reconnect_failed', () => {
+      console.warn('🔌 Socket.IO reconnection failed - real-time features disabled');
+    });
 
     return () => {
       if (socketRef.current) {
@@ -70,6 +75,12 @@ const useSocket = () => {
     }
   };
 
+  const joinBuyer = (buyerId) => {
+    if (socketRef.current?.connected) {
+      socketRef.current.emit('join-buyer', buyerId);
+    }
+  };
+
   const joinAdmin = () => {
     if (socketRef.current?.connected) {
       socketRef.current.emit('join-admin');
@@ -77,25 +88,25 @@ const useSocket = () => {
   };
 
   const onNewMessage = (callback) => {
-    if (socketRef.current?.connected) {
+    if (socketRef.current) {
       socketRef.current.on('new-message', callback);
     }
   };
 
   const onTicketUpdated = (callback) => {
-    if (socketRef.current?.connected) {
+    if (socketRef.current) {
       socketRef.current.on('ticket-updated', callback);
     }
   };
 
   const offNewMessage = (callback) => {
-    if (socketRef.current?.connected) {
+    if (socketRef.current) {
       socketRef.current.off('new-message', callback);
     }
   };
 
   const offTicketUpdated = (callback) => {
-    if (socketRef.current?.connected) {
+    if (socketRef.current) {
       socketRef.current.off('ticket-updated', callback);
     }
   };
@@ -105,6 +116,7 @@ const useSocket = () => {
     joinTicket,
     leaveTicket,
     joinFarmer,
+    joinBuyer,
     joinAdmin,
     onNewMessage,
     onTicketUpdated,

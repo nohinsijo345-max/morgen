@@ -5,20 +5,27 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AdminThemeProvider } from "./context/AdminThemeContext";
 import { BuyerThemeProvider } from "./context/BuyerThemeContext";
 import { SessionManager, startSessionMonitoring } from "./utils/sessionManager";
+import { initializeErrorHandler } from "./utils/errorHandler";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SessionExpiryWarning from "./components/SessionExpiryWarning";
 import ModuleSelector from "./pages/ModuleSelector";
 import Login from "./pages/Login";
 import AdminLogin from "./pages/AdminLogin";
-import BuyerLogin from "./pages/BuyerLogin";
-import BuyerRegister from "./pages/BuyerRegister";
-import BuyerForgotPassword from "./pages/BuyerForgotPassword";
+import BuyerLoginClean from "./pages/BuyerLoginClean";
+import BuyerRegisterClean from "./pages/BuyerRegisterClean";
+import BuyerForgotPasswordClean from "./pages/BuyerForgotPasswordClean";
+
 import ForgotPassword from "./pages/ForgotPassword";
 import FarmerDashboard from "./pages/FarmerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import Admin from "./pages/Admin";
 import AdminBuyerDashboard from "./pages/admin/buyer/AdminBuyerDashboard";
 import BuyerManagement from "./pages/admin/buyer/BuyerManagement";
+import BuyerProfileRequests from "./pages/admin/buyer/BuyerProfileRequests";
+import BuyerCustomerSupportManagement from "./pages/admin/buyer/BuyerCustomerSupportManagement";
+import BuyerOrderManagement from "./pages/admin/buyer/BuyerOrderManagement";
+import BuyerBiddingAnalytics from "./pages/admin/buyer/BuyerBiddingAnalytics";
+import BuyerSettings from "./pages/admin/buyer/BuyerSettings";
 import Updates from "./pages/Updates";
 import AccountCentre from "./pages/AccountCentre";
 import Weather from "./pages/Weather";
@@ -31,7 +38,10 @@ import TransportBooking from "./pages/farmer/TransportBooking";
 import OrderTracking from "./pages/farmer/OrderTracking";
 import BuyerOrderTracking from "./pages/buyer/BuyerOrderTracking";
 import MyFarmers from "./pages/buyer/MyFarmers";
+import MyFarmersSimple from "./pages/buyer/MyFarmersSimple";
+import BuyerCustomerSupport from "./pages/buyer/BuyerCustomerSupport";
 import MyCustomers from "./pages/farmer/MyCustomers";
+import MyCustomersSimple from "./pages/farmer/MyCustomersSimple";
 import OrderHistory from "./pages/farmer/OrderHistory";
 import CustomerSupport from "./pages/farmer/CustomerSupport";
 import AIPlantDoctor from "./pages/farmer/AIPlantDoctor";
@@ -47,6 +57,9 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Initialize error handler to suppress non-critical console errors
+    initializeErrorHandler();
+    
     // Load sessions using SessionManager (with expiry check)
     console.log('🔧 Loading sessions on app start...');
     const farmer = SessionManager.getUserSession('farmer');
@@ -111,6 +124,10 @@ export default function App() {
   const handleAdminLogout = () => {
     setAdminUser(null);
     SessionManager.clearUserSession('admin');
+    // Clear admin module selection
+    sessionStorage.removeItem('selectedAdminModule');
+    // Redirect to admin login
+    window.location.href = '/admin-login';
   };
 
   const handleDriverLogout = () => {
@@ -176,7 +193,7 @@ export default function App() {
           path="/buyer-login" 
           element={
             <ProtectedRoute userType="buyer" requireAuth={false}>
-              <BuyerLogin onLogin={handleBuyerLogin} />
+              <BuyerLoginClean onLogin={handleBuyerLogin} />
             </ProtectedRoute>
           } 
         />
@@ -184,7 +201,7 @@ export default function App() {
           path="/buyer-register" 
           element={
             <ProtectedRoute userType="buyer" requireAuth={false}>
-              <BuyerRegister />
+              <BuyerRegisterClean />
             </ProtectedRoute>
           } 
         />
@@ -192,7 +209,7 @@ export default function App() {
           path="/buyer/forgot-password" 
           element={
             <ProtectedRoute userType="buyer" requireAuth={false}>
-              <BuyerForgotPassword />
+              <BuyerForgotPasswordClean />
             </ProtectedRoute>
           } 
         />
@@ -403,6 +420,30 @@ export default function App() {
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/buyer/my-farmers-simple" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <MyFarmersSimple />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/my-customers-simple" 
+          element={
+            <ProtectedRoute userType="farmer">
+              <MyCustomersSimple />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/customer-support" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <BuyerCustomerSupport />
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Protected Admin Routes */}
         <Route 
@@ -431,6 +472,56 @@ export default function App() {
             <ProtectedRoute userType="admin">
               <AdminThemeProvider>
                 <BuyerManagement />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/profile-requests" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <BuyerProfileRequests />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/orders" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <BuyerOrderManagement />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/bidding" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <BuyerBiddingAnalytics />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/messages" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <BuyerCustomerSupportManagement />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/buyer/settings" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <BuyerSettings />
               </AdminThemeProvider>
             </ProtectedRoute>
           } 
