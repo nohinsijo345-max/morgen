@@ -41,6 +41,7 @@ import MyFarmers from "./pages/buyer/MyFarmers";
 import MyFarmersSimple from "./pages/buyer/MyFarmersSimple";
 import BuyerCustomerSupport from "./pages/buyer/BuyerCustomerSupport";
 import BuyCrops from "./pages/buyer/BuyCrops";
+import LiveBidding from "./pages/buyer/LiveBidding";
 import MyCustomers from "./pages/farmer/MyCustomers";
 import MyCustomersSimple from "./pages/farmer/MyCustomersSimple";
 import OrderHistory from "./pages/farmer/OrderHistory";
@@ -434,9 +435,7 @@ export default function App() {
           path="/buyer/live-bidding" 
           element={
             <ProtectedRoute userType="buyer">
-              <div className="min-h-screen flex items-center justify-center">
-                <h1 className="text-2xl font-bold">Live Bidding - Coming Soon</h1>
-              </div>
+              <LiveBidding />
             </ProtectedRoute>
           } 
         />
