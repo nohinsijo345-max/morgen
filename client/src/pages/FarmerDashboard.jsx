@@ -486,7 +486,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
           <PriceForecastCard onClick={() => window.location.href = '/price-forecast'} />
 
           {/* Live Bidding Card */}
-          <GlassCard delay={0.7} onClick={() => window.location.href = '/live-bidding'}>
+          <GlassCard delay={0.7} onClick={() => window.location.href = '/farmer/my-bids'}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
                    style={{ backgroundColor: colors.primary }}>
@@ -564,7 +564,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
           </GlassCard>
 
           {/* Sell Card */}
-          <GlassCard delay={0.9} onClick={() => window.location.href = '/sell'}>
+          <GlassCard delay={0.9} onClick={() => window.location.href = '/farmer/sell-crops'}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
                    style={{ backgroundColor: colors.primary }}>
