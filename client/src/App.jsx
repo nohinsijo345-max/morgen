@@ -46,6 +46,9 @@ import MyCustomersSimple from "./pages/farmer/MyCustomersSimple";
 import OrderHistory from "./pages/farmer/OrderHistory";
 import CustomerSupport from "./pages/farmer/CustomerSupport";
 import AIPlantDoctor from "./pages/farmer/AIPlantDoctor";
+import CreateBid from "./pages/farmer/CreateBid";
+import MyBids from "./pages/farmer/MyBids";
+import SellCrops from "./pages/farmer/SellCrops";
 import DriverLogin from "./pages/DriverLogin";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverOrderDetails from "./pages/DriverOrderDetails";
@@ -358,6 +361,30 @@ export default function App() {
           element={
             <ProtectedRoute userType="farmer">
               <AIPlantDoctor />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/farmer/create-bid" 
+          element={
+            <ProtectedRoute userType="farmer">
+              <CreateBid />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/farmer/my-bids" 
+          element={
+            <ProtectedRoute userType="farmer">
+              <MyBids />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/farmer/sell-crops" 
+          element={
+            <ProtectedRoute userType="farmer">
+              <SellCrops />
             </ProtectedRoute>
           } 
         />

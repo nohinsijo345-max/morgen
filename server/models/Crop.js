@@ -12,7 +12,12 @@ const CropSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
   unit: { type: String, enum: ['kg', 'quintal', 'ton', 'piece'], default: 'kg' },
   basePrice: { type: Number, required: true },
+  pricePerUnit: { type: Number }, // For direct sale listings
   msp: { type: Number }, // Minimum Support Price set by admin
+  
+  // Direct Sale Fields
+  available: { type: Boolean, default: false }, // For direct sale to public buyers
+  description: { type: String }, // Description for listings
   
   // Harvest Management
   plantedDate: { type: Date },
