@@ -83,7 +83,7 @@ const LiveBidding = () => {
       await axios.post(`${API_URL}/api/bidding/place`, {
         bidId,
         buyerId,
-        amount: parseFloat(amount)
+        bidAmount: parseFloat(amount) // Changed from 'amount' to 'bidAmount'
       });
 
       alert('Bid placed successfully!');
@@ -92,7 +92,7 @@ const LiveBidding = () => {
       setCustomAmount('');
     } catch (error) {
       console.error('Failed to place bid:', error);
-      alert(error.response?.data?.message || 'Failed to place bid');
+      alert(error.response?.data?.error || 'Failed to place bid');
     }
   };
 
@@ -221,7 +221,11 @@ const LiveBidding = () => {
                       </div>
                     </div>
                     <div className="px-3 py-1 rounded-full text-xs font-semibold"
-                         style={{ backgroundColor: colors.primaryLight, color: colors.primary }}>
+                         style={{ 
+                           backgroundColor: colors.surface, 
+                           color: colors.textPrimary,
+                           border: `1px solid ${colors.primary}`
+                         }}>
                       {bid.quality}
                     </div>
                   </div>
@@ -270,7 +274,7 @@ const LiveBidding = () => {
                   </div>
 
                   {/* Quick Bid Buttons */}
-                  {selectedBid === bid._id ? (
+                  {selectedBid === bid.bidId ? (
                     <div className="space-y-2">
                       <div className="grid grid-cols-3 gap-2">
                         {[500, 1000, 3000].map((amount) => (
@@ -278,7 +282,7 @@ const LiveBidding = () => {
                             key={amount}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => handlePlaceBid(bid._id, (bid.currentPrice || bid.startingPrice) + amount)}
+                            onClick={() => handlePlaceBid(bid.bidId, (bid.currentPrice || bid.startingPrice) + amount)}
                             className="py-2 rounded-lg font-semibold text-sm"
                             style={{ backgroundColor: colors.surface, color: colors.textPrimary, border: `1px solid ${colors.border}` }}
                           >
@@ -302,7 +306,7 @@ const LiveBidding = () => {
                         <motion.button
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          onClick={() => customAmount && handlePlaceBid(bid._id, customAmount)}
+                          onClick={() => customAmount && handlePlaceBid(bid.bidId, customAmount)}
                           className="px-4 py-2 rounded-lg font-semibold"
                           style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
                         >
@@ -323,7 +327,7 @@ const LiveBidding = () => {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedBid(bid._id)}
+                      onClick={() => setSelectedBid(bid.bidId)}
                       className="w-full py-3 rounded-xl font-semibold shadow-lg"
                       style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
                     >

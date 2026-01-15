@@ -19,6 +19,7 @@ const SellCrops = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     cropName: '',
+    category: 'vegetables',
     quantity: '',
     unit: 'kg',
     pricePerUnit: '',
@@ -61,6 +62,8 @@ const SellCrops = () => {
         farmerId: farmerUser?.farmerId,
         farmerName: farmerUser?.name,
         ...formData,
+        category: formData.category,
+        basePrice: parseFloat(formData.pricePerUnit), // Add required basePrice
         quantity: parseFloat(formData.quantity),
         pricePerUnit: parseFloat(formData.pricePerUnit),
         location: {
@@ -73,6 +76,7 @@ const SellCrops = () => {
       setShowAddForm(false);
       setFormData({
         cropName: '',
+        category: 'vegetables',
         quantity: '',
         unit: 'kg',
         pricePerUnit: '',
@@ -307,6 +311,29 @@ const SellCrops = () => {
                       color: colors.textPrimary
                     }}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
+                    Category *
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl border-2"
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                      color: colors.textPrimary
+                    }}
+                  >
+                    <option value="vegetables">Vegetables</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="grains">Grains</option>
+                    <option value="spices">Spices</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
 
                 <div>
