@@ -40,6 +40,7 @@ import BuyerOrderTracking from "./pages/buyer/BuyerOrderTracking";
 import MyFarmers from "./pages/buyer/MyFarmers";
 import MyFarmersSimple from "./pages/buyer/MyFarmersSimple";
 import BuyerCustomerSupport from "./pages/buyer/BuyerCustomerSupport";
+import BuyCrops from "./pages/buyer/BuyCrops";
 import MyCustomers from "./pages/farmer/MyCustomers";
 import MyCustomersSimple from "./pages/farmer/MyCustomersSimple";
 import OrderHistory from "./pages/farmer/OrderHistory";
@@ -441,6 +442,14 @@ export default function App() {
           element={
             <ProtectedRoute userType="buyer">
               <BuyerCustomerSupport />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/buy-crops" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <BuyCrops />
             </ProtectedRoute>
           } 
         />

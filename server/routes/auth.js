@@ -40,26 +40,30 @@ const upload = multer({
 });
 
 // Generate next Buyer ID
-const generateBuyerId = async () => {
+const generateBuyerId = async (buyerType = 'commercial') => {
   try {
+    const prefix = buyerType === 'public' ? 'MGPB' : 'MGB';
+    const regex = buyerType === 'public' ? /^MGPB\d+$/ : /^MGB\d+$/;
+    
     // Find the last buyer by sorting buyerId in descending order
     const lastBuyer = await User.findOne({ 
-      buyerId: { $regex: /^MGB\d+$/ } 
+      buyerId: { $regex: regex } 
     }).sort({ buyerId: -1 });
     
     if (!lastBuyer || !lastBuyer.buyerId) {
-      return 'MGB001';
+      return `${prefix}001`;
     }
     
-    // Extract number from MGB001, MGB002, etc.
-    const lastNumber = parseInt(lastBuyer.buyerId.replace('MGB', ''));
+    // Extract number from MGB001/MGPB001, MGB002/MGPB002, etc.
+    const lastNumber = parseInt(lastBuyer.buyerId.replace(prefix, ''));
     const nextNumber = lastNumber + 1;
     
-    // Pad with zeros (MGB001, MGB002, ..., MGB999)
-    return `MGB${String(nextNumber).padStart(3, '0')}`;
+    // Pad with zeros (MGB001/MGPB001, MGB002/MGPB002, ..., MGB999/MGPB999)
+    return `${prefix}${String(nextNumber).padStart(3, '0')}`;
   } catch (err) {
     console.error('Error generating buyer ID:', err);
-    return 'MGB001';
+    const prefix = buyerType === 'public' ? 'MGPB' : 'MGB';
+    return `${prefix}001`;
   }
 };
 
@@ -90,7 +94,8 @@ const generateFarmerId = async () => {
 // Get next Buyer ID (for frontend to display)
 router.get('/next-buyer-id', async (req, res) => {
   try {
-    const nextId = await generateBuyerId();
+    const buyerType = req.query.type || 'commercial';
+    const nextId = await generateBuyerId(buyerType);
     res.json({ buyerId: nextId });
   } catch (err) {
     res.status(500).json({ error: 'Failed to generate Buyer ID' });
@@ -110,7 +115,7 @@ router.get('/next-farmer-id', async (req, res) => {
 // BUYER REGISTER API
 router.post('/buyer/register', async (req, res) => {
   try {
-    const { name, pin, phone, email, state, district, city, pinCode, maxBidLimit } = req.body;
+    const { name, pin, phone, email, state, district, city, pinCode, maxBidLimit, buyerType } = req.body;
 
     // Validation
     if (!name || !pin || !phone) {
@@ -132,6 +137,9 @@ router.post('/buyer/register', async (req, res) => {
       return res.status(400).json({ error: "PIN must be exactly 4 digits" });
     }
 
+    // Validate buyer type
+    const validBuyerType = buyerType === 'public' ? 'public' : 'commercial';
+
     // Check if user already exists
     const existingUser = await User.findOne({ 
       $or: [{ phone }, ...(email ? [{ email }] : [])] 
@@ -146,8 +154,8 @@ router.post('/buyer/register', async (req, res) => {
       }
     }
 
-    // Auto-generate Buyer ID
-    const buyerId = await generateBuyerId();
+    // Auto-generate Buyer ID based on type
+    const buyerId = await generateBuyerId(validBuyerType);
 
     // Hash the PIN
     const hashedPin = await bcrypt.hash(pin, 10);
@@ -156,6 +164,7 @@ router.post('/buyer/register', async (req, res) => {
       name,
       role: 'buyer',
       buyerId,
+      buyerType: validBuyerType,
       pin: hashedPin,
       phone,
       email,
@@ -163,17 +172,18 @@ router.post('/buyer/register', async (req, res) => {
       district,
       city,
       pinCode,
-      maxBidLimit: maxBidLimit || 10000
+      maxBidLimit: validBuyerType === 'public' ? 0 : (maxBidLimit || 10000)
     });
 
     const savedUser = await newUser.save();
-    console.log("✅ Buyer registered:", savedUser.buyerId);
+    console.log("✅ Buyer registered:", savedUser.buyerId, "Type:", savedUser.buyerType);
     
     // Don't send the hashed PIN back
     const userResponse = {
       name: savedUser.name,
       role: savedUser.role,
       buyerId: savedUser.buyerId,
+      buyerType: savedUser.buyerType,
       phone: savedUser.phone,
       email: savedUser.email,
       state: savedUser.state,
@@ -223,6 +233,7 @@ router.post('/buyer/login', async (req, res) => {
       role: user.role,
       name: user.name,
       buyerId: user.buyerId,
+      buyerType: user.buyerType || 'commercial',
       email: user.email,
       phone: user.phone,
       state: user.state,

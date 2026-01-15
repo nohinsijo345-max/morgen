@@ -6,7 +6,8 @@ import { indiaStates, indiaDistricts } from '../data/indiaLocations';
 const BuyerRegisterClean = () => {
   const [formData, setFormData] = useState({
     name: '', pin: '', confirmPin: '', phone: '', email: '',
-    state: '', district: '', city: '', pinCode: '', maxBidLimit: '10000'
+    state: '', district: '', city: '', pinCode: '', maxBidLimit: '10000',
+    buyerType: 'commercial' // 'commercial' or 'public'
   });
   
   const [showPin, setShowPin] = useState(false);
@@ -34,14 +35,16 @@ const BuyerRegisterClean = () => {
     const fetchNextBuyerId = async () => {
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-        const response = await axios.get(`${API_URL}/api/auth/next-buyer-id`);
+        const prefix = formData.buyerType === 'public' ? 'mgpb' : 'mgb';
+        const response = await axios.get(`${API_URL}/api/auth/next-buyer-id?type=${formData.buyerType}`);
         setNextBuyerId(response.data.buyerId);
       } catch (e) {
-        setNextBuyerId('MGB001');
+        const prefix = formData.buyerType === 'public' ? 'MGPB' : 'MGB';
+        setNextBuyerId(`${prefix}001`);
       }
     };
     fetchNextBuyerId();
-  }, []);
+  }, [formData.buyerType]);
 
   useEffect(() => {
     if (formData.state) {
@@ -89,7 +92,8 @@ const BuyerRegisterClean = () => {
         district: formData.district,
         city: formData.city,
         pinCode: formData.pinCode || undefined,
-        maxBidLimit: parseInt(formData.maxBidLimit)
+        maxBidLimit: parseInt(formData.maxBidLimit),
+        buyerType: formData.buyerType
       });
 
       setSuccess(`Success! Your Buyer ID: ${response.data.buyerId}`);
@@ -189,6 +193,76 @@ const BuyerRegisterClean = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Buyer Type Selection */}
+              <div className="mb-6">
+                <label className="block text-sm font-semibold mb-3" style={{ color: colors.textPrimary }}>
+                  Buyer Type *
+                </label>
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, buyerType: 'commercial' }))}
+                    className={`flex-1 p-4 rounded-xl border-2 transition-all text-left ${
+                      formData.buyerType === 'commercial' ? 'border-red-500 bg-red-50' : ''
+                    }`}
+                    style={{
+                      backgroundColor: formData.buyerType === 'commercial' 
+                        ? (isDarkMode ? 'rgba(239, 68, 68, 0.1)' : '#FEF2F2')
+                        : colors.surface,
+                      borderColor: formData.buyerType === 'commercial' ? colors.primary : colors.border,
+                      color: colors.textPrimary
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full border-2 ${
+                        formData.buyerType === 'commercial' ? 'bg-red-500 border-red-500' : 'border-gray-300'
+                      }`}>
+                        {formData.buyerType === 'commercial' && (
+                          <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-sm">Commercial Buyer</h3>
+                        <p className="text-xs" style={{ color: colors.textSecondary }}>
+                          Full access: Bidding, Order tracking, All features
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, buyerType: 'public' }))}
+                    className={`flex-1 p-4 rounded-xl border-2 transition-all text-left ${
+                      formData.buyerType === 'public' ? 'border-blue-500 bg-blue-50' : ''
+                    }`}
+                    style={{
+                      backgroundColor: formData.buyerType === 'public' 
+                        ? (isDarkMode ? 'rgba(59, 130, 246, 0.1)' : '#EFF6FF')
+                        : colors.surface,
+                      borderColor: formData.buyerType === 'public' ? '#3B82F6' : colors.border,
+                      color: colors.textPrimary
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full border-2 ${
+                        formData.buyerType === 'public' ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
+                      }`}>
+                        {formData.buyerType === 'public' && (
+                          <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-sm">Public Buyer</h3>
+                        <p className="text-xs" style={{ color: colors.textSecondary }}>
+                          Direct purchase only, Local district crops
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               {success && (
                 <div 
                   className="p-3 rounded-xl flex items-center gap-3" 
@@ -261,21 +335,23 @@ const BuyerRegisterClean = () => {
                   }}
                 />
 
-                <input
-                  type="number"
-                  name="maxBidLimit"
-                  value={formData.maxBidLimit}
-                  onChange={handleChange}
-                  placeholder="Max Bid Limit (₹) *"
-                  min="1000"
-                  max="10000000"
-                  className="w-full px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium"
-                  style={{
-                    backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                    color: colors.textPrimary
-                  }}
-                />
+                {formData.buyerType === 'commercial' && (
+                  <input
+                    type="number"
+                    name="maxBidLimit"
+                    value={formData.maxBidLimit}
+                    onChange={handleChange}
+                    placeholder="Max Bid Limit (₹) *"
+                    min="1000"
+                    max="10000000"
+                    className="w-full px-4 py-3 rounded-xl border-2 transition-all text-sm font-medium"
+                    style={{
+                      backgroundColor: colors.surface,
+                      borderColor: colors.border,
+                      color: colors.textPrimary
+                    }}
+                  />
+                )}
 
                 <select
                   name="state"

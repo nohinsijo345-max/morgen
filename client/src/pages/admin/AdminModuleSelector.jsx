@@ -31,16 +31,6 @@ const AdminModuleSelector = ({ onModuleSelect }) => {
       available: true
     },
     {
-      id: 'public',
-      title: 'Public Module',
-      description: 'Public services, announcements, and community features',
-      icon: Globe,
-      color: 'from-blue-500 to-indigo-600',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-      available: false
-    },
-    {
       id: 'government',
       title: 'Government Module',
       description: 'Government schemes, policies, and regulatory management',
@@ -195,7 +185,7 @@ const AdminModuleSelector = ({ onModuleSelect }) => {
         >
           <div className="bg-white/40 backdrop-blur-xl rounded-2xl p-6 border border-white/20 inline-block">
             <p className="text-[#4A7C99] text-sm">
-              <span className="font-semibold text-[#2C5F7C]">2 modules</span> are currently available. 
+              <span className="font-semibold text-[#2C5F7C]">3 modules</span> are currently available. 
               More modules will be added in future updates.
             </p>
           </div>

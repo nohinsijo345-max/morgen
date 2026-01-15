@@ -46,6 +46,11 @@ const UserSchema = new mongoose.Schema({
   },
   
   // Buyer specific
+  buyerType: { 
+    type: String, 
+    enum: ['commercial', 'public'], 
+    default: 'commercial' 
+  },
   totalPurchases: { type: Number, default: 0 },
   maxBidLimit: { type: Number, default: 10000 },
   totalBids: { type: Number, default: 0 },

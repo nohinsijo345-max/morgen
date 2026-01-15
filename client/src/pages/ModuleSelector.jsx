@@ -101,15 +101,6 @@ const ModuleSelector = () => {
       features: ['Policy Management', 'Subsidy Distribution', 'Data Analytics', 'Compliance']
     },
     {
-      id: 'public',
-      title: 'Public Portal',
-      description: 'Agricultural information, market prices, and educational resources',
-      icon: Globe,
-      gradient: 'from-orange-400 to-red-500',
-      route: '/public/dashboard',
-      features: ['Market Prices', 'Educational Content', 'News Updates', 'Resources']
-    },
-    {
       id: 'driver',
       title: 'Driver Portal',
       description: 'Transport management, delivery tracking, and route optimization',

@@ -27,6 +27,10 @@ const BuyerDashboard = ({ user, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const { isDarkMode, toggleTheme, colors } = useBuyerTheme();
 
+  // Get buyer type from user data
+  const buyerType = user?.buyerType || 'commercial';
+  const isPublicBuyer = buyerType === 'public';
+
   useEffect(() => {
     fetchDashboardData();
     
@@ -139,7 +143,9 @@ const BuyerDashboard = ({ user, onLogout }) => {
               />
               <div>
                 <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Morgen</h1>
-                <p className="text-xs" style={{ color: colors.textSecondary }}>Buyer Dashboard</p>
+                <p className="text-xs" style={{ color: colors.textSecondary }}>
+                  {isPublicBuyer ? 'Public Buyer Dashboard' : 'Commercial Buyer Dashboard'}
+                </p>
               </div>
             </motion.div>
 
@@ -300,60 +306,119 @@ const BuyerDashboard = ({ user, onLogout }) => {
               )}
             </BuyerGlassCard>
 
-            {/* Live Bidding Card - Moved below Updates card */}
-            <BuyerGlassCard delay={0.5} onClick={() => window.location.href = '/buyer/live-bidding'} className="h-fit">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
-                     style={{ backgroundColor: colors.primary }}>
-                  <Gavel className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Live Bidding</h2>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-xs font-medium" style={{ color: colors.primary }}>
-                      {dashboardData?.activeBids || 0} active bids
-                    </span>
+            {/* Live Bidding Card - Only for Commercial Buyers */}
+            {!isPublicBuyer && (
+              <BuyerGlassCard delay={0.5} onClick={() => window.location.href = '/buyer/live-bidding'} className="h-fit">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+                       style={{ backgroundColor: colors.primary }}>
+                    <Gavel className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                   </div>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="rounded-xl p-4 border"
-                     style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Bidding Stats</span>
-                    <TrendingUp className="w-4 h-4" style={{ color: colors.primary }} />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { value: dashboardData?.totalBids || '0', label: 'Total Bids' },
-                      { value: '₹2.5L', label: 'Won Value' }
-                    ].map((stat, i) => (
-                      <div key={i} className="text-center rounded-lg p-3 border"
-                           style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
-                        <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>{stat.value}</div>
-                        <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>{stat.label}</div>
-                      </div>
-                    ))}
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Live Bidding</h2>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                      <span className="text-xs font-medium" style={{ color: colors.primary }}>
+                        {dashboardData?.activeBids || 0} active bids
+                      </span>
+                    </div>
                   </div>
                 </div>
                 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.location.href = '/buyer/live-bidding';
-                  }}
-                  className="w-full py-3 rounded-xl font-semibold shadow-lg transition-all"
-                  style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
-                >
-                  🔥 Join Live Auctions
-                </motion.button>
-              </div>
-            </BuyerGlassCard>
+                <div className="space-y-4">
+                  <div className="rounded-xl p-4 border"
+                       style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Bidding Stats</span>
+                      <TrendingUp className="w-4 h-4" style={{ color: colors.primary }} />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { value: dashboardData?.totalBids || '0', label: 'Total Bids' },
+                        { value: '₹2.5L', label: 'Won Value' }
+                      ].map((stat, i) => (
+                        <div key={i} className="text-center rounded-lg p-3 border"
+                             style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
+                          <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>{stat.value}</div>
+                          <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>{stat.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = '/buyer/live-bidding';
+                    }}
+                    className="w-full py-3 rounded-xl font-semibold shadow-lg transition-all"
+                    style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
+                  >
+                    🔥 Join Live Auctions
+                  </motion.button>
+                </div>
+              </BuyerGlassCard>
+            )}
+
+            {/* Direct Purchase Card - For Public Buyers */}
+            {isPublicBuyer && (
+              <BuyerGlassCard delay={0.5} onClick={() => window.location.href = '/buyer/buy-crops'} className="h-fit">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+                       style={{ backgroundColor: colors.primary }}>
+                    <ShoppingBag className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Buy Crops</h2>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" style={{ color: colors.primary }} />
+                      <span className="text-xs font-medium" style={{ color: colors.primary }}>
+                        Local district crops only
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="rounded-xl p-4 border"
+                       style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Available Crops</span>
+                      <Clock className="w-4 h-4" style={{ color: colors.primary }} />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { value: '12', label: 'Available' },
+                        { value: '₹45/kg', label: 'Avg Price' }
+                      ].map((stat, i) => (
+                        <div key={i} className="text-center rounded-lg p-3 border"
+                             style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
+                          <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>{stat.value}</div>
+                          <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>{stat.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = '/buyer/buy-crops';
+                    }}
+                    className="w-full py-3 rounded-xl font-semibold shadow-lg transition-all"
+                    style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
+                  >
+                    🛒 Browse Local Crops
+                  </motion.button>
+                </div>
+              </BuyerGlassCard>
+            )}
           </div>
 
           {/* Right Column */}
@@ -364,40 +429,41 @@ const BuyerDashboard = ({ user, onLogout }) => {
               useBuyerTheme={true}
             />
 
-            {/* Order Tracking Card */}
-            <BuyerGlassCard delay={0.7} onClick={() => window.location.href = '/buyer/order-tracking'} className="h-fit">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
-                     style={{ backgroundColor: colors.primary }}>
-                  <Package className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Order Tracking</h2>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-xs font-medium" style={{ color: colors.primary }}>
-                      {dashboardData?.totalOrders || 0} active orders
-                    </span>
+            {/* Order Tracking Card - Only for Commercial Buyers */}
+            {!isPublicBuyer && (
+              <BuyerGlassCard delay={0.7} onClick={() => window.location.href = '/buyer/order-tracking'} className="h-fit">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+                       style={{ backgroundColor: colors.primary }}>
+                    <Package className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Order Tracking</h2>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                      <span className="text-xs font-medium" style={{ color: colors.primary }}>
+                        {dashboardData?.totalOrders || 0} active orders
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="rounded-xl p-4 border"
-                     style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Recent Orders</span>
-                    <span className="text-xs" style={{ color: colors.textSecondary }}>Last 7 days</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { value: dashboardData?.totalOrders || '0', label: 'Total' },
-                      { value: dashboardData?.activeBids || '0', label: 'Active' },
-                      { value: '4.8', label: 'Rating', showStar: true }
-                    ].map((stat, i) => (
-                      <div key={i} className="text-center">
-                        <div className="flex items-center justify-center gap-1">
+                
+                <div className="space-y-4">
+                  <div className="rounded-xl p-4 border"
+                       style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Recent Orders</span>
+                      <span className="text-xs" style={{ color: colors.textSecondary }}>Last 7 days</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { value: dashboardData?.totalOrders || '0', label: 'Total' },
+                        { value: dashboardData?.activeBids || '0', label: 'Active' },
+                        { value: '4.8', label: 'Rating', showStar: true }
+                      ].map((stat, i) => (
+                        <div key={i} className="text-center">
+                          <div className="flex items-center justify-center gap-1">
                           <span className="text-lg font-bold" style={{ color: colors.textPrimary }}>{stat.value}</span>
                           {stat.showStar && <Star className="w-4 h-4 text-yellow-500 fill-current" />}
                         </div>
@@ -408,6 +474,64 @@ const BuyerDashboard = ({ user, onLogout }) => {
                 </div>
               </div>
             </BuyerGlassCard>
+            )}
+
+            {/* Transport Booking Card - For Public Buyers */}
+            {isPublicBuyer && (
+              <BuyerGlassCard delay={0.7} onClick={() => window.location.href = '/buyer/transport'} className="h-fit">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+                       style={{ backgroundColor: colors.primary }}>
+                    <Truck className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Transport</h2>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                      <span className="text-xs font-medium" style={{ color: colors.primary }}>
+                        Book cargo transport
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="rounded-xl p-4 border"
+                       style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Transport Options</span>
+                      <span className="text-xs" style={{ color: colors.textSecondary }}>Available now</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { value: '5', label: 'Vehicles' },
+                        { value: '₹12/km', label: 'Rate' }
+                      ].map((stat, i) => (
+                        <div key={i} className="text-center rounded-lg p-3 border"
+                             style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
+                          <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>{stat.value}</div>
+                          <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>{stat.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = '/buyer/transport';
+                    }}
+                    className="w-full py-3 rounded-xl font-semibold shadow-lg transition-all"
+                    style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
+                  >
+                    🚛 Book Transport
+                  </motion.button>
+                </div>
+              </BuyerGlassCard>
+            )}
           </div>
         </div>
       </div>
