@@ -18,7 +18,7 @@ import { useAdminTheme } from '../../../context/AdminThemeContext';
 import AdminGlassCard from '../../../components/AdminGlassCard';
 import AdminBuyerLayout from './AdminBuyerLayout';
 
-const AdminBuyerDashboard = () => {
+const AdminBuyerDashboard = ({ onLogout, onBack }) => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const { colors } = useAdminTheme();
@@ -52,7 +52,7 @@ const AdminBuyerDashboard = () => {
 
   if (loading) {
     return (
-      <AdminBuyerLayout currentPage="dashboard">
+      <AdminBuyerLayout currentPage="dashboard" onLogout={onLogout} onBack={onBack}>
         <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.background }}>
           <motion.div
             animate={{ rotate: 360 }}
@@ -143,7 +143,7 @@ const AdminBuyerDashboard = () => {
   ];
 
   return (
-    <AdminBuyerLayout currentPage="dashboard">
+    <AdminBuyerLayout currentPage="dashboard" onLogout={onLogout} onBack={onBack}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div

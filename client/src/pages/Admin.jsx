@@ -10,7 +10,6 @@ import CustomerSupportManagement from './admin/CustomerSupportManagement';
 import AdminModuleSelector from './admin/AdminModuleSelector';
 import DriverAdmin from './admin/driver/DriverAdmin';
 import AdminBuyerDashboard from './admin/buyer/AdminBuyerDashboard';
-import AdminBuyerLayout from './admin/buyer/AdminBuyerLayout';
 
 const Admin = ({ onLogout }) => {
   // Always start with module selector for admin
@@ -77,13 +76,10 @@ const Admin = ({ onLogout }) => {
   // Show Buyer Admin module
   if (selectedModule === 'buyer') {
     return (
-      <AdminBuyerLayout 
-        currentPage="dashboard"
+      <AdminBuyerDashboard 
         onLogout={handleLogout}
         onBack={handleBackToModules}
-      >
-        <AdminBuyerDashboard />
-      </AdminBuyerLayout>
+      />
     );
   }
 
