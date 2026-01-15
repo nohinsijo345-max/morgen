@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import { indiaStates, indiaDistricts } from '../data/indiaLocations';
 
 const BuyerRegisterClean = () => {
   const [formData, setFormData] = useState({
@@ -29,23 +30,6 @@ const BuyerRegisterClean = () => {
     border: isDarkMode ? '#404040' : '#E9ECEF'
   };
 
-  // Simple states list
-  const indiaStates = [
-    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
-    'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
-    'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
-    'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
-    'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
-  ];
-
-  const indiaDistricts = {
-    'Kerala': ['Thiruvananthapuram', 'Kollam', 'Pathanamthitta', 'Alappuzha', 'Kottayam'],
-    'Karnataka': ['Bengaluru Urban', 'Bengaluru Rural', 'Mysuru', 'Tumakuru', 'Mandya'],
-    'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem'],
-    'Maharashtra': ['Mumbai City', 'Mumbai Suburban', 'Pune', 'Nagpur', 'Thane'],
-    'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar']
-  };
-
   useEffect(() => {
     const fetchNextBuyerId = async () => {
       try {
@@ -61,7 +45,8 @@ const BuyerRegisterClean = () => {
 
   useEffect(() => {
     if (formData.state) {
-      setDistricts(indiaDistricts[formData.state] || []);
+      const selectedStateKey = indiaStates.find(state => state.label === formData.state)?.value;
+      setDistricts(indiaDistricts[selectedStateKey] || []);
       setFormData(prev => ({ ...prev, district: '', city: '' }));
     }
   }, [formData.state]);
@@ -135,14 +120,16 @@ const BuyerRegisterClean = () => {
 
         <div className="relative z-10 flex flex-col justify-center px-10 xl:px-14">
           <div className="mb-10">
-            <div className="h-14 w-14 rounded-xl shadow-2xl bg-white/20 flex items-center justify-center">
-              <span className="text-2xl font-bold text-white">M</span>
-            </div>
+            <img 
+              src="/src/assets/Morgen-logo-main.png" 
+              alt="Morgen Logo" 
+              className="h-14 w-auto rounded-xl shadow-2xl"
+            />
           </div>
 
           <div>
             <h1 className="text-3xl xl:text-4xl font-bold text-white mb-4 leading-tight">
-              Join Our<br />Marketplace! 🛒
+              Join Our<br />Marketplace!
             </h1>
             <p className="text-white/80 text-base xl:text-lg max-w-sm leading-relaxed">
               Create your buyer account and start connecting with farmers!
@@ -157,7 +144,7 @@ const BuyerRegisterClean = () => {
           )}
 
           <div className="absolute bottom-8 left-10 xl:left-14">
-            <p className="text-white/60 text-sm">© 2024 Morgen. All rights reserved.</p>
+            <p className="text-white/60 text-sm">© 2026 Morgen. All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -176,9 +163,11 @@ const BuyerRegisterClean = () => {
         </div>
 
         <div className="lg:hidden pt-6 px-6">
-          <div className="h-10 w-10 rounded-xl shadow-lg bg-gray-200 flex items-center justify-center">
-            <span className="text-lg font-bold">M</span>
-          </div>
+          <img 
+            src="/src/assets/Morgen-logo-main.png" 
+            alt="Morgen Logo" 
+            className="h-10 w-auto rounded-xl shadow-lg"
+          />
         </div>
 
         <div className="flex-1 flex items-center justify-center px-6 py-8">
@@ -301,7 +290,7 @@ const BuyerRegisterClean = () => {
                 >
                   <option value="">Select State *</option>
                   {indiaStates.map(state => (
-                    <option key={state} value={state}>{state}</option>
+                    <option key={state.value} value={state.label}>{state.label}</option>
                   ))}
                 </select>
 
@@ -319,7 +308,7 @@ const BuyerRegisterClean = () => {
                 >
                   <option value="">Select District *</option>
                   {districts.map(d => (
-                    <option key={d} value={d}>{d}</option>
+                    <option key={d.value} value={d.label}>{d.label}</option>
                   ))}
                 </select>
 

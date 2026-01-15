@@ -73,14 +73,16 @@ const BuyerLoginClean = ({ onLogin }) => {
 
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16">
           <div className="mb-12">
-            <div className="h-16 w-16 rounded-xl shadow-2xl bg-white/20 flex items-center justify-center">
-              <span className="text-2xl font-bold text-white">M</span>
-            </div>
+            <img 
+              src="/src/assets/Morgen-logo-main.png" 
+              alt="Morgen Logo" 
+              className="h-16 w-auto rounded-xl shadow-2xl"
+            />
           </div>
 
           <div>
             <h1 className="text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight">
-              Hello<br />Buyer! 👋
+              Hello<br />Buyer!
             </h1>
             <p className="text-white/80 text-lg xl:text-xl max-w-md leading-relaxed">
               Connect with farmers, bid on fresh produce, and grow your business!
@@ -88,7 +90,7 @@ const BuyerLoginClean = ({ onLogin }) => {
           </div>
 
           <div className="absolute bottom-8 left-12 xl:left-16">
-            <p className="text-white/60 text-sm">© 2024 Morgen. All rights reserved.</p>
+            <p className="text-white/60 text-sm">© 2026 Morgen. All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -109,9 +111,11 @@ const BuyerLoginClean = ({ onLogin }) => {
         </div>
 
         <div className="lg:hidden pt-8 px-8">
-          <div className="h-12 w-12 rounded-xl shadow-lg bg-gray-200 flex items-center justify-center">
-            <span className="text-xl font-bold">M</span>
-          </div>
+          <img 
+            src="/src/assets/Morgen-logo-main.png" 
+            alt="Morgen Logo" 
+            className="h-12 w-auto rounded-xl shadow-lg"
+          />
         </div>
 
         <div className="flex-1 flex items-center justify-center px-8 py-12">
