@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Gavel, TrendingUp, Clock, User, MapPin, Package, DollarSign } from 'lucide-react';
+import { ArrowLeft, Gavel, TrendingUp, Clock, User, Package } from 'lucide-react';
 import axios from 'axios';
 import { useBuyerTheme } from '../../context/BuyerThemeContext';
 import BuyerGlassCard from '../../components/BuyerGlassCard';
@@ -10,9 +10,33 @@ const LiveBidding = () => {
   const [activeBids, setActiveBids] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBid, setSelectedBid] = useState(null);
-  const [bidAmount, setBidAmount] = useState('');
   const [customAmount, setCustomAmount] = useState('');
-  const { isDarkMode, colors } = useBuyerTheme();
+  const [error, setError] = useState(null);
+  
+  // Safely get theme with fallback
+  let isDarkMode = false;
+  let colors = {
+    background: '#ffffff',
+    headerBg: '#ffffff',
+    headerBorder: '#e5e7eb',
+    surface: '#f9fafb',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280',
+    textMuted: '#9ca3af',
+    primary: '#FF4757',
+    primaryLight: '#FFE5E8',
+    border: '#e5e7eb',
+    backgroundCard: '#ffffff'
+  };
+
+  try {
+    const theme = useBuyerTheme();
+    isDarkMode = theme.isDarkMode;
+    colors = theme.colors;
+  } catch (err) {
+    console.error('Theme error:', err);
+    setError('Theme loading error');
+  }
 
   useEffect(() => {
     fetchActiveBids();
@@ -26,8 +50,11 @@ const LiveBidding = () => {
       const response = await axios.get(`${API_URL}/api/bidding/active`);
       setActiveBids(response.data);
       console.log('✅ Active bids loaded:', response.data);
+      setError(null);
     } catch (error) {
       console.error('Failed to fetch active bids:', error);
+      setError('Failed to load bids');
+      setActiveBids([]);
     } finally {
       setLoading(false);
     }
@@ -53,7 +80,6 @@ const LiveBidding = () => {
       alert('Bid placed successfully!');
       fetchActiveBids();
       setSelectedBid(null);
-      setBidAmount('');
       setCustomAmount('');
     } catch (error) {
       console.error('Failed to place bid:', error);
@@ -76,6 +102,41 @@ const LiveBidding = () => {
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 border-4 rounded-full"
+          style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
+        />
+        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading live auctions...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
+        <Gavel className="w-16 h-16 mb-4" style={{ color: colors.textMuted }} />
+        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>Unable to Load</p>
+        <p style={{ color: colors.textSecondary }}>{error}</p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => window.history.back()}
+          className="mt-4 px-6 py-2 rounded-xl font-semibold"
+          style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+        >
+          Go Back
+        </motion.button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: colors.background }}>

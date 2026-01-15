@@ -357,7 +357,7 @@ const BuyerDashboard = ({ user, onLogout }) => {
                     className="w-full py-3 rounded-xl font-semibold shadow-lg transition-all"
                     style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
                   >
-                    🔥 Join Live Auctions
+                    Join Live Auctions
                   </motion.button>
                 </div>
               </BuyerGlassCard>
