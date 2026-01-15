@@ -4,9 +4,7 @@ import {
   ArrowLeft, 
   Plus,
   Package,
-  DollarSign,
   Calendar,
-  Edit,
   Trash2,
   CheckCircle
 } from 'lucide-react';
@@ -189,7 +187,7 @@ const SellCrops = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {listings.map((crop, index) => (
               <motion.div
-                key={crop.id}
+                key={crop._id || index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -253,7 +251,7 @@ const SellCrops = () => {
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => handleDelete(crop.id)}
+                        onClick={() => handleDelete(crop._id)}
                         className="flex-1 py-2 rounded-xl font-semibold border flex items-center justify-center gap-2"
                         style={{
                           backgroundColor: 'transparent',

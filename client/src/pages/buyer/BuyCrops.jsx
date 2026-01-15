@@ -86,7 +86,7 @@ const BuyCrops = () => {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
       await axios.post(`${API_URL}/api/crops/purchase`, {
-        cropId: selectedCrop.id,
+        cropId: selectedCrop._id,
         buyerId: buyerUser?.buyerId,
         quantity: selectedCrop.quantity,
         totalAmount: selectedCrop.quantity * selectedCrop.pricePerUnit
@@ -170,7 +170,7 @@ const BuyCrops = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {crops.map((crop, index) => (
               <motion.div
-                key={crop.id}
+                key={crop._id || index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
