@@ -48,7 +48,16 @@ const LiveBidding = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       const response = await axios.get(`${API_URL}/api/bidding/active`);
-      setActiveBids(response.data);
+      
+      // API returns { bids: [...] }
+      const bidsData = response.data;
+      if (bidsData && Array.isArray(bidsData.bids)) {
+        setActiveBids(bidsData.bids);
+      } else {
+        console.warn('API returned unexpected data structure:', bidsData);
+        setActiveBids([]);
+      }
+      
       console.log('✅ Active bids loaded:', response.data);
       setError(null);
     } catch (error) {
@@ -197,7 +206,7 @@ const LiveBidding = () => {
           </BuyerGlassCard>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeBids.map((bid, index) => (
+            {Array.isArray(activeBids) && activeBids.map((bid, index) => (
               <BuyerGlassCard key={bid._id} delay={index * 0.1}>
                 <div className="space-y-4">
                   {/* Header */}
