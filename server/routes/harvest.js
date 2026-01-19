@@ -10,7 +10,7 @@ router.get('/countdowns/:farmerId', async (req, res) => {
     
     const crops = await Crop.find({
       farmerId,
-      status: { $in: ['growing', 'ready'] },
+      status: { $in: ['growing', 'ready', 'listed'] }, // Include 'listed' crops
       harvestDate: { $gte: new Date() }
     })
     .sort({ harvestDate: 1 })
@@ -37,7 +37,7 @@ router.get('/countdowns/:farmerId', async (req, res) => {
       }
       
       // Check if crop is ready for harvest (0 days or overdue)
-      if (daysLeft <= 0 && crop.status === 'growing') {
+      if (daysLeft <= 0 && (crop.status === 'growing' || crop.status === 'listed')) {
         crop.status = 'ready';
         await crop.save();
         console.log(`🌾 Crop ${crop.name} is now ready for harvest!`);
@@ -117,7 +117,7 @@ router.post('/countdowns', async (req, res) => {
     // Check if farmer already has 3 active countdowns
     const activeCount = await Crop.countDocuments({
       farmerId,
-      status: { $in: ['growing', 'ready'] },
+      status: { $in: ['growing', 'ready', 'listed'] }, // Include 'listed' crops
       harvestDate: { $gte: new Date() }
     });
 
@@ -263,7 +263,7 @@ router.post('/update-all-countdowns', async (req, res) => {
     
     // Find all active crops with harvest dates
     const activeCrops = await Crop.find({
-      status: { $in: ['growing', 'ready'] },
+      status: { $in: ['growing', 'ready', 'listed'] }, // Include 'listed' crops
       harvestDate: { $exists: true }
     });
     
@@ -288,7 +288,7 @@ router.post('/update-all-countdowns', async (req, res) => {
       crop.updatedAt = new Date();
       
       // Check if crop is ready for harvest
-      if (daysLeft <= 0 && crop.status === 'growing') {
+      if (daysLeft <= 0 && (crop.status === 'growing' || crop.status === 'listed')) {
         crop.status = 'ready';
         readyCount++;
         
@@ -332,7 +332,7 @@ router.post('/update-all-countdowns', async (req, res) => {
       }
       
       // Send 1-day reminder
-      if (daysLeft === 1 && crop.status === 'growing') {
+      if (daysLeft === 1 && (crop.status === 'growing' || crop.status === 'listed')) {
         const Update = require('../models/Update');
         const user = await User.findOne({ farmerId: crop.farmerId });
         if (user) {
@@ -383,7 +383,7 @@ router.post('/update-all-countdowns', async (req, res) => {
 router.get('/stats', async (req, res) => {
   try {
     const totalActive = await Crop.countDocuments({
-      status: { $in: ['growing', 'ready'] },
+      status: { $in: ['growing', 'ready', 'listed'] }, // Include 'listed' crops
       harvestDate: { $gte: new Date() }
     });
     
@@ -393,12 +393,12 @@ router.get('/stats', async (req, res) => {
     });
     
     const dueSoon = await Crop.countDocuments({
-      status: 'growing',
+      status: { $in: ['growing', 'listed'] }, // Include 'listed' crops
       daysToHarvest: { $lte: 7, $gt: 0 }
     });
     
     const overdue = await Crop.countDocuments({
-      status: 'growing',
+      status: { $in: ['growing', 'listed'] }, // Include 'listed' crops
       harvestDate: { $lt: new Date() }
     });
     

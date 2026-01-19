@@ -10,7 +10,7 @@ router.get('/pending-request/:userId', async (req, res) => {
     
     // Determine if it's a farmer or buyer based on ID format
     let user;
-    if (userId.startsWith('MGB')) {
+    if (userId.startsWith('MGB') || userId.startsWith('MGPB')) {
       // Buyer ID format
       user = await User.findOne({ buyerId: userId });
     } else {
@@ -19,7 +19,8 @@ router.get('/pending-request/:userId', async (req, res) => {
     }
     
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      // Return 200 with null instead of 404 to avoid console errors
+      return res.json({ pendingRequest: null, message: 'User not found' });
     }
 
     const pendingRequest = await ProfileChangeRequest.findOne({
@@ -27,12 +28,14 @@ router.get('/pending-request/:userId', async (req, res) => {
       status: 'pending'
     });
 
+    // Return 200 with null if no pending request (instead of 404)
     if (!pendingRequest) {
-      return res.status(404).json({ error: 'No pending request' });
+      return res.json({ pendingRequest: null });
     }
 
-    res.json(pendingRequest);
+    res.json({ pendingRequest });
   } catch (err) {
+    console.error('Error fetching pending request:', err);
     res.status(500).json({ error: err.message });
   }
 });

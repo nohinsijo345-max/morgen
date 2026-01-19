@@ -25,6 +25,7 @@ import { UserSession } from '../utils/userSession';
 const BuyerDashboard = ({ user, onLogout }) => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cropData, setCropData] = useState({ availableCount: 0, avgPrice: 0 });
   const { isDarkMode, toggleTheme, colors } = useBuyerTheme();
 
   // Get buyer type from user data
@@ -33,13 +34,19 @@ const BuyerDashboard = ({ user, onLogout }) => {
 
   useEffect(() => {
     fetchDashboardData();
+    if (isPublicBuyer) {
+      fetchCropData();
+    }
     
     const refreshInterval = setInterval(() => {
       fetchDashboardData();
+      if (isPublicBuyer) {
+        fetchCropData();
+      }
     }, 5 * 60 * 1000);
     
     return () => clearInterval(refreshInterval);
-  }, []);
+  }, [isPublicBuyer]);
 
   const fetchDashboardData = async () => {
     try {
@@ -77,6 +84,24 @@ const BuyerDashboard = ({ user, onLogout }) => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCropData = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const buyerUser = UserSession.getCurrentUser('buyer');
+      
+      const params = new URLSearchParams();
+      if (buyerUser?.state) params.append('state', buyerUser.state);
+      if (buyerUser?.district) params.append('district', buyerUser.district);
+      
+      const response = await axios.get(`${API_URL}/api/analytics/public-buyer/crops?${params.toString()}`);
+      setCropData(response.data);
+      console.log('✅ Crop data loaded:', response.data);
+    } catch (error) {
+      console.error('Failed to fetch crop data:', error);
+      setCropData({ availableCount: 0, avgPrice: 0 });
     }
   };
 
@@ -249,16 +274,19 @@ const BuyerDashboard = ({ user, onLogout }) => {
                   <span className="font-medium text-sm">Account</span>
                 </motion.button>
                 
-                <motion.button 
-                  whileHover={{ scale: 1.03, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => window.location.href = '/buyer/my-farmers'}
-                  className="flex-1 rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
-                  style={{ backgroundColor: colors.surface, color: colors.textPrimary, border: `1px solid ${colors.border}` }}
-                >
-                  <Users className="w-4 h-4" />
-                  <span className="font-medium text-sm">My Farmers</span>
-                </motion.button>
+                {/* My Farmers - Only for Commercial Buyers */}
+                {!isPublicBuyer && (
+                  <motion.button 
+                    whileHover={{ scale: 1.03, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => window.location.href = '/buyer/my-farmers'}
+                    className="flex-1 rounded-full px-4 py-2.5 flex items-center justify-center gap-2 transition-all shadow-md"
+                    style={{ backgroundColor: colors.surface, color: colors.textPrimary, border: `1px solid ${colors.border}` }}
+                  >
+                    <Users className="w-4 h-4" />
+                    <span className="font-medium text-sm">My Farmers</span>
+                  </motion.button>
+                )}
               </div>
             </BuyerGlassCard>
 
@@ -335,8 +363,8 @@ const BuyerDashboard = ({ user, onLogout }) => {
                     
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { value: dashboardData?.totalBids || '0', label: 'Total Bids' },
-                        { value: '₹2.5L', label: 'Won Value' }
+                        { value: String(dashboardData?.totalBids || 0), label: 'Total Bids' },
+                        { value: String(dashboardData?.activeBids || 0), label: 'Active' }
                       ].map((stat, i) => (
                         <div key={i} className="text-center rounded-lg p-3 border"
                              style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
@@ -392,8 +420,8 @@ const BuyerDashboard = ({ user, onLogout }) => {
                     
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { value: '12', label: 'Available' },
-                        { value: '₹45/kg', label: 'Avg Price' }
+                        { value: String(cropData.availableCount || 0), label: 'Available' },
+                        { value: cropData.avgPrice > 0 ? `₹${cropData.avgPrice}/kg` : '₹0/kg', label: 'Avg Price' }
                       ].map((stat, i) => (
                         <div key={i} className="text-center rounded-lg p-3 border"
                              style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>

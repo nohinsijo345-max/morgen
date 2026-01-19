@@ -4,16 +4,18 @@ import { ArrowLeft, Gavel, TrendingUp, Clock, User, Package } from 'lucide-react
 import axios from 'axios';
 import { useBuyerTheme } from '../../context/BuyerThemeContext';
 import BuyerGlassCard from '../../components/BuyerGlassCard';
+// import useLiveUpdates from '../../hooks/useLiveUpdates';
 import { UserSession } from '../../utils/userSession';
 
 const LiveBidding = () => {
-  const [activeBids, setActiveBids] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedBid, setSelectedBid] = useState(null);
   const [customAmount, setCustomAmount] = useState('');
   const [error, setError] = useState(null);
+  const [bidsData, setBidsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState(null);
   
-  // Safely get theme with fallback
+  // Get theme with safe fallback
   let isDarkMode = false;
   let colors = {
     background: '#ffffff',
@@ -31,49 +33,72 @@ const LiveBidding = () => {
 
   try {
     const theme = useBuyerTheme();
-    isDarkMode = theme.isDarkMode;
-    colors = theme.colors;
+    if (theme && theme.colors) {
+      isDarkMode = theme.isDarkMode;
+      colors = theme.colors;
+      console.log('✅ Theme loaded successfully:', { isDarkMode, hasColors: !!theme.colors });
+    }
   } catch (err) {
-    console.error('Theme error:', err);
-    setError('Theme loading error');
+    console.error('⚠️ Theme error (using fallback):', err);
+    // Continue with fallback colors - don't break the component
   }
 
-  useEffect(() => {
-    fetchActiveBids();
-    const interval = setInterval(fetchActiveBids, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
+  const buyerUser = UserSession.getCurrentUser('buyer');
 
-  const fetchActiveBids = async () => {
+  // Direct API call instead of useLiveUpdates hook
+  const fetchBids = async () => {
     try {
+      console.log('🔄 Fetching bids directly...');
+      setLoading(true);
+      setError(null);
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       const response = await axios.get(`${API_URL}/api/bidding/active`);
       
-      // API returns { bids: [...] }
-      const bidsData = response.data;
-      if (bidsData && Array.isArray(bidsData.bids)) {
-        setActiveBids(bidsData.bids);
-      } else {
-        console.warn('API returned unexpected data structure:', bidsData);
-        setActiveBids([]);
-      }
-      
-      console.log('✅ Active bids loaded:', response.data);
+      console.log('✅ Direct fetch successful:', response.data);
+      setBidsData(response.data);
+      setLastUpdated(new Date());
       setError(null);
-    } catch (error) {
-      console.error('Failed to fetch active bids:', error);
-      setError('Failed to load bids');
-      setActiveBids([]);
+    } catch (err) {
+      console.error('❌ Direct fetch failed:', err);
+      setError(`Failed to load bids: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch data on component mount
+  useEffect(() => {
+    console.log('🚀 LiveBidding component mounted');
+    fetchBids();
+    
+    // Set up polling every 10 seconds
+    const interval = setInterval(fetchBids, 10000);
+    
+    return () => {
+      console.log('🛑 LiveBidding component unmounted');
+      clearInterval(interval);
+    };
+  }, []);
+
+  const activeBids = bidsData?.bids || [];
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 LiveBidding State:', {
+      loading,
+      error,
+      bidsDataExists: !!bidsData,
+      activeBidsCount: activeBids.length,
+      lastUpdated: lastUpdated?.toISOString(),
+      buyerUser: buyerUser ? { buyerId: buyerUser.buyerId, name: buyerUser.name } : null
+    });
+  }, [loading, error, bidsData, activeBids.length, lastUpdated, buyerUser]);
+
   const handlePlaceBid = async (bidId, amount) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const buyerData = UserSession.getCurrentUser('buyer');
-      const buyerId = buyerData?.buyerId;
+      const buyerId = buyerUser?.buyerId;
 
       if (!buyerId) {
         alert('Please login to place a bid');
@@ -87,7 +112,7 @@ const LiveBidding = () => {
       });
 
       alert('Bid placed successfully!');
-      fetchActiveBids();
+      fetchBids(); // Refresh data immediately
       setSelectedBid(null);
       setCustomAmount('');
     } catch (error) {
@@ -137,11 +162,11 @@ const LiveBidding = () => {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => window.history.back()}
+          onClick={fetchBids}
           className="mt-4 px-6 py-2 rounded-xl font-semibold"
           style={{ backgroundColor: colors.primary, color: '#ffffff' }}
         >
-          Go Back
+          Try Again
         </motion.button>
       </div>
     );
@@ -170,14 +195,50 @@ const LiveBidding = () => {
               </motion.button>
               <div>
                 <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Live Bidding</h1>
-                <p className="text-sm" style={{ color: colors.textSecondary }}>
-                  {activeBids.length} active auctions
-                </p>
+                <div className="flex items-center gap-4 text-sm" style={{ color: colors.textSecondary }}>
+                  <span>{activeBids.length} active auctions</span>
+                  {lastUpdated && (
+                    <span className="text-xs">
+                      Updated: {lastUpdated.toLocaleTimeString()}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm font-medium" style={{ color: colors.primary }}>Live</span>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-sm font-medium" style={{ color: colors.primary }}>Live</span>
+              </div>
+              
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/buyer/bid-history'}
+                className="px-4 py-2 rounded-xl font-semibold flex items-center gap-2 border"
+                style={{
+                  backgroundColor: 'transparent',
+                  borderColor: colors.border,
+                  color: colors.textSecondary
+                }}
+              >
+                <Clock className="w-5 h-5" />
+                Bid History
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={fetchBids}
+                className="px-3 py-1 rounded-lg text-xs font-semibold"
+                style={{ 
+                  backgroundColor: colors.surface, 
+                  color: colors.textPrimary,
+                  border: `1px solid ${colors.border}`
+                }}
+              >
+                Refresh
+              </motion.button>
             </div>
           </div>
         </div>
@@ -198,11 +259,25 @@ const LiveBidding = () => {
           <BuyerGlassCard className="text-center py-20">
             <Gavel className="w-20 h-20 mx-auto mb-4" style={{ color: colors.textMuted }} />
             <h2 className="text-2xl font-bold mb-2" style={{ color: colors.textPrimary }}>
-              No Active Bids
+              No Active Auctions
             </h2>
-            <p style={{ color: colors.textSecondary }}>
-              Check back later for new auction opportunities
+            <p className="mb-4" style={{ color: colors.textSecondary }}>
+              There are currently no live auctions available.
             </p>
+            <div className="text-sm space-y-2" style={{ color: colors.textMuted }}>
+              <p>• Farmers may not have created any bids yet</p>
+              <p>• All current auctions may have ended</p>
+              <p>• Check back later for new opportunities</p>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={fetchBids}
+              className="mt-6 px-6 py-3 rounded-xl font-semibold"
+              style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+            >
+              Refresh Now
+            </motion.button>
           </BuyerGlassCard>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -217,7 +292,7 @@ const LiveBidding = () => {
                       </h3>
                       <div className="flex items-center gap-2 text-sm" style={{ color: colors.textSecondary }}>
                         <User className="w-4 h-4" />
-                        <span>{bid.farmerId?.name || 'Unknown Farmer'}</span>
+                        <span>{bid.farmerName || 'Unknown Farmer'}</span>
                       </div>
                     </div>
                     <div className="px-3 py-1 rounded-full text-xs font-semibold"

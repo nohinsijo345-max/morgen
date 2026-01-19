@@ -14,6 +14,8 @@ Successfully completed the buyer dashboard layout optimization and navigation fi
 
 ### 2. BuyerDashboard Layout Optimization
 - **Eliminated Gap Issues**: Restructured the grid layout from `gap-6` to `gap-4` for tighter spacing
+
+
 - **Two-Column Structure**: Created dedicated left and right columns with consistent `space-y-4` vertical spacing
 - **Card Repositioning**: Moved Live Bidding card below Updates card as requested
 

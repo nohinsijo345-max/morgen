@@ -55,7 +55,7 @@ const ProfileImageCard = ({ user, onImageUpdate }) => {
       
       if (isBuyerRoute) {
         const buyerUser = UserSession.getCurrentUser('buyer');
-        userId = buyerUser?.buyerId || 'MGB002'; // Fallback for testing
+        userId = buyerUser?.buyerId;
       } else {
         const farmerUser = UserSession.getCurrentUser('farmer');
         userId = farmerUser?.farmerId;
@@ -131,7 +131,7 @@ const ProfileImageCard = ({ user, onImageUpdate }) => {
       
       if (isBuyerRoute) {
         const buyerUser = UserSession.getCurrentUser('buyer');
-        userId = buyerUser?.buyerId || 'MGB002'; // Fallback for testing
+        userId = buyerUser?.buyerId;
       } else {
         const farmerUser = UserSession.getCurrentUser('farmer');
         userId = farmerUser?.farmerId;

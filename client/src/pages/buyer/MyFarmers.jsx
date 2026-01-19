@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useBuyerTheme } from '../../context/BuyerThemeContext';
 import BuyerGlassCard from '../../components/BuyerGlassCard';
+import { UserSession } from '../../utils/userSession';
 
 const MyFarmers = () => {
   const navigate = useNavigate();
@@ -55,39 +56,43 @@ const MyFarmers = () => {
   useEffect(() => {
     const getUserData = () => {
       try {
-        // Try the SessionManager format first (buyerUser with nested user object)
-        let sessionData = localStorage.getItem('buyerUser') || sessionStorage.getItem('buyerUser');
+        console.log('🔍 MyFarmers - Checking buyer session...');
         
-        if (sessionData) {
-          const parsed = JSON.parse(sessionData);
-          console.log('Buyer session data found:', parsed);
-          
-          // Check if it's the SessionManager format with nested user
-          const userData = parsed.user || parsed;
-          
-          if (userData.buyerId) {
-            setBuyerId(userData.buyerId);
-            return userData.buyerId;
-          }
+        // Use UserSession utility to get buyer data
+        const buyerData = UserSession.getCurrentUser('buyer');
+        
+        if (!buyerData) {
+          console.log('❌ No buyer session found');
+          setError('Please login as a buyer to access this page');
+          setLoading(false);
+          return null;
         }
         
-        // Fallback: try the simple 'user' key
-        const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
-        if (userStr) {
-          const user = JSON.parse(userStr);
-          console.log('User data found:', user);
-          if (user.buyerId) {
-            setBuyerId(user.buyerId);
-            return user.buyerId;
-          }
+        console.log('✅ Buyer session found:', buyerData);
+        
+        // Check buyer type - only commercial buyers can access
+        if (buyerData.buyerType === 'public') {
+          console.log('🚫 Public buyer detected - access denied');
+          setError('This feature is only available for commercial buyers');
+          setLoading(false);
+          return null;
         }
         
-        console.log('No buyer ID found in session');
-        setError('Please login as a buyer to access this page');
-        setLoading(false);
-        return null;
+        // Get buyerId
+        const buyerId = buyerData.buyerId;
+        
+        if (!buyerId) {
+          console.log('❌ No buyer ID found in session');
+          setError('Invalid buyer session. Please login again.');
+          setLoading(false);
+          return null;
+        }
+        
+        console.log('✅ Commercial buyer ID found:', buyerId);
+        setBuyerId(buyerId);
+        return buyerId;
       } catch (err) {
-        console.error('Error parsing user data:', err);
+        console.error('❌ Error reading buyer session:', err);
         setError('Session error. Please login again.');
         setLoading(false);
         return null;

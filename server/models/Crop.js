@@ -39,11 +39,15 @@ const CropSchema = new mongoose.Schema({
   location: {
     state: { type: String },
     district: { type: String },
+    city: { type: String },
     panchayat: { type: String },
-    coordinates: {
-      type: { type: String, enum: ['Point'], default: 'Point' },
-      coordinates: { type: [Number], default: [0, 0] }
-    }
+    pinCode: { type: String } // Add pinCode for precise location matching
+  },
+  
+  // Geospatial coordinates (separate from location)
+  coordinates: {
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: { type: [Number], default: [0, 0] }
   },
   
   // Quality & Certification
@@ -63,7 +67,7 @@ const CropSchema = new mongoose.Schema({
 });
 
 // Index for geospatial queries
-CropSchema.index({ 'location.coordinates': '2dsphere' });
+CropSchema.index({ coordinates: '2dsphere' });
 
 // Calculate days to harvest before saving
 CropSchema.pre('save', function(next) {

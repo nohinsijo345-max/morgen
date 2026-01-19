@@ -2,11 +2,11 @@
 
 ## 🎯 **Issue Resolution Summary**
 
-### **Problem Identified**
+### **Problem Identified**t with gemini ai api button the dirrence is i will only c
 The driver portal accept/reject functionality was failing with "Failed to accept order" and "Failed to reject order" errors.
 
 ### **Root Cause Discovered**
-The `cargoDescription` field in the Booking model was set as `required: true`, but existing bookings in the database didn't have this field. When trying to update booking status (accept/reject), Mongoose validation failed because it couldn't find the required `cargoDescription` field in existing records.
+The `cargoDescription` field in the Booking model was set as `required: true`, but existing bookings in the database didn't have this field. When trying to update booking status (accept/reject), Mon00oose validation failed because it couldn't find the required `cargoDescription` field in existing records.
 
 ### **Solution Implemented**
 Updated the Booking model to make `cargoDescription` field optional with a default value:

@@ -3,8 +3,6 @@ import { motion } from 'framer-motion';
 import { 
   Search, 
   Filter, 
-  Plus, 
-  Edit, 
   Trash2, 
   Eye,
   Users,
@@ -12,7 +10,7 @@ import {
   Phone,
   MapPin,
   DollarSign,
-  MoreVertical
+  X
 } from 'lucide-react';
 import axios from 'axios';
 import { useAdminTheme } from '../../../context/AdminThemeContext';
@@ -35,41 +33,11 @@ const BuyerManagement = () => {
   const fetchBuyers = async () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.get(`${API_URL}/api/admin/buyers`);
+      const response = await axios.get(`${API_URL}/api/analytics/admin/buyers`);
       setBuyers(response.data);
     } catch (error) {
       console.error('Failed to fetch buyers:', error);
-      // Set mock data for development
-      setBuyers([
-        {
-          _id: '1',
-          name: 'Rajesh Kumar',
-          buyerId: 'MGB001',
-          email: 'rajesh@example.com',
-          phone: '9876543210',
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          totalPurchases: 15,
-          totalSpent: 125000,
-          maxBidLimit: 50000,
-          isActive: true,
-          createdAt: new Date('2024-01-15')
-        },
-        {
-          _id: '2',
-          name: 'Priya Sharma',
-          buyerId: 'MGB002',
-          email: 'priya@example.com',
-          phone: '9876543211',
-          city: 'Delhi',
-          state: 'Delhi',
-          totalPurchases: 8,
-          totalSpent: 75000,
-          maxBidLimit: 30000,
-          isActive: true,
-          createdAt: new Date('2024-02-10')
-        }
-      ]);
+      setBuyers([]);
     } finally {
       setLoading(false);
     }
@@ -145,25 +113,13 @@ const BuyerManagement = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold mb-2" style={{ color: colors.textPrimary }}>
-                  Buyer Management
-                </h1>
-                <p className="text-lg" style={{ color: colors.textSecondary }}>
-                  Manage buyer accounts and profiles
-                </p>
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => window.location.href = '/admin/buyer/add'}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold shadow-lg"
-                style={{ backgroundColor: colors.primary, color: 'white' }}
-              >
-                <Plus className="w-5 h-5" />
-                Add Buyer
-              </motion.button>
+            <div>
+              <h1 className="text-3xl font-bold mb-2" style={{ color: colors.textPrimary }}>
+                Buyer Management
+              </h1>
+              <p className="text-lg" style={{ color: colors.textSecondary }}>
+                Manage buyer accounts and profiles
+              </p>
             </div>
           </motion.div>
 
@@ -232,6 +188,9 @@ const BuyerManagement = () => {
                         Buyer
                       </th>
                       <th className="text-left p-4 font-semibold" style={{ color: colors.textPrimary }}>
+                        Type
+                      </th>
+                      <th className="text-left p-4 font-semibold" style={{ color: colors.textPrimary }}>
                         Contact
                       </th>
                       <th className="text-left p-4 font-semibold" style={{ color: colors.textPrimary }}>
@@ -298,6 +257,34 @@ const BuyerManagement = () => {
                           </div>
                         </td>
                         <td className="p-4">
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold"
+                               style={{
+                                 backgroundColor: buyer.buyerType === 'commercial' 
+                                   ? colors.primary 
+                                   : colors.surface,
+                                 borderWidth: '2px',
+                                 borderStyle: 'solid',
+                                 borderColor: buyer.buyerType === 'commercial' 
+                                   ? colors.primary 
+                                   : colors.textPrimary,
+                                 color: buyer.buyerType === 'commercial' 
+                                   ? '#ffffff'
+                                   : colors.textPrimary
+                               }}>
+                            {buyer.buyerType === 'commercial' ? (
+                              <>
+                                <Users className="w-4 h-4" />
+                                Commercial
+                              </>
+                            ) : (
+                              <>
+                                <Users className="w-4 h-4" />
+                                Public
+                              </>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-4">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <Mail className="w-4 h-4" style={{ color: colors.textMuted }} />
@@ -356,15 +343,6 @@ const BuyerManagement = () => {
                               style={{ backgroundColor: colors.surface }}
                             >
                               <Eye className="w-4 h-4" style={{ color: colors.primary }} />
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={() => window.location.href = `/admin/buyer/edit/${buyer._id}`}
-                              className="p-2 rounded-lg transition-all"
-                              style={{ backgroundColor: colors.surface }}
-                            >
-                              <Edit className="w-4 h-4" style={{ color: '#F59E0B' }} />
                             </motion.button>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
@@ -449,6 +427,27 @@ const BuyerManagement = () => {
                     </div>
                     <div>
                       <label className="text-sm font-medium" style={{ color: colors.textSecondary }}>
+                        Buyer Type
+                      </label>
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold mt-1"
+                           style={{
+                             backgroundColor: selectedBuyer.buyerType === 'commercial' 
+                               ? colors.primary 
+                               : colors.surface,
+                             borderWidth: '2px',
+                             borderStyle: 'solid',
+                             borderColor: selectedBuyer.buyerType === 'commercial' 
+                               ? colors.primary 
+                               : colors.textPrimary,
+                             color: selectedBuyer.buyerType === 'commercial' 
+                               ? '#ffffff'
+                               : colors.textPrimary
+                           }}>
+                        {selectedBuyer.buyerType === 'commercial' ? 'Commercial' : 'Public'}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium" style={{ color: colors.textSecondary }}>
                         Email
                       </label>
                       <p className="font-semibold" style={{ color: colors.textPrimary }}>
@@ -516,13 +515,6 @@ const BuyerManagement = () => {
                   style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
                 >
                   Close
-                </button>
-                <button
-                  onClick={() => window.location.href = `/admin/buyer/edit/${selectedBuyer._id}`}
-                  className="px-6 py-2 rounded-xl font-semibold transition-all"
-                  style={{ backgroundColor: colors.primary, color: 'white' }}
-                >
-                  Edit Buyer
                 </button>
               </div>
             </div>

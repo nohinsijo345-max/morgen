@@ -49,9 +49,12 @@ app.use('/api/transport', require('./routes/transport'));
 app.use('/api/driver', require('./routes/driver'));
 app.use('/api/support', require('./routes/customerSupport'));
 app.use('/api/bidding', require('./routes/bidding'));
+app.use('/api/buyer', require('./routes/buyer'));
 app.use('/api/modules', require('./routes/modules'));
 app.use('/api/ai-doctor', require('./routes/aiDoctor'));
 app.use('/api/buyer-notifications', require('./routes/buyerNotifications'));
+app.use('/api/orders', require('./routes/orders'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 // Test route to verify server is working
 app.get('/api/test-connections', (req, res) => {

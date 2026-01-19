@@ -470,8 +470,8 @@ router.get('/profile/:userId', async (req, res) => {
     
     // Determine if it's a farmer or buyer based on ID format
     let user;
-    if (userId.startsWith('MGB')) {
-      // Buyer ID format
+    if (userId.startsWith('MGB') || userId.startsWith('MGPB')) {
+      // Buyer ID format (both commercial MGB and public MGPB)
       user = await User.findOne({ buyerId: userId }).select('-pin');
     } else {
       // Farmer ID format
@@ -503,8 +503,8 @@ router.put('/profile/:userId', async (req, res) => {
     // Determine if it's a farmer or buyer based on ID format
     let user;
     let userIdField;
-    if (userId.startsWith('MGB')) {
-      // Buyer ID format
+    if (userId.startsWith('MGB') || userId.startsWith('MGPB')) {
+      // Buyer ID format (both commercial MGB and public MGPB)
       user = await User.findOne({ buyerId: userId });
       userIdField = 'buyerId';
     } else {
@@ -541,7 +541,7 @@ router.put('/profile/:userId', async (req, res) => {
     const updateData = {};
     if (email !== undefined) updateData.email = email;
     if (phone !== undefined) updateData.phone = phone;
-    if (cropTypes !== undefined && !userId.startsWith('MGB')) {
+    if (cropTypes !== undefined && !userId.startsWith('MGB') && !userId.startsWith('MGPB')) {
       // Only farmers can have crop types
       updateData.cropTypes = cropTypes;
     }
@@ -679,8 +679,8 @@ router.post('/profile-image/:userId', upload.single('profileImage'), async (req,
 
     // Determine user type and find user
     let user;
-    if (userId.startsWith('MGB')) {
-      // Buyer ID format
+    if (userId.startsWith('MGB') || userId.startsWith('MGPB')) {
+      // Buyer ID format (both commercial MGB and public MGPB)
       user = await User.findOne({ buyerId: userId });
     } else {
       // Farmer ID format
@@ -728,8 +728,8 @@ router.delete('/profile-image/:userId', async (req, res) => {
 
     // Determine user type and find user
     let user;
-    if (userId.startsWith('MGB')) {
-      // Buyer ID format
+    if (userId.startsWith('MGB') || userId.startsWith('MGPB')) {
+      // Buyer ID format (both commercial MGB and public MGPB)
       user = await User.findOne({ buyerId: userId });
     } else {
       // Farmer ID format

@@ -1,3 +1,4 @@
+
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });

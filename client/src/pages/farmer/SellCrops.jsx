@@ -4,18 +4,15 @@ import {
   ArrowLeft, 
   Plus,
   Package,
-  Calendar,
-  Trash2,
   CheckCircle
 } from 'lucide-react';
 import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
+import EnhancedCropCard from '../../components/EnhancedCropCard';
 import { UserSession } from '../../utils/userSession';
 
 const SellCrops = () => {
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     cropName: '',
@@ -23,29 +20,154 @@ const SellCrops = () => {
     quantity: '',
     unit: 'kg',
     pricePerUnit: '',
-    quality: 'Premium',
+    quality: 'A',
     harvestDate: '',
     description: ''
   });
-  const { colors } = useTheme();
+  const [cropsData, setCropsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  // Get theme with safe fallback
+  let colors = {
+    background: '#ffffff',
+    glassBackground: '#ffffff',
+    glassBorder: '#e5e7eb',
+    surface: '#f9fafb',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280',
+    textMuted: '#9ca3af',
+    primary: '#10B981',
+    border: '#e5e7eb',
+    backgroundCard: '#ffffff'
+  };
+
+  try {
+    const theme = useTheme();
+    if (theme && theme.colors) {
+      colors = theme.colors;
+      console.log('✅ Theme loaded successfully for SellCrops');
+    }
+  } catch (err) {
+    console.error('⚠️ Theme error (using fallback):', err);
+  }
 
   const farmerUser = UserSession.getCurrentUser('farmer');
 
-  useEffect(() => {
-    fetchMyListings();
-  }, []);
-
-  const fetchMyListings = async () => {
+  // Direct API call instead of useLiveUpdates hook
+  const fetchCrops = async () => {
     try {
+      console.log('🔄 Fetching farmer crops directly...', { farmerId: farmerUser?.farmerId });
+      setLoading(true);
+      setError(null);
+      
+      if (!farmerUser?.farmerId) {
+        setError('Farmer ID not found. Please login again.');
+        setLoading(false);
+        return;
+      }
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.get(`${API_URL}/api/crops/farmer/${farmerUser?.farmerId}`);
-      setListings(response.data.crops || []);
-    } catch (error) {
-      console.error('Failed to fetch listings:', error);
+      const endpoint = `/api/crops/farmer/${farmerUser.farmerId}`;
+      
+      console.log('📡 Fetching from:', `${API_URL}${endpoint}`);
+      
+      const response = await axios.get(`${API_URL}${endpoint}`);
+      
+      console.log('✅ Crops fetch successful:', response.data);
+      
+      // Fetch order information for each crop
+      const cropsWithOrders = await Promise.all(
+        (response.data.crops || []).map(async (crop) => {
+          try {
+            // Get orders for this crop
+            const ordersResponse = await axios.get(`${API_URL}/api/orders/farmer/${farmerUser.farmerId}`);
+            const cropOrders = ordersResponse.data.orders?.filter(order => {
+              // Handle different cropId formats
+              if (!order.cropId) return false;
+              
+              // If cropId is an object with _id property
+              if (typeof order.cropId === 'object' && order.cropId._id) {
+                return order.cropId._id === crop._id;
+              }
+              
+              // If cropId is a string
+              if (typeof order.cropId === 'string') {
+                return order.cropId === crop._id;
+              }
+              
+              return false;
+            }) || [];
+            
+            console.log(`📊 Crop ${crop.name} (${crop._id}):`, {
+              totalOrders: ordersResponse.data.orders?.length || 0,
+              matchingOrders: cropOrders.length,
+              cropOrders: cropOrders.map(o => ({ orderId: o.orderId, status: o.status, cropId: o.cropId }))
+            });
+            
+            // Calculate order statistics
+            const totalOrders = cropOrders.length;
+            const completedOrders = cropOrders.filter(order => order.status === 'completed').length;
+            const pendingOrders = cropOrders.filter(order => order.status === 'pending').length;
+            const approvedOrders = cropOrders.filter(order => order.status === 'approved').length;
+            
+            return {
+              ...crop,
+              cropName: crop.cropName || crop.name, // Ensure cropName is available
+              orderStats: {
+                total: totalOrders,
+                completed: completedOrders,
+                pending: pendingOrders,
+                approved: approvedOrders,
+                hasCompletedOrders: completedOrders > 0
+              }
+            };
+          } catch (orderError) {
+            console.error('Failed to fetch orders for crop:', crop._id, orderError);
+            return {
+              ...crop,
+              orderStats: {
+                total: 0,
+                completed: 0,
+                pending: 0,
+                approved: 0,
+                hasCompletedOrders: false
+              }
+            };
+          }
+        })
+      );
+      
+      setCropsData({ crops: cropsWithOrders });
+      setLastUpdated(new Date());
+      setError(null);
+    } catch (err) {
+      console.error('❌ Crops fetch failed:', err);
+      setError(`Failed to load crops: ${err.response?.data?.error || err.message}`);
     } finally {
       setLoading(false);
     }
   };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    console.log('🚀 SellCrops component mounted');
+    fetchCrops();
+    
+    // Set up polling every 30 seconds
+    const interval = setInterval(fetchCrops, 30000);
+    
+    return () => {
+      console.log('🛑 SellCrops component unmounted');
+      clearInterval(interval);
+    };
+  }, []);
+
+  const listings = cropsData?.crops || [];
+
+  // Refresh function for manual updates
+  const refresh = fetchCrops;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,20 +180,40 @@ const SellCrops = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
-      await axios.post(`${API_URL}/api/crops/create`, {
+      console.log('📝 Creating crop listing with data:', {
         farmerId: farmerUser?.farmerId,
         farmerName: farmerUser?.name,
-        ...formData,
+        cropName: formData.cropName,
         category: formData.category,
-        basePrice: parseFloat(formData.pricePerUnit), // Add required basePrice
         quantity: parseFloat(formData.quantity),
+        unit: formData.unit,
         pricePerUnit: parseFloat(formData.pricePerUnit),
+        basePrice: parseFloat(formData.pricePerUnit),
+        quality: formData.quality,
+        harvestDate: formData.harvestDate,
+        description: formData.description
+      });
+      
+      const response = await axios.post(`${API_URL}/api/crops/create`, {
+        farmerId: farmerUser?.farmerId,
+        farmerName: farmerUser?.name,
+        cropName: formData.cropName,
+        category: formData.category,
+        quantity: parseFloat(formData.quantity),
+        unit: formData.unit,
+        pricePerUnit: parseFloat(formData.pricePerUnit),
+        basePrice: parseFloat(formData.pricePerUnit),
+        quality: formData.quality,
+        harvestDate: formData.harvestDate,
+        description: formData.description,
         location: {
           state: farmerUser?.state,
           district: farmerUser?.district,
           city: farmerUser?.city
         }
       });
+
+      console.log('✅ Crop listing created successfully:', response.data);
 
       setShowAddForm(false);
       setFormData({
@@ -80,15 +222,17 @@ const SellCrops = () => {
         quantity: '',
         unit: 'kg',
         pricePerUnit: '',
-        quality: 'Premium',
+        quality: 'A',
         harvestDate: '',
         description: ''
       });
-      fetchMyListings();
+      refresh(); // Refresh the live data
       alert('Crop listed successfully!');
     } catch (error) {
-      console.error('Failed to create listing:', error);
-      alert('Failed to create listing. Please try again.');
+      console.error('❌ Failed to create listing:', error);
+      console.error('Error details:', error.response?.data);
+      const errorMessage = error.response?.data?.error || 'Failed to create listing. Please try again.';
+      alert(errorMessage);
     }
   };
 
@@ -98,12 +242,27 @@ const SellCrops = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       await axios.delete(`${API_URL}/api/crops/${cropId}`);
-      fetchMyListings();
+      refresh(); // Refresh the live data
       alert('Listing deleted successfully!');
     } catch (error) {
       console.error('Failed to delete listing:', error);
       alert('Failed to delete listing. Please try again.');
     }
+  };
+
+  const handleEdit = (crop) => {
+    // Set form data for editing
+    setFormData({
+      cropName: crop.cropName || crop.name,
+      category: crop.category,
+      quantity: crop.quantity.toString(),
+      unit: crop.unit,
+      pricePerUnit: crop.pricePerUnit.toString(),
+      quality: crop.quality,
+      harvestDate: crop.harvestDate ? new Date(crop.harvestDate).toISOString().split('T')[0] : '',
+      description: crop.description || ''
+    });
+    setShowAddForm(true);
   };
 
   if (loading) {
@@ -115,6 +274,26 @@ const SellCrops = () => {
           className="w-16 h-16 border-4 rounded-full"
           style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
+        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading your crops...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
+        <Package className="w-16 h-16 mb-4" style={{ color: colors.textMuted }} />
+        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>Unable to Load Crops</p>
+        <p className="mb-4" style={{ color: colors.textSecondary }}>{error}</p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={fetchCrops}
+          className="px-6 py-2 rounded-xl font-semibold"
+          style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+        >
+          Try Again
+        </motion.button>
       </div>
     );
   }
@@ -145,22 +324,44 @@ const SellCrops = () => {
                 <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
                   Sell Crops
                 </h1>
-                <p className="text-sm" style={{ color: colors.textSecondary }}>
-                  List your crops for direct sale to public buyers
-                </p>
+                <div className="flex items-center gap-4 text-sm" style={{ color: colors.textSecondary }}>
+                  <span>List your crops for direct sale to public buyers</span>
+                  {lastUpdated && (
+                    <span className="text-xs">
+                      Last updated: {lastUpdated.toLocaleTimeString()}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowAddForm(true)}
-              className="px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
-              style={{ backgroundColor: colors.primary, color: '#ffffff' }}
-            >
-              <Plus className="w-5 h-5" />
-              Add Listing
-            </motion.button>
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowAddForm(true)}
+                className="px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
+                style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+              >
+                <Plus className="w-5 h-5" />
+                Add Listing
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/farmer/orders'}
+                className="px-4 py-2 rounded-xl font-semibold flex items-center gap-2 border"
+                style={{ 
+                  backgroundColor: 'transparent',
+                  borderColor: colors.border,
+                  color: colors.textPrimary
+                }}
+              >
+                <Package className="w-5 h-5" />
+                Orders
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -190,86 +391,14 @@ const SellCrops = () => {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {listings.map((crop, index) => (
-              <motion.div
+              <EnhancedCropCard
                 key={crop._id || index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <GlassCard className="h-full">
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-lg font-bold" style={{ color: colors.textPrimary }}>
-                          {crop.cropName || crop.name}
-                        </h3>
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          {crop.quality}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xl font-bold" style={{ color: colors.primary }}>
-                          ₹{crop.pricePerUnit}
-                        </div>
-                        <div className="text-xs" style={{ color: colors.textSecondary }}>
-                          per {crop.unit}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Package className="w-4 h-4" style={{ color: colors.primary }} />
-                        <span className="text-sm" style={{ color: colors.textSecondary }}>
-                          {crop.quantity} {crop.unit} available
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" style={{ color: colors.primary }} />
-                        <span className="text-sm" style={{ color: colors.textSecondary }}>
-                          Harvested: {new Date(crop.harvestDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    {crop.description && (
-                      <p className="text-sm" style={{ color: colors.textSecondary }}>
-                        {crop.description}
-                      </p>
-                    )}
-
-                    <div className="rounded-xl p-3 border"
-                         style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold" style={{ color: colors.textPrimary }}>
-                          Total Value:
-                        </span>
-                        <span className="text-lg font-bold" style={{ color: colors.primary }}>
-                          ₹{(crop.quantity * crop.pricePerUnit).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleDelete(crop._id)}
-                        className="flex-1 py-2 rounded-xl font-semibold border flex items-center justify-center gap-2"
-                        style={{
-                          backgroundColor: 'transparent',
-                          borderColor: colors.border,
-                          color: colors.textSecondary
-                        }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Delete
-                      </motion.button>
-                    </div>
-                  </div>
-                </GlassCard>
-              </motion.div>
+                crop={crop}
+                onDelete={() => handleDelete(crop._id)}
+                onEdit={handleEdit}
+                showActions={true}
+                variant="farmer"
+              />
             ))}
           </div>
         )}
@@ -351,10 +480,9 @@ const SellCrops = () => {
                       color: colors.textPrimary
                     }}
                   >
-                    <option value="Premium">Premium</option>
-                    <option value="Grade A">Grade A</option>
-                    <option value="Grade B">Grade B</option>
-                    <option value="Standard">Standard</option>
+                    <option value="A">Grade A (Premium)</option>
+                    <option value="B">Grade B (Good)</option>
+                    <option value="C">Grade C (Standard)</option>
                   </select>
                 </div>
 

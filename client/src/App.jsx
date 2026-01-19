@@ -37,11 +37,14 @@ import VehicleDetails from "./pages/farmer/VehicleDetails";
 import TransportBooking from "./pages/farmer/TransportBooking";
 import OrderTracking from "./pages/farmer/OrderTracking";
 import BuyerOrderTracking from "./pages/buyer/BuyerOrderTracking";
+import BuyerTransportTracking from "./pages/buyer/BuyerTransportTracking";
 import MyFarmers from "./pages/buyer/MyFarmers";
 import MyFarmersSimple from "./pages/buyer/MyFarmersSimple";
 import BuyerCustomerSupport from "./pages/buyer/BuyerCustomerSupport";
 import BuyCrops from "./pages/buyer/BuyCrops";
 import LiveBidding from "./pages/buyer/LiveBidding";
+import BuyerOrders from "./pages/buyer/Orders";
+import BuyerBidHistory from "./pages/buyer/BidHistory";
 import MyCustomers from "./pages/farmer/MyCustomers";
 import MyCustomersSimple from "./pages/farmer/MyCustomersSimple";
 import OrderHistory from "./pages/farmer/OrderHistory";
@@ -50,9 +53,12 @@ import AIPlantDoctor from "./pages/farmer/AIPlantDoctor";
 import CreateBid from "./pages/farmer/CreateBid";
 import MyBids from "./pages/farmer/MyBids";
 import SellCrops from "./pages/farmer/SellCrops";
+import FarmerOrders from "./pages/farmer/Orders";
+import FarmerBidHistory from "./pages/farmer/BidHistory";
 import DriverLogin from "./pages/DriverLogin";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverOrderDetails from "./pages/DriverOrderDetails";
+import PublicTransportTracking from "./pages/PublicTransportTracking";
 
 export default function App() {
   const [farmerUser, setFarmerUser] = useState(null);
@@ -103,7 +109,8 @@ export default function App() {
   const handleBuyerLogin = (userData) => {
     console.log('🔧 Setting buyer session with data:', userData);
     setBuyerUser(userData);
-    SessionManager.setUserSession('buyer', userData);
+    // Use SessionManager.setBuyerSession for proper type separation
+    SessionManager.setBuyerSession(userData, userData.buyerType || 'commercial');
   };
 
   const handleAdminLogin = (userData) => {
@@ -183,6 +190,12 @@ export default function App() {
         <Route 
           path="/" 
           element={<ModuleSelector />} 
+        />
+        
+        {/* Public Transport Tracking - No authentication required */}
+        <Route 
+          path="/track-transport" 
+          element={<PublicTransportTracking />} 
         />
         
         {/* Login Routes - Redirect to dashboard if already logged in */}
@@ -389,6 +402,22 @@ export default function App() {
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/farmer/orders" 
+          element={
+            <ProtectedRoute userType="farmer">
+              <FarmerOrders />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/farmer/bid-history" 
+          element={
+            <ProtectedRoute userType="farmer">
+              <FarmerBidHistory />
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Protected Buyer Routes */}
         <Route 
@@ -428,6 +457,14 @@ export default function App() {
           element={
             <ProtectedRoute userType="buyer">
               <BuyerOrderTracking />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/transport" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <BuyerTransportTracking />
             </ProtectedRoute>
           } 
         />
@@ -476,6 +513,22 @@ export default function App() {
           element={
             <ProtectedRoute userType="buyer">
               <BuyCrops />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/orders" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <BuyerOrders />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/buyer/bid-history" 
+          element={
+            <ProtectedRoute userType="buyer">
+              <BuyerBidHistory />
             </ProtectedRoute>
           } 
         />

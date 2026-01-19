@@ -546,6 +546,61 @@ const ModuleSelector = () => {
           ))}
         </motion.div>
 
+        {/* Transport Tracking Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={cardsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ delay: 1.2, duration: 0.6, ease: "easeOut" }}
+          className="mt-16 text-center"
+        >
+          <motion.div
+            whileHover={{ scale: 1.02, y: -3 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('🚀 Navigating to /track-transport');
+              window.location.href = '/track-transport';
+            }}
+            className="inline-block cursor-pointer p-8 rounded-3xl backdrop-blur-xl border transition-all duration-300 shadow-lg hover:shadow-xl"
+            style={{
+              backgroundColor: currentColors.cardBackground,
+              borderColor: currentColors.cardBorder,
+              boxShadow: `0 8px 25px ${currentColors.accent}20`
+            }}
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <motion.div
+                whileHover={{ rotate: [0, -5, 5, 0] }}
+                transition={{ duration: 0.5 }}
+                className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg"
+              >
+                <TruckIcon className="w-6 h-6 text-white" />
+              </motion.div>
+              <div className="text-left">
+                <h3 className="text-xl font-bold" style={{ color: currentColors.text }}>
+                  Track Your Transport
+                </h3>
+                <p className="text-sm" style={{ color: currentColors.textSecondary }}>
+                  Track your crop transport orders using your phone number
+                </p>
+              </div>
+            </div>
+            <motion.div
+              className="flex items-center gap-2 font-semibold"
+              style={{ color: currentColors.accent }}
+            >
+              <span>Track Now</span>
+              <motion.div
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                →
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+
         {/* Footer */}
         <motion.footer
           initial={{ opacity: 0, y: 15 }}

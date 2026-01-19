@@ -4,45 +4,98 @@ import {
   ArrowLeft, 
   Plus,
   Gavel,
-  Calendar,
-  Package,
-  TrendingUp,
-  Users,
-  DollarSign,
   Clock,
   CheckCircle,
-  XCircle,
-  Truck
+  XCircle
 } from 'lucide-react';
 import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
+import EnhancedBidCard from '../../components/EnhancedBidCard';
+// import useLiveUpdates from '../../hooks/useLiveUpdates';
 import { UserSession } from '../../utils/userSession';
 
 const MyBids = () => {
-  const [bids, setBids] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [selectedBid, setSelectedBid] = useState(null);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
-  const { colors } = useTheme();
+  const [bidsData, setBidsData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  
+  // Get theme with safe fallback
+  let colors = {
+    background: '#ffffff',
+    glassBackground: '#ffffff',
+    glassBorder: '#e5e7eb',
+    surface: '#f9fafb',
+    textPrimary: '#111827',
+    textSecondary: '#6b7280',
+    textMuted: '#9ca3af',
+    primary: '#10B981',
+    border: '#e5e7eb',
+    backgroundCard: '#ffffff'
+  };
+
+  try {
+    const theme = useTheme();
+    if (theme && theme.colors) {
+      colors = theme.colors;
+      console.log('✅ Theme loaded successfully for MyBids');
+    }
+  } catch (err) {
+    console.error('⚠️ Theme error (using fallback):', err);
+  }
 
   const farmerUser = UserSession.getCurrentUser('farmer');
 
-  useEffect(() => {
-    fetchMyBids();
-  }, []);
-
-  const fetchMyBids = async () => {
+  // Direct API call instead of useLiveUpdates hook
+  const fetchBids = async () => {
     try {
+      console.log('🔄 Fetching farmer bids directly...', { farmerId: farmerUser?.farmerId });
+      setLoading(true);
+      setError(null);
+      
+      if (!farmerUser?.farmerId) {
+        setError('Farmer ID not found. Please login again.');
+        setLoading(false);
+        return;
+      }
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.get(`${API_URL}/api/bidding/farmer/${farmerUser?.farmerId}`);
-      setBids(response.data.bids || []);
-    } catch (error) {
-      console.error('Failed to fetch bids:', error);
+      const endpoint = `/api/bidding/farmer/${farmerUser.farmerId}`;
+      
+      console.log('📡 Fetching from:', `${API_URL}${endpoint}`);
+      
+      const response = await axios.get(`${API_URL}${endpoint}`);
+      
+      console.log('✅ Bids fetch successful:', response.data);
+      setBidsData(response.data);
+      setLastUpdated(new Date());
+      setError(null);
+    } catch (err) {
+      console.error('❌ Bids fetch failed:', err);
+      setError(`Failed to load bids: ${err.response?.data?.error || err.message}`);
     } finally {
       setLoading(false);
     }
   };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    console.log('🚀 MyBids component mounted');
+    fetchBids();
+    
+    // Set up polling every 15 seconds
+    const interval = setInterval(fetchBids, 15000);
+    
+    return () => {
+      console.log('🛑 MyBids component unmounted');
+      clearInterval(interval);
+    };
+  }, []);
+
+  const bids = bidsData?.bids || [];
 
   const handleEndBid = async (bidId) => {
     try {
@@ -53,7 +106,7 @@ const MyBids = () => {
       
       setShowEndConfirm(false);
       setSelectedBid(null);
-      fetchMyBids(); // Refresh the list
+      fetchBids(); // Refresh the data
       alert('Bid ended successfully!');
     } catch (error) {
       console.error('Failed to end bid:', error);
@@ -61,24 +114,14 @@ const MyBids = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active': return '#10B981';
-      case 'ended': return '#F59E0B';
-      case 'cancelled': return '#EF4444';
-      case 'completed': return '#3B82F6';
-      default: return colors.textMuted;
-    }
+  const handleViewDetails = (bid) => {
+    // Removed - View details functionality no longer needed
+    console.log('View details removed for bid:', bid.bidId);
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'active': return <Clock className="w-4 h-4" />;
-      case 'ended': return <CheckCircle className="w-4 h-4" />;
-      case 'cancelled': return <XCircle className="w-4 h-4" />;
-      case 'completed': return <CheckCircle className="w-4 h-4" />;
-      default: return <Clock className="w-4 h-4" />;
-    }
+  const handleEndBidClick = (bid) => {
+    setSelectedBid(bid);
+    setShowEndConfirm(true);
   };
 
   if (loading) {
@@ -90,6 +133,26 @@ const MyBids = () => {
           className="w-16 h-16 border-4 rounded-full"
           style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
+        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading your bids...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
+        <Gavel className="w-16 h-16 mb-4" style={{ color: colors.textMuted }} />
+        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>Unable to Load Bids</p>
+        <p className="mb-4" style={{ color: colors.textSecondary }}>{error}</p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={fetchBids}
+          className="px-6 py-2 rounded-xl font-semibold"
+          style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+        >
+          Try Again
+        </motion.button>
       </div>
     );
   }
@@ -120,22 +183,44 @@ const MyBids = () => {
                 <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
                   My Bids
                 </h1>
-                <p className="text-sm" style={{ color: colors.textSecondary }}>
-                  Manage your crop bidding listings
-                </p>
+                <div className="flex items-center gap-4 text-sm" style={{ color: colors.textSecondary }}>
+                  <span>Manage your crop bidding listings</span>
+                  {lastUpdated && (
+                    <span className="text-xs">
+                      Last updated: {lastUpdated.toLocaleTimeString()}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = '/farmer/create-bid'}
-              className="px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
-              style={{ backgroundColor: colors.primary, color: '#ffffff' }}
-            >
-              <Plus className="w-5 h-5" />
-              Create New Bid
-            </motion.button>
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/farmer/bid-history'}
+                className="px-4 py-2 rounded-xl font-semibold flex items-center gap-2 border"
+                style={{
+                  backgroundColor: 'transparent',
+                  borderColor: colors.border,
+                  color: colors.textSecondary
+                }}
+              >
+                <Clock className="w-5 h-5" />
+                Bid History
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/farmer/create-bid'}
+                className="px-4 py-2 rounded-xl font-semibold flex items-center gap-2"
+                style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+              >
+                <Plus className="w-5 h-5" />
+                Create New Bid
+              </motion.button>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -163,157 +248,14 @@ const MyBids = () => {
             </motion.button>
           </GlassCard>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {bids.map((bid, index) => (
-              <motion.div
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {bids.map((bid) => (
+              <EnhancedBidCard
                 key={bid.bidId}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <GlassCard className="h-full">
-                  <div className="space-y-4">
-                    {/* Header */}
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold" style={{ color: colors.textPrimary }}>
-                          {bid.cropName}
-                        </h3>
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          Bid ID: {bid.bidId}
-                        </p>
-                      </div>
-                      <div 
-                        className="px-3 py-1 rounded-full flex items-center gap-1 text-sm font-semibold"
-                        style={{ 
-                          backgroundColor: `${getStatusColor(bid.status)}20`,
-                          color: getStatusColor(bid.status)
-                        }}
-                      >
-                        {getStatusIcon(bid.status)}
-                        {bid.status.charAt(0).toUpperCase() + bid.status.slice(1)}
-                      </div>
-                    </div>
-
-                    {/* Details Grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="rounded-xl p-3 border"
-                           style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Package className="w-4 h-4" style={{ color: colors.primary }} />
-                          <span className="text-xs" style={{ color: colors.textSecondary }}>Quantity</span>
-                        </div>
-                        <p className="font-bold" style={{ color: colors.textPrimary }}>
-                          {bid.quantity} {bid.unit}
-                        </p>
-                      </div>
-
-                      <div className="rounded-xl p-3 border"
-                           style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <DollarSign className="w-4 h-4" style={{ color: colors.primary }} />
-                          <span className="text-xs" style={{ color: colors.textSecondary }}>Current Price</span>
-                        </div>
-                        <p className="font-bold" style={{ color: colors.primary }}>
-                          ₹{bid.currentPrice.toLocaleString()}
-                        </p>
-                      </div>
-
-                      <div className="rounded-xl p-3 border"
-                           style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Users className="w-4 h-4" style={{ color: colors.primary }} />
-                          <span className="text-xs" style={{ color: colors.textSecondary }}>Total Bids</span>
-                        </div>
-                        <p className="font-bold" style={{ color: colors.textPrimary }}>
-                          {bid.totalBids} ({bid.uniqueBidders} bidders)
-                        </p>
-                      </div>
-
-                      <div className="rounded-xl p-3 border"
-                           style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <TrendingUp className="w-4 h-4" style={{ color: colors.primary }} />
-                          <span className="text-xs" style={{ color: colors.textSecondary }}>Starting Price</span>
-                        </div>
-                        <p className="font-bold" style={{ color: colors.textPrimary }}>
-                          ₹{bid.startingPrice.toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Dates */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" style={{ color: colors.primary }} />
-                        <span className="text-sm" style={{ color: colors.textSecondary }}>
-                          Harvest: {new Date(bid.harvestDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" style={{ color: colors.primary }} />
-                        <span className="text-sm" style={{ color: colors.textSecondary }}>
-                          Bid Ends: {new Date(bid.bidEndDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Winner Info */}
-                    {bid.winnerId && (
-                      <div className="rounded-xl p-4 border"
-                           style={{ 
-                             backgroundColor: `${colors.primary}10`,
-                             borderColor: `${colors.primary}40`
-                           }}>
-                        <div className="flex items-center gap-2 mb-2">
-                          <CheckCircle className="w-5 h-5" style={{ color: colors.primary }} />
-                          <span className="font-semibold" style={{ color: colors.textPrimary }}>
-                            Winner
-                          </span>
-                        </div>
-                        <p className="text-sm" style={{ color: colors.textSecondary }}>
-                          {bid.winnerName} - ₹{bid.winningAmount?.toLocaleString()}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex gap-3">
-                      {bid.status === 'active' && (
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => {
-                            setSelectedBid(bid);
-                            setShowEndConfirm(true);
-                          }}
-                          className="flex-1 py-2 rounded-xl font-semibold border"
-                          style={{
-                            backgroundColor: 'transparent',
-                            borderColor: colors.border,
-                            color: colors.textSecondary
-                          }}
-                        >
-                          End Bid Early
-                        </motion.button>
-                      )}
-
-                      {bid.winnerId && (
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => window.location.href = '/local-transport'}
-                          className="flex-1 py-2 rounded-xl font-semibold flex items-center justify-center gap-2"
-                          style={{ backgroundColor: colors.primary, color: '#ffffff' }}
-                        >
-                          <Truck className="w-4 h-4" />
-                          Book Transport
-                        </motion.button>
-                      )}
-                    </div>
-                  </div>
-                </GlassCard>
-              </motion.div>
+                bid={bid}
+                onEndBid={handleEndBidClick}
+                showActions={true}
+              />
             ))}
           </div>
         )}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+import { SessionManager } from '../utils/sessionManager';
 
 const BuyerLoginClean = ({ onLogin }) => {
   const [formData, setFormData] = useState({ buyerId: '', pin: '' });
@@ -47,7 +48,14 @@ const BuyerLoginClean = ({ onLogin }) => {
         buyerId: formData.buyerId.toUpperCase(),
         pin: formData.pin
       });
-      if (onLogin) onLogin(response.data);
+      
+      const userData = response.data;
+      console.log('🔧 Buyer login successful, setting session:', userData);
+      
+      // Use SessionManager to set buyer session with proper type separation
+      SessionManager.setBuyerSession(userData, userData.buyerType || 'commercial');
+      
+      if (onLogin) onLogin(userData);
       window.location.href = '/buyer/dashboard';
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Please try again.');

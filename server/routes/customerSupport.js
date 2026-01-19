@@ -88,7 +88,7 @@ router.get('/messages/:userId', async (req, res) => {
     const { userId } = req.params;
     
     // Determine if it's a farmer or buyer based on ID format
-    const userType = userId.startsWith('MGB') ? 'buyer' : 'farmer';
+    const userType = (userId.startsWith('MGB') || userId.startsWith('MGPB')) ? 'buyer' : 'farmer';
     const searchField = userType === 'buyer' ? 'buyerId' : 'farmerId';
     
     const ticket = await CustomerSupport.findOne({ [searchField]: userId });

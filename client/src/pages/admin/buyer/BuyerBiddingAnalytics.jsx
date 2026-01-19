@@ -32,27 +32,20 @@ const BuyerBiddingAnalytics = () => {
 
   const fetchAnalytics = async () => {
     try {
-      // Mock data for bidding analytics
-      const mockAnalytics = {
-        totalBids: 156,
-        activeBidders: 23,
-        averageBidAmount: 4500,
-        successRate: 68.5,
-        topBidders: [
-          { buyerId: 'MGB002', name: 'NOHIN SIJO', totalBids: 45, winRate: 72.3, totalSpent: 125000 },
-          { buyerId: 'MGB003', name: 'Test Buyer 2', totalBids: 38, winRate: 65.8, totalSpent: 98000 },
-          { buyerId: 'MGB001', name: 'Test Buyer', totalBids: 32, winRate: 59.4, totalSpent: 87500 }
-        ],
-        recentActivity: [
-          { type: 'bid_placed', buyerId: 'MGB002', amount: 5500, product: 'Rice', time: new Date(Date.now() - 30 * 60 * 1000) },
-          { type: 'bid_won', buyerId: 'MGB003', amount: 3200, product: 'Wheat', time: new Date(Date.now() - 45 * 60 * 1000) },
-          { type: 'bid_placed', buyerId: 'MGB001', amount: 4800, product: 'Corn', time: new Date(Date.now() - 60 * 60 * 1000) }
-        ]
-      };
-      
-      setAnalytics(mockAnalytics);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/analytics/admin/bidding`);
+      setAnalytics(response.data);
     } catch (err) {
       console.error('Failed to fetch bidding analytics:', err);
+      // Set fallback data
+      setAnalytics({
+        totalBids: 0,
+        activeBidders: 0,
+        averageBidAmount: 0,
+        successRate: 0,
+        topBidders: [],
+        recentActivity: []
+      });
     } finally {
       setLoading(false);
     }

@@ -104,6 +104,26 @@ const BidSchema = new mongoose.Schema({
     type: Number, 
     default: null 
   },
+  winnerContact: {
+    email: String,
+    phone: String,
+    address: {
+      state: String,
+      district: String,
+      city: String,
+      pinCode: String
+    }
+  },
+  
+  // Completion tracking
+  completedAt: {
+    type: Date,
+    default: null
+  },
+  notificationsSent: {
+    type: Boolean,
+    default: false
+  },
   
   // Location (farmer's location)
   state: { 

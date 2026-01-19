@@ -653,6 +653,114 @@ router.post('/profile-requests/:requestId/reject', async (req, res) => {
   }
 });
 
+// ============= BID LIMIT REQUEST MANAGEMENT =============
+
+// Get all bid limit requests
+router.get('/bid-limit-requests', async (req, res) => {
+  try {
+    const BidLimitRequest = require('../models/BidLimitRequest');
+    const requests = await BidLimitRequest.find({ status: 'pending' })
+      .sort({ requestedAt: -1 });
+    
+    res.json(requests);
+  } catch (err) {
+    console.error('Failed to fetch bid limit requests:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get bid limit requests count
+router.get('/bid-limit-requests-count', async (req, res) => {
+  try {
+    const BidLimitRequest = require('../models/BidLimitRequest');
+    const count = await BidLimitRequest.countDocuments({ status: 'pending' });
+    res.json({ count });
+  } catch (err) {
+    console.error('Failed to fetch bid limit requests count:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Approve bid limit request
+router.post('/bid-limit-requests/:requestId/approve', async (req, res) => {
+  try {
+    const BidLimitRequest = require('../models/BidLimitRequest');
+    const { requestId } = req.params;
+    const { adminNotes } = req.body;
+    
+    const request = await BidLimitRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    
+    if (request.status !== 'pending') {
+      return res.status(400).json({ error: 'Request already processed' });
+    }
+    
+    // Update the buyer's bid limit
+    const buyer = await User.findOne({ buyerId: request.buyerId });
+    if (!buyer) {
+      return res.status(404).json({ error: 'Buyer not found' });
+    }
+    
+    buyer.maxBidLimit = request.requestedLimit;
+    await buyer.save();
+    
+    // Update request status
+    request.status = 'approved';
+    request.processedAt = new Date();
+    request.processedBy = 'admin';
+    request.adminNotes = adminNotes || 'Approved by admin';
+    await request.save();
+    
+    console.log(`✅ Bid limit approved for buyer ${request.buyerId}: ₹${request.currentLimit} → ₹${request.requestedLimit}`);
+    
+    res.json({ 
+      message: 'Bid limit request approved successfully', 
+      request,
+      newLimit: request.requestedLimit
+    });
+  } catch (err) {
+    console.error('Failed to approve bid limit request:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Reject bid limit request
+router.post('/bid-limit-requests/:requestId/reject', async (req, res) => {
+  try {
+    const BidLimitRequest = require('../models/BidLimitRequest');
+    const { requestId } = req.params;
+    const { reason } = req.body;
+    
+    const request = await BidLimitRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    
+    if (request.status !== 'pending') {
+      return res.status(400).json({ error: 'Request already processed' });
+    }
+    
+    // Update request status
+    request.status = 'rejected';
+    request.processedAt = new Date();
+    request.processedBy = 'admin';
+    request.adminNotes = reason || 'Rejected by admin';
+    await request.save();
+    
+    console.log(`❌ Bid limit rejected for buyer ${request.buyerId}: ₹${request.currentLimit} → ₹${request.requestedLimit}`);
+    
+    res.json({ 
+      message: 'Bid limit request rejected', 
+      request 
+    });
+  } catch (err) {
+    console.error('Failed to reject bid limit request:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Image Settings Management
 const Settings = require('../models/Settings');
 const multer = require('multer');

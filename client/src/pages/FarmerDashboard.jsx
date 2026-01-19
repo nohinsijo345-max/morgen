@@ -29,15 +29,21 @@ const FarmerDashboard = ({ user, onLogout }) => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [aiDoctorStats, setAiDoctorStats] = useState(null);
+  const [biddingStats, setBiddingStats] = useState(null);
+  const [cropStats, setCropStats] = useState(null);
   const { isDarkMode, toggleTheme, colors } = useTheme();
 
   useEffect(() => {
     fetchDashboardData();
     fetchAiDoctorStats();
+    fetchBiddingStats();
+    fetchCropStats();
     
     const refreshInterval = setInterval(() => {
       fetchDashboardData();
       fetchAiDoctorStats();
+      fetchBiddingStats();
+      fetchCropStats();
     }, 5 * 60 * 1000);
     
     return () => clearInterval(refreshInterval);
@@ -121,6 +127,130 @@ const FarmerDashboard = ({ user, onLogout }) => {
         lastConsultation: null,
         isActive: false,
         recentTopics: []
+      });
+    }
+  };
+
+  const fetchBiddingStats = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId || user?.farmerId;
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found for bidding stats');
+        setBiddingStats({
+          totalBids: 0,
+          activeBids: 0,
+          completedBids: 0,
+          totalEarnings: 0,
+          averageBidValue: 0,
+          recentBids: []
+        });
+        return;
+      }
+      
+      console.log('🔄 Fetching bidding stats for farmerId:', farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/bidding/farmer/${farmerId}`);
+      const bids = response.data.bids || [];
+      
+      // Calculate stats from bids
+      const activeBids = bids.filter(bid => bid.status === 'active').length;
+      const completedBids = bids.filter(bid => bid.status === 'ended' || bid.status === 'completed').length;
+      const totalEarnings = bids
+        .filter(bid => bid.winningAmount)
+        .reduce((sum, bid) => sum + (bid.winningAmount || 0), 0);
+      const averageBidValue = bids.length > 0 ? 
+        bids.reduce((sum, bid) => sum + (bid.currentPrice || bid.startingPrice || 0), 0) / bids.length : 0;
+      
+      setBiddingStats({
+        totalBids: bids.length,
+        activeBids,
+        completedBids,
+        totalEarnings,
+        averageBidValue: Math.round(averageBidValue),
+        recentBids: bids.slice(0, 3)
+      });
+      
+      console.log('✅ Bidding stats loaded:', {
+        totalBids: bids.length,
+        activeBids,
+        completedBids,
+        totalEarnings
+      });
+    } catch (error) {
+      console.log('⚠️ Bidding stats not available, using fallback:', error.message);
+      setBiddingStats({
+        totalBids: 0,
+        activeBids: 0,
+        completedBids: 0,
+        totalEarnings: 0,
+        averageBidValue: 0,
+        recentBids: []
+      });
+    }
+  };
+
+  const fetchCropStats = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      // Get user session data using UserSession utility
+      const userData = UserSession.getCurrentUser('farmer');
+      const farmerId = userData?.farmerId || user?.farmerId;
+      
+      if (!farmerId) {
+        console.log('⚠️ No farmerId found for crop stats');
+        setCropStats({
+          totalCrops: 0,
+          availableCrops: 0,
+          soldCrops: 0,
+          totalValue: 0,
+          averagePrice: 0,
+          recentCrops: []
+        });
+        return;
+      }
+      
+      console.log('🔄 Fetching crop stats for farmerId:', farmerId);
+      
+      const response = await axios.get(`${API_URL}/api/crops/farmer/${farmerId}`);
+      const crops = response.data.crops || [];
+      
+      // Calculate stats from crops
+      const availableCrops = crops.filter(crop => crop.available).length;
+      const soldCrops = crops.filter(crop => !crop.available).length;
+      const totalValue = crops.reduce((sum, crop) => sum + (crop.pricePerUnit * crop.quantity), 0);
+      const averagePrice = crops.length > 0 ? 
+        crops.reduce((sum, crop) => sum + (crop.pricePerUnit || 0), 0) / crops.length : 0;
+      
+      setCropStats({
+        totalCrops: crops.length,
+        availableCrops,
+        soldCrops,
+        totalValue: Math.round(totalValue),
+        averagePrice: Math.round(averagePrice),
+        recentCrops: crops.slice(0, 3)
+      });
+      
+      console.log('✅ Crop stats loaded:', {
+        totalCrops: crops.length,
+        availableCrops,
+        soldCrops,
+        totalValue: Math.round(totalValue)
+      });
+    } catch (error) {
+      console.log('⚠️ Crop stats not available, using fallback:', error.message);
+      setCropStats({
+        totalCrops: 0,
+        availableCrops: 0,
+        soldCrops: 0,
+        totalValue: 0,
+        averagePrice: 0,
+        recentCrops: []
       });
     }
   };
@@ -492,11 +622,63 @@ const FarmerDashboard = ({ user, onLogout }) => {
                    style={{ backgroundColor: colors.primary }}>
                 <Gavel className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
-              <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Live Bidding</h2>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Live Bidding</h2>
+                <div className="flex items-center gap-1">
+                  <div className={`w-2 h-2 rounded-full ${biddingStats?.activeBids > 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                  <span className="text-xs font-medium" style={{ color: biddingStats?.activeBids > 0 ? colors.primary : colors.textMuted }}>
+                    {biddingStats?.activeBids || 0} active bids
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="text-center py-6">
-              <Gavel className="w-16 h-16 mx-auto mb-3" style={{ color: colors.textMuted }} />
-              <p className="font-medium" style={{ color: colors.textSecondary }}>Join live auctions</p>
+            
+            <div className="rounded-xl p-4 border shadow-sm mb-4"
+                 style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+              <div className="grid grid-cols-2 gap-4 mb-3">
+                <div className="text-center">
+                  <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>
+                    {biddingStats?.totalBids || 0}
+                  </div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>Total Bids</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold" style={{ color: colors.primary }}>
+                    ₹{biddingStats?.averageBidValue || 0}
+                  </div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>Avg Value</div>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-sm font-semibold mb-1" style={{ color: colors.textPrimary }}>
+                  Total Earnings: ₹{biddingStats?.totalEarnings || 0}
+                </div>
+                <div className="text-xs" style={{ color: colors.textSecondary }}>
+                  {biddingStats?.completedBids || 0} completed auctions
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={(e) => { e.stopPropagation(); window.location.href = '/farmer/create-bid'; }}
+                className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all"
+                style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
+              >
+                🔨 Create Bid
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={(e) => { e.stopPropagation(); window.location.href = '/farmer/my-bids'; }}
+                className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all border"
+                style={{ backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }}
+              >
+                📊 View All
+              </motion.button>
             </div>
           </GlassCard>
 
@@ -570,11 +752,63 @@ const FarmerDashboard = ({ user, onLogout }) => {
                    style={{ backgroundColor: colors.primary }}>
                 <ShoppingBag className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
-              <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Sell</h2>
+              <div className="flex-1">
+                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Sell Crops</h2>
+                <div className="flex items-center gap-1">
+                  <div className={`w-2 h-2 rounded-full ${cropStats?.availableCrops > 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+                  <span className="text-xs font-medium" style={{ color: cropStats?.availableCrops > 0 ? colors.primary : colors.textMuted }}>
+                    {cropStats?.availableCrops || 0} available
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="text-center py-6">
-              <ShoppingBag className="w-16 h-16 mx-auto mb-3" style={{ color: colors.textMuted }} />
-              <p className="font-medium" style={{ color: colors.textSecondary }}>List your crops for sale</p>
+            
+            <div className="rounded-xl p-4 border shadow-sm mb-4"
+                 style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+              <div className="grid grid-cols-2 gap-4 mb-3">
+                <div className="text-center">
+                  <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>
+                    {cropStats?.totalCrops || 0}
+                  </div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>Total Listings</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold" style={{ color: colors.primary }}>
+                    ₹{cropStats?.averagePrice || 0}
+                  </div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>Avg Price/kg</div>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-sm font-semibold mb-1" style={{ color: colors.textPrimary }}>
+                  Total Value: ₹{cropStats?.totalValue || 0}
+                </div>
+                <div className="text-xs" style={{ color: colors.textSecondary }}>
+                  {cropStats?.soldCrops || 0} crops sold
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={(e) => { e.stopPropagation(); window.location.href = '/farmer/sell-crops'; }}
+                className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all"
+                style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
+              >
+                🌾 Add Crop
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={(e) => { e.stopPropagation(); window.location.href = '/farmer/sell-crops'; }}
+                className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all border"
+                style={{ backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }}
+              >
+                📋 Manage
+              </motion.button>
             </div>
           </GlassCard>
         </div>

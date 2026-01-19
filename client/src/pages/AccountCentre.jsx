@@ -15,7 +15,9 @@ import {
   XCircle,
   Lock,
   Eye,
-  EyeOff
+  EyeOff,
+  Gavel,
+  TrendingUp
 } from 'lucide-react';
 import axios from 'axios';
 import { indiaStates, indiaDistricts, cropTypes } from '../data/indiaLocations';
@@ -86,6 +88,11 @@ const AccountCentre = () => {
   const [showNewPin, setShowNewPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
   
+  // Bid limit increase request (for commercial buyers only)
+  const [requestedBidLimit, setRequestedBidLimit] = useState('');
+  const [bidLimitReason, setBidLimitReason] = useState('');
+  const [showBidLimitSection, setShowBidLimitSection] = useState(false);
+  
   const [availableDistricts, setAvailableDistricts] = useState([]);
 
   useEffect(() => {
@@ -116,23 +123,26 @@ const AccountCentre = () => {
         userId = buyerUser?.buyerId;
         console.log('🔍 Buyer session found:', buyerUser);
         
-        // Fallback to MGB002 for testing
+        // If no buyer session, show error
         if (!userId) {
-          console.log('⚠️ No buyer session, using fallback MGB002');
-          userId = 'MGB002';
+          console.log('❌ No buyer session found');
+          setError('No buyer session found. Please login again.');
+          setLoading(false);
+          return;
         }
       } else {
         // Try to get farmer session
         const farmerUser = UserSession.getCurrentUser('farmer');
         userId = farmerUser?.farmerId;
         console.log('🔍 Farmer session found:', farmerUser);
-      }
-      
-      if (!userId) {
-        console.error('❌ No user ID found');
-        setError('No user session found. Please login again.');
-        setLoading(false);
-        return;
+        
+        // If no farmer session, show error
+        if (!userId) {
+          console.log('❌ No farmer session found');
+          setError('No farmer session found. Please login again.');
+          setLoading(false);
+          return;
+        }
       }
       
       console.log(`✅ Fetching profile for userId: ${userId}, userType: ${userType}`);
@@ -152,8 +162,12 @@ const AccountCentre = () => {
       setSelectedCropTypes(response.data.cropTypes || []);
       
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
-      setError('Failed to load profile data - API Error: ' + (error.response?.status || error.message));
+      console.error('❌ Failed to fetch user data:', error);
+      if (error.response?.status === 404) {
+        setError('User not found. Please login again.');
+      } else {
+        setError('Failed to load profile data - API Error: ' + (error.response?.status || error.message));
+      }
     } finally {
       setLoading(false);
     }
@@ -167,25 +181,41 @@ const AccountCentre = () => {
       let userId = null;
       if (isBuyerRoute) {
         const buyerUser = UserSession.getCurrentUser('buyer');
-        userId = buyerUser?.buyerId || 'MGB002';
+        userId = buyerUser?.buyerId;
+        
+        // If no buyer session, don't make the request
+        if (!userId) {
+          console.log('⚠️ No buyer session found, skipping pending request check');
+          setPendingRequest(null);
+          return;
+        }
       } else {
         const farmerUser = UserSession.getCurrentUser('farmer');
         userId = farmerUser?.farmerId;
+        
+        // If no farmer session, don't make the request
+        if (!userId) {
+          console.log('⚠️ No farmer session found, skipping pending request check');
+          setPendingRequest(null);
+          return;
+        }
       }
       
-      if (!userId) return;
+      console.log('🔍 Checking pending request for user:', userId);
       
-      const response = await axios.get(`${API_URL}/api/profile/pending-request/${userId}`, {
-        validateStatus: (status) => status < 500 // Don't throw for 404
-      });
+      const response = await axios.get(`${API_URL}/api/profile/pending-request/${userId}`);
       
-      if (response.status === 200 && response.data) {
-        setPendingRequest(response.data);
+      // Handle new response format
+      if (response.data?.pendingRequest) {
+        console.log('✅ Found pending request:', response.data.pendingRequest);
+        setPendingRequest(response.data.pendingRequest);
       } else {
+        console.log('ℹ️ No pending request found');
         setPendingRequest(null);
       }
     } catch (error) {
       // Network error or server error - silently ignore
+      console.log('⚠️ Error checking pending request:', error.message);
       setPendingRequest(null);
     }
   };
@@ -202,7 +232,7 @@ const AccountCentre = () => {
       let userId = null;
       if (isBuyerRoute) {
         const buyerUser = UserSession.getCurrentUser('buyer');
-        userId = buyerUser?.buyerId || 'MGB002';
+        userId = buyerUser?.buyerId;
       } else {
         const farmerUser = UserSession.getCurrentUser('farmer');
         userId = farmerUser?.farmerId;
@@ -249,7 +279,7 @@ const AccountCentre = () => {
       
       if (isBuyerRoute) {
         const buyerUser = UserSession.getCurrentUser('buyer');
-        userId = buyerUser?.buyerId || 'MGB002';
+        userId = buyerUser?.buyerId;
       } else {
         const farmerUser = UserSession.getCurrentUser('farmer');
         userId = farmerUser?.farmerId;
@@ -349,7 +379,7 @@ const AccountCentre = () => {
       
       if (isBuyerRoute) {
         const buyerUser = UserSession.getCurrentUser('buyer');
-        userId = buyerUser?.buyerId || 'MGB002';
+        userId = buyerUser?.buyerId;
       } else {
         const farmerUser = UserSession.getCurrentUser('farmer');
         userId = farmerUser?.farmerId;
@@ -375,6 +405,69 @@ const AccountCentre = () => {
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to change password');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBidLimitRequest = async () => {
+    setError('');
+    setSuccess('');
+
+    if (!requestedBidLimit || parseFloat(requestedBidLimit) <= 0) {
+      setError('Please enter a valid bid limit amount');
+      return;
+    }
+
+    if (parseFloat(requestedBidLimit) <= (user?.maxBidLimit || 0)) {
+      setError(`Requested limit must be greater than current limit of ₹${(user?.maxBidLimit || 0).toLocaleString()}`);
+      return;
+    }
+
+    if (!bidLimitReason || bidLimitReason.trim().length < 10) {
+      setError('Please provide a detailed reason (at least 10 characters)');
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      const buyerUser = UserSession.getCurrentUser('buyer');
+      const buyerId = buyerUser?.buyerId;
+      
+      if (!buyerId) {
+        setError('No buyer session found. Please login again.');
+        setSaving(false);
+        return;
+      }
+      
+      console.log('📊 Submitting bid limit request:', {
+        buyerId,
+        requestedLimit: parseFloat(requestedBidLimit),
+        currentLimit: user?.maxBidLimit || 0,
+        reason: bidLimitReason.substring(0, 50) + '...'
+      });
+      
+      const response = await axios.post(`${API_URL}/api/buyer/request-bid-limit-increase`, {
+        buyerId,
+        requestedLimit: parseFloat(requestedBidLimit),
+        reason: bidLimitReason.trim(),
+        currentLimit: user?.maxBidLimit || 0
+      });
+      
+      console.log('✅ Bid limit request submitted successfully:', response.data);
+      
+      setSuccess('Bid limit increase request submitted successfully! Admin will review your request.');
+      setRequestedBidLimit('');
+      setBidLimitReason('');
+      setShowBidLimitSection(false);
+      setTimeout(() => setSuccess(''), 5000);
+    } catch (err) {
+      console.error('❌ Failed to submit bid limit request:', err);
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to submit bid limit request';
+      setError(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -478,13 +571,7 @@ const AccountCentre = () => {
       <div className="relative z-10 p-6">
         <div className="max-w-4xl mx-auto">
 
-          {/* Profile Image Card - New at the top */}
-          <ProfileImageCard 
-            user={user} 
-            onImageUpdate={handleImageUpdate}
-          />
-
-          {/* Success/Error Messages */}
+          {/* Success/Error Messages - Show at the top */}
           {success && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -507,24 +594,33 @@ const AccountCentre = () => {
             </motion.div>
           )}
 
-          {/* Pending Request Alert */}
-          {pendingRequest && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mb-6 p-6 bg-yellow-50 border border-yellow-200 rounded-2xl"
-            >
-              <div className="flex items-start gap-3">
-                <Clock className="w-6 h-6 text-yellow-600 mt-1" />
-                <div>
-                  <h3 className="font-bold text-yellow-900 mb-2">Pending Approval</h3>
-                  <p className="text-sm text-yellow-800">
-                    Your profile change request is waiting for admin approval. You'll be notified once it's reviewed.
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
+          {/* Only show content if user is loaded */}
+          {user && (
+            <>
+              {/* Profile Image Card - New at the top */}
+              <ProfileImageCard 
+                user={user} 
+                onImageUpdate={handleImageUpdate}
+              />
+
+              {/* Pending Request Alert */}
+              {pendingRequest && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="mb-6 p-6 bg-yellow-50 border border-yellow-200 rounded-2xl"
+                >
+                  <div className="flex items-start gap-3">
+                    <Clock className="w-6 h-6 text-yellow-600 mt-1" />
+                    <div>
+                      <h3 className="font-bold text-yellow-900 mb-2">Pending Approval</h3>
+                      <p className="text-sm text-yellow-800">
+                        Your profile change request is waiting for admin approval. You'll be notified once it's reviewed.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
           {/* Section 1: Instant Update Fields */}
           <motion.div
@@ -893,6 +989,195 @@ const AccountCentre = () => {
           </div>
           </motion.div>
 
+          {/* Section 3.5: Bid Limit Increase (Commercial Buyers Only) */}
+          {isBuyerRoute && user?.buyerType === 'commercial' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="backdrop-blur-xl rounded-3xl p-8 border shadow-2xl mb-6 transition-colors duration-300 relative overflow-hidden"
+              style={{ backgroundColor: colors.backgroundCard, borderColor: colors.cardBorder }}
+            >
+              {/* Edge Glass Reflection */}
+              <motion.div
+                initial={{ x: '-100%' }}
+                animate={{ x: '100%' }}
+                transition={{ 
+                  duration: 3, 
+                  repeat: Infinity, 
+                  repeatDelay: 9,
+                  ease: "easeInOut" 
+                }}
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: `linear-gradient(90deg, transparent 0%, ${colors.primary}20 50%, transparent 100%)`,
+                  transform: 'skewX(-20deg)',
+                  zIndex: 1
+                }}
+              />
+
+              <div className="relative z-10">
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-3" style={{ color: colors.textPrimary }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
+                    <Gavel className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
+                  </div>
+                  Bid Limit Management
+                </h2>
+
+                <div className="mb-6 p-4 rounded-xl border" style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>Current Bid Limit:</span>
+                    <span className="text-2xl font-bold" style={{ color: colors.primary }}>
+                      ₹{user?.maxBidLimit?.toLocaleString() || '0'}
+                    </span>
+                  </div>
+                </div>
+
+                {!showBidLimitSection ? (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setShowBidLimitSection(true);
+                      setError(''); // Clear any existing errors
+                      setSuccess(''); // Clear any existing success messages
+                    }}
+                    className="w-full font-semibold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                    style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
+                  >
+                    <TrendingUp className="w-5 h-5" />
+                    Request Bid Limit Increase
+                  </motion.button>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>
+                        Requested Bid Limit (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={requestedBidLimit}
+                        onChange={(e) => setRequestedBidLimit(e.target.value)}
+                        placeholder="Enter new bid limit amount"
+                        min={user?.maxBidLimit || 0}
+                        className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors ${
+                          requestedBidLimit && parseFloat(requestedBidLimit) <= (user?.maxBidLimit || 0) ? 'border-red-500' : ''
+                        }`}
+                        style={{ 
+                          backgroundColor: colors.surface, 
+                          borderColor: requestedBidLimit && parseFloat(requestedBidLimit) <= (user?.maxBidLimit || 0)
+                            ? '#EF4444'
+                            : colors.border, 
+                          color: colors.textPrimary,
+                        }}
+                      />
+                      <p className={`text-xs mt-1 ${
+                        requestedBidLimit && parseFloat(requestedBidLimit) <= (user?.maxBidLimit || 0)
+                          ? 'text-red-500 font-medium'
+                          : requestedBidLimit && parseFloat(requestedBidLimit) > (user?.maxBidLimit || 0)
+                            ? 'text-green-600 font-medium'
+                            : ''
+                      }`} style={{ 
+                        color: requestedBidLimit && parseFloat(requestedBidLimit) <= (user?.maxBidLimit || 0)
+                          ? '#EF4444'
+                          : requestedBidLimit && parseFloat(requestedBidLimit) > (user?.maxBidLimit || 0)
+                            ? '#10B981'
+                            : colors.textMuted 
+                      }}>
+                        {requestedBidLimit && parseFloat(requestedBidLimit) <= (user?.maxBidLimit || 0)
+                          ? `❌ Must be greater than current limit of ₹${(user?.maxBidLimit || 0).toLocaleString()}`
+                          : requestedBidLimit && parseFloat(requestedBidLimit) > (user?.maxBidLimit || 0)
+                            ? `✓ Valid amount (₹${parseFloat(requestedBidLimit).toLocaleString()})`
+                            : `Must be greater than current limit of ₹${(user?.maxBidLimit || 0).toLocaleString()}`
+                        }
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>
+                        Reason for Increase
+                      </label>
+                      <textarea
+                        value={bidLimitReason}
+                        onChange={(e) => setBidLimitReason(e.target.value)}
+                        placeholder="Please explain why you need a higher bid limit (minimum 10 characters)"
+                        rows="4"
+                        className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-colors resize-none ${
+                          bidLimitReason.length > 0 && bidLimitReason.length < 10 ? 'border-red-500' : ''
+                        }`}
+                        style={{ 
+                          backgroundColor: colors.surface, 
+                          borderColor: bidLimitReason.length > 0 && bidLimitReason.length < 10 
+                            ? '#EF4444' 
+                            : colors.border, 
+                          color: colors.textPrimary,
+                        }}
+                      />
+                      <div className="flex justify-between items-center mt-1">
+                        <p className={`text-xs ${
+                          bidLimitReason.length > 0 && bidLimitReason.length < 10 
+                            ? 'text-red-500 font-medium' 
+                            : bidLimitReason.length >= 10 
+                              ? 'text-green-600 font-medium'
+                              : ''
+                        }`} style={{ 
+                          color: bidLimitReason.length > 0 && bidLimitReason.length < 10 
+                            ? '#EF4444' 
+                            : bidLimitReason.length >= 10 
+                              ? '#10B981'
+                              : colors.textMuted 
+                        }}>
+                          {bidLimitReason.length < 10 && bidLimitReason.length > 0 
+                            ? `Need ${10 - bidLimitReason.length} more characters`
+                            : bidLimitReason.length >= 10 
+                              ? '✓ Minimum length met'
+                              : 'Minimum 10 characters required'
+                          }
+                        </p>
+                        <p className="text-xs" style={{ color: colors.textMuted }}>
+                          {bidLimitReason.length}/200 characters
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          setShowBidLimitSection(false);
+                          setRequestedBidLimit('');
+                          setBidLimitReason('');
+                          setError(''); // Clear any errors
+                          setSuccess(''); // Clear any success messages
+                        }}
+                        className="flex-1 font-semibold py-3 rounded-xl border transition-all"
+                        style={{ 
+                          backgroundColor: 'transparent', 
+                          borderColor: colors.border,
+                          color: colors.textSecondary 
+                        }}
+                      >
+                        Cancel
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleBidLimitRequest}
+                        disabled={saving || !requestedBidLimit || parseFloat(requestedBidLimit) <= (user?.maxBidLimit || 0) || bidLimitReason.trim().length < 10}
+                        className="flex-1 font-semibold py-3 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
+                      >
+                        <CheckCircle className="w-5 h-5" />
+                        {saving ? 'Submitting...' : 'Submit Request'}
+                      </motion.button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
           {/* Section 4: Password Reset */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1042,6 +1327,8 @@ const AccountCentre = () => {
             )}
           </div>
           </motion.div>
+            </>
+          )}
         </div>
       </div>
     </div>
