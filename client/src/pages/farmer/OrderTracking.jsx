@@ -17,8 +17,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const OrderTracking = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -50,7 +52,7 @@ const OrderTracking = () => {
       console.log('🔍 OrderTracking - Bookings response:', response.data);
       setBookings(response.data);
     } catch (error) {
-      console.error('Failed to fetch bookings:', error);
+      console.error(t('failedToFetch'), error);
       console.error('Error details:', error.response?.data);
     } finally {
       setLoading(false);
@@ -138,12 +140,12 @@ const OrderTracking = () => {
 
   const getStepTitle = (step) => {
     const titles = {
-      'order_placed': 'Order Placed',
-      'order_accepted': 'Order Accepted',
-      'pickup_started': 'Pickup Started',
-      'order_picked_up': 'Order Picked Up',
-      'in_transit': 'In Transit',
-      'delivered': 'Delivered'
+      'order_placed': t('orderPlaced'),
+      'order_accepted': t('orderAccepted'),
+      'pickup_started': t('pickupStarted'),
+      'order_picked_up': t('orderPickedUp'),
+      'in_transit': t('inTransit'),
+      'delivered': t('delivered')
     };
     return titles[step] || step;
   };
@@ -230,8 +232,8 @@ const OrderTracking = () => {
                   <Package className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-green-800">Order Tracking</h1>
-                  <p className="text-green-600 text-sm">Track your transport orders</p>
+                  <h1 className="text-2xl font-bold text-green-800">{t('orderTracking')}</h1>
+                  <p className="text-green-600 text-sm">{t('trackYourTransportOrders')}</p>
                 </div>
               </div>
             </div>
@@ -244,7 +246,7 @@ const OrderTracking = () => {
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-colors"
               >
                 <Search className="w-4 h-4" />
-                Track by ID
+                {t('trackById')}
               </motion.button>
             </div>
           </div>
@@ -260,7 +262,7 @@ const OrderTracking = () => {
               >
                 <input
                   type="text"
-                  placeholder="Enter tracking ID (e.g., TRK123456)"
+                  placeholder={t('enterTrackingId')}
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   className="flex-1 px-4 py-2 bg-white/70 border border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400"

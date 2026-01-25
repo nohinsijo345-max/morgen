@@ -21,8 +21,10 @@ import LeaderboardCard from '../components/LeaderboardCard';
 import BuyerGlassCard from '../components/BuyerGlassCard';
 import BuyerNeumorphicThemeToggle from '../components/BuyerNeumorphicThemeToggle';
 import { UserSession } from '../utils/userSession';
+import { useTranslation } from '../hooks/useTranslation';
 
 const BuyerDashboard = ({ user, onLogout }) => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [cropData, setCropData] = useState({ availableCount: 0, avgPrice: 0 });
@@ -114,7 +116,7 @@ const BuyerDashboard = ({ user, onLogout }) => {
           className="w-16 h-16 border-4 rounded-full"
           style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
-        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading buyer dashboard...</p>
+        <p className="mt-4" style={{ color: colors.textSecondary }}>{t('loadingBuyerDashboard')}</p>
       </div>
     );
   }
@@ -122,13 +124,13 @@ const BuyerDashboard = ({ user, onLogout }) => {
   if (!dashboardData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
-        <p className="text-xl" style={{ color: colors.textPrimary }}>Failed to load dashboard data</p>
+        <p className="text-xl" style={{ color: colors.textPrimary }}>{t('failedToLoadDashboardData')}</p>
         <button 
           onClick={fetchDashboardData}
           className="mt-4 px-6 py-2 rounded-lg"
           style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
         >
-          Retry
+          {t('retry')}
         </button>
       </div>
     );
@@ -167,9 +169,9 @@ const BuyerDashboard = ({ user, onLogout }) => {
                 className="h-10 w-auto object-contain rounded-xl"
               />
               <div>
-                <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Morgen</h1>
+                <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('morgen')}</h1>
                 <p className="text-xs" style={{ color: colors.textSecondary }}>
-                  {isPublicBuyer ? 'Public Buyer Dashboard' : 'Commercial Buyer Dashboard'}
+                  {isPublicBuyer ? t('publicBuyerDashboard') : t('commercialBuyerDashboard')}
                 </p>
               </div>
             </motion.div>
@@ -198,7 +200,7 @@ const BuyerDashboard = ({ user, onLogout }) => {
                 style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
                 <LogOut className="w-4 h-4" />
-                <span className="font-semibold text-sm">Logout</span>
+                <span className="font-semibold text-sm">{t('logout')}</span>
               </motion.button>
             </div>
           </div>
@@ -258,7 +260,7 @@ const BuyerDashboard = ({ user, onLogout }) => {
                   >
                     Hello, {dashboardData?.buyer?.name || user?.name || 'Buyer'}
                   </motion.h2>
-                  <p style={{ color: colors.textSecondary }} className="text-sm">Welcome back to your dashboard</p>
+                  <p style={{ color: colors.textSecondary }} className="text-sm">{t('welcomeBack')}</p>
                 </div>
               </div>
               

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./styles/neumorphic-theme.css";
 import { ThemeProvider } from "./context/ThemeContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import { AdminThemeProvider } from "./context/AdminThemeContext";
 import { BuyerThemeProvider } from "./context/BuyerThemeContext";
 import { SessionManager, startSessionMonitoring } from "./utils/sessionManager";
@@ -152,9 +153,10 @@ export default function App() {
   }
 
   return (
-    <ThemeProvider>
-      <BuyerThemeProvider>
-        <BrowserRouter>
+    <LanguageProvider>
+      <ThemeProvider>
+        <BuyerThemeProvider>
+          <BrowserRouter>
           {/* Session Expiry Warnings */}
           {farmerUser && (
             <SessionExpiryWarning 
@@ -654,5 +656,6 @@ export default function App() {
       </BrowserRouter>
       </BuyerThemeProvider>
     </ThemeProvider>
+    </LanguageProvider>
   );
 }

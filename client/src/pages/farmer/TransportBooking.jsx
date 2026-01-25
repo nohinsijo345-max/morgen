@@ -18,8 +18,10 @@ import { useTheme } from '../../context/ThemeContext';
 import FarmerHeader from '../../components/FarmerHeader';
 import GlassCard from '../../components/GlassCard';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const TransportBooking = () => {
+  const { t } = useTranslation();
   const { vehicleId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -286,7 +288,7 @@ const TransportBooking = () => {
     >
       {/* Header */}
       <FarmerHeader 
-        title="Book Transport"
+        title={t('transportBooking')}
         subtitle={`${vehicle?.name} - ${selectedOption?.capacity}`}
         icon={Package}
         onBack={() => window.history.back()}
@@ -303,13 +305,13 @@ const TransportBooking = () => {
           <GlassCard className="p-6 mb-6">
             <div className="flex items-center gap-3 mb-4">
               <MapPin className="w-5 h-5 text-green-600" />
-              <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Pickup Location</h3>
+              <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>{t('fromLocation')}</h3>
             </div>
           
             <div className="grid grid-cols-2 gap-4 mb-4">
               <input
                 type="text"
-                placeholder="State"
+                placeholder={t('state')}
                 value={bookingData.fromLocation.state}
                 onChange={(e) => handleInputChange('fromLocation.state', e.target.value)}
                 className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
@@ -322,7 +324,7 @@ const TransportBooking = () => {
               />
               <input
                 type="text"
-                placeholder="District"
+                placeholder={t('district')}
                 value={bookingData.fromLocation.district}
                 onChange={(e) => handleInputChange('fromLocation.district', e.target.value)}
                 className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
@@ -338,7 +340,7 @@ const TransportBooking = () => {
             <div className="grid grid-cols-2 gap-4 mb-4">
               <input
                 type="text"
-                placeholder="City"
+                placeholder={t('city')}
                 value={bookingData.fromLocation.city}
                 onChange={(e) => handleInputChange('fromLocation.city', e.target.value)}
                 className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
@@ -351,7 +353,7 @@ const TransportBooking = () => {
               />
               <input
                 type="text"
-                placeholder="PIN Code"
+                placeholder={t('pinCode')}
                 value={bookingData.fromLocation.pinCode}
                 onChange={(e) => handleInputChange('fromLocation.pinCode', e.target.value)}
                 maxLength="6"
@@ -367,7 +369,7 @@ const TransportBooking = () => {
             </div>
             
             <textarea
-              placeholder="Detailed Address"
+              placeholder={t('detailedAddress')}
               value={bookingData.fromLocation.address}
               onChange={(e) => handleInputChange('fromLocation.address', e.target.value)}
               className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 h-20 resize-none transition-colors"
@@ -386,7 +388,7 @@ const TransportBooking = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <MapPin className="w-5 h-5" style={{ color: colors.primary }} />
-              <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Destination</h3>
+              <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>{t('destination')}</h3>
             </div>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -407,14 +409,14 @@ const TransportBooking = () => {
                 color: colors.primary
               }}
             >
-              Copy from Pickup
+              {t('copyFromPickup')}
             </motion.button>
           </div>
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <input
               type="text"
-              placeholder="State *"
+              placeholder={`${t('state')} *`}
               value={bookingData.toLocation.state}
               onChange={(e) => handleInputChange('toLocation.state', e.target.value)}
               className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
@@ -428,7 +430,7 @@ const TransportBooking = () => {
             />
             <input
               type="text"
-              placeholder="District *"
+              placeholder={`${t('district')} *`}
               value={bookingData.toLocation.district}
               onChange={(e) => handleInputChange('toLocation.district', e.target.value)}
               className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
@@ -445,7 +447,7 @@ const TransportBooking = () => {
           <div className="grid grid-cols-2 gap-4 mb-4">
             <input
               type="text"
-              placeholder="City *"
+              placeholder={`${t('city')} *`}
               value={bookingData.toLocation.city}
               onChange={(e) => handleInputChange('toLocation.city', e.target.value)}
               className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"
@@ -459,7 +461,7 @@ const TransportBooking = () => {
             />
             <input
               type="text"
-              placeholder="PIN Code *"
+              placeholder={`${t('pinCode')} *`}
               value={bookingData.toLocation.pinCode}
               onChange={(e) => handleInputChange('toLocation.pinCode', e.target.value)}
               maxLength="6"
@@ -476,7 +478,7 @@ const TransportBooking = () => {
           </div>
           
           <textarea
-            placeholder="Detailed Address"
+            placeholder={t('detailedAddress')}
             value={bookingData.toLocation.address}
             onChange={(e) => handleInputChange('toLocation.address', e.target.value)}
             className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 h-20 resize-none transition-colors"
@@ -493,12 +495,12 @@ const TransportBooking = () => {
         <GlassCard delay={0.3} className="mb-6">
           <div className="flex items-center gap-3 mb-4">
             <Calendar className="w-5 h-5" style={{ color: colors.primary }} />
-            <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>Pickup Schedule</h3>
+            <h3 className="text-lg font-semibold" style={{ color: colors.textPrimary }}>{t('pickupSchedule')}</h3>
           </div>
           
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>Date *</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>{t('date')} *</label>
               <input
                 type="date"
                 value={bookingData.pickupDate}
@@ -515,7 +517,7 @@ const TransportBooking = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>Time *</label>
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>{t('time')} *</label>
               <select
                 value={bookingData.pickupTime}
                 onChange={(e) => handleInputChange('pickupTime', e.target.value)}
@@ -529,7 +531,7 @@ const TransportBooking = () => {
                 required
               >
                 <option value="">
-                  {getAvailableTimeOptions().length === 0 ? 'No times available today' : 'Select Time'}
+                  {getAvailableTimeOptions().length === 0 ? t('noTimesAvailableToday') : t('selectTime')}
                 </option>
                 {getAvailableTimeOptions().map(option => (
                   <option key={option.value} value={option.value}>
@@ -566,7 +568,7 @@ const TransportBooking = () => {
               </div>
               <input
                 type="number"
-                placeholder="Or enter exact distance"
+                placeholder={t('orEnterExactDistance')}
                 value={bookingData.distance}
                 onChange={(e) => handleInputChange('distance', parseInt(e.target.value) || 1)}
                 min="1"
@@ -615,7 +617,7 @@ const TransportBooking = () => {
           </div>
           <input
             type="tel"
-            placeholder="Enter buyer's phone number for cross-platform tracking"
+            placeholder={t('enterBuyerPhoneNumber')}
             value={bookingData.buyerPhoneNumber}
             onChange={(e) => handleInputChange('buyerPhoneNumber', e.target.value)}
             className="w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 transition-colors"

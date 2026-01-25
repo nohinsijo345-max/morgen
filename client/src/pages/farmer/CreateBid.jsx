@@ -13,8 +13,10 @@ import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const CreateBid = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     cropName: '',
     quantity: '',
@@ -32,6 +34,7 @@ const CreateBid = () => {
   const { colors } = useTheme();
 
   const farmerUser = UserSession.getCurrentUser('farmer');
+  const farmerId = farmerUser?.farmerId || farmerUser?.userId;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,27 +44,27 @@ const CreateBid = () => {
 
   const validateForm = () => {
     if (!formData.cropName.trim()) {
-      setError('Crop name is required');
+      setError(t('fieldRequired'));
       return false;
     }
     if (!formData.quantity || formData.quantity <= 0) {
-      setError('Valid quantity is required');
+      setError(t('quantityMustBePositive'));
       return false;
     }
     if (!formData.startingPrice || formData.startingPrice <= 0) {
-      setError('Valid starting price is required');
+      setError(t('priceMustBePositive'));
       return false;
     }
     if (!formData.harvestDate) {
-      setError('Harvest date is required');
+      setError(t('fieldRequired'));
       return false;
     }
     if (!formData.expiryDate) {
-      setError('Expiry date is required');
+      setError(t('fieldRequired'));
       return false;
     }
     if (!formData.bidEndDate) {
-      setError('Bid end date is required');
+      setError(t('fieldRequired'));
       return false;
     }
 
@@ -72,19 +75,19 @@ const CreateBid = () => {
     const bidEnd = new Date(formData.bidEndDate);
 
     if (harvest <= now) {
-      setError('Harvest date must be in the future');
+      setError(t('dateMustBeFuture'));
       return false;
     }
     if (expiry <= harvest) {
-      setError('Expiry date must be after harvest date');
+      setError(t('invalidDate'));
       return false;
     }
     if (bidEnd <= now) {
-      setError('Bid end date must be in the future');
+      setError(t('dateMustBeFuture'));
       return false;
     }
     if (bidEnd >= harvest) {
-      setError('Bid must end before harvest date');
+      setError(t('invalidDate'));
       return false;
     }
 
@@ -102,8 +105,14 @@ const CreateBid = () => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       
+      if (!farmerId) {
+        setError(t('farmerSessionNotFound'));
+        setLoading(false);
+        return;
+      }
+      
       const response = await axios.post(`${API_URL}/api/bidding/create`, {
-        farmerId: farmerUser?.farmerId,
+        farmerId: farmerId,
         ...formData,
         quantity: parseFloat(formData.quantity),
         startingPrice: parseFloat(formData.startingPrice)
@@ -115,7 +124,7 @@ const CreateBid = () => {
       }, 2000);
 
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to create bid');
+      setError(err.response?.data?.error || t('failedToCreate'));
     } finally {
       setLoading(false);
     }
@@ -131,10 +140,10 @@ const CreateBid = () => {
         >
           <CheckCircle className="w-20 h-20 mx-auto mb-4" style={{ color: colors.primary }} />
           <h2 className="text-2xl font-bold mb-2" style={{ color: colors.textPrimary }}>
-            Bid Created Successfully!
+            {t('bidCreatedSuccessfully')}
           </h2>
           <p style={{ color: colors.textSecondary }}>
-            Connected buyers will be notified about your bid.
+            {t('buyersWillBeNotified')}
           </p>
         </motion.div>
       </div>
@@ -164,10 +173,10 @@ const CreateBid = () => {
             
             <div>
               <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
-                Create New Bid
+                {t('createNewBid')}
               </h1>
               <p className="text-sm" style={{ color: colors.textSecondary }}>
-                List your crop for bidding
+                {t('listCropForBidding')}
               </p>
             </div>
           </div>
@@ -194,12 +203,12 @@ const CreateBid = () => {
             {/* Crop Details */}
             <div>
               <h3 className="text-lg font-semibold mb-4" style={{ color: colors.textPrimary }}>
-                Crop Details
+                {t('cropDetails')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Crop Name *
+                    {t('cropName')} *
                   </label>
                   <input
                     type="text"
@@ -218,7 +227,7 @@ const CreateBid = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Quality *
+                    {t('quality')} *
                   </label>
                   <select
                     name="quality"
@@ -231,16 +240,16 @@ const CreateBid = () => {
                       color: colors.textPrimary
                     }}
                   >
-                    <option value="Premium">Premium</option>
-                    <option value="Grade A">Grade A</option>
-                    <option value="Grade B">Grade B</option>
-                    <option value="Standard">Standard</option>
+                    <option value="Premium">{t('premium')}</option>
+                    <option value="Grade A">{t('gradeA')}</option>
+                    <option value="Grade B">{t('gradeB')}</option>
+                    <option value="Standard">{t('standard')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Quantity *
+                    {t('quantity')} *
                   </label>
                   <input
                     type="number"
@@ -261,7 +270,7 @@ const CreateBid = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Unit *
+                    {t('unit')} *
                   </label>
                   <select
                     name="unit"
@@ -274,9 +283,9 @@ const CreateBid = () => {
                       color: colors.textPrimary
                     }}
                   >
-                    <option value="kg">Kilograms (kg)</option>
-                    <option value="quintal">Quintal</option>
-                    <option value="ton">Ton</option>
+                    <option value="kg">{t('kilograms')}</option>
+                    <option value="quintal">{t('quintal')}</option>
+                    <option value="ton">{t('ton')}</option>
                   </select>
                 </div>
               </div>
@@ -285,11 +294,11 @@ const CreateBid = () => {
             {/* Pricing */}
             <div>
               <h3 className="text-lg font-semibold mb-4" style={{ color: colors.textPrimary }}>
-                Pricing
+                {t('price')}
               </h3>
               <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                  Starting Bid Price (₹) *
+                  {t('startingPrice')} (₹) *
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" 
@@ -316,12 +325,12 @@ const CreateBid = () => {
             {/* Dates */}
             <div>
               <h3 className="text-lg font-semibold mb-4" style={{ color: colors.textPrimary }}>
-                Important Dates
+                {t('harvestDate')}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Harvest Date *
+                    {t('harvestDate')} *
                   </label>
                   <input
                     type="date"
@@ -340,7 +349,7 @@ const CreateBid = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Expiry Date *
+                    {t('expiryDate')} *
                   </label>
                   <input
                     type="date"
@@ -359,7 +368,7 @@ const CreateBid = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Bid End Date *
+                    {t('bidEndDate')} *
                   </label>
                   <input
                     type="date"
@@ -378,7 +387,7 @@ const CreateBid = () => {
                 </div>
               </div>
               <p className="text-xs mt-2" style={{ color: colors.textMuted }}>
-                Note: Bid must end before the harvest date
+                {t('bidMustEndBeforeHarvest')}
               </p>
             </div>
 
@@ -396,7 +405,7 @@ const CreateBid = () => {
                   color: colors.textSecondary
                 }}
               >
-                Cancel
+                {t('cancel')}
               </motion.button>
 
               <motion.button
@@ -416,7 +425,7 @@ const CreateBid = () => {
                 ) : (
                   <>
                     <Package className="w-5 h-5" />
-                    Create Bid
+                    {t('createBid')}
                   </>
                 )}
               </motion.button>

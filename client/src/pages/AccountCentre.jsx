@@ -27,8 +27,10 @@ import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
 import BuyerNeumorphicThemeToggle from '../components/BuyerNeumorphicThemeToggle';
 import ProfileImageCard from '../components/ProfileImageCard';
 import { UserSession } from '../utils/userSession';
+import { useTranslation } from '../hooks/useTranslation';
 
 const AccountCentre = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   
   // Determine if this is a buyer route
@@ -126,7 +128,7 @@ const AccountCentre = () => {
         // If no buyer session, show error
         if (!userId) {
           console.log('❌ No buyer session found');
-          setError('No buyer session found. Please login again.');
+          setError(t('noBuyerSessionFound'));
           setLoading(false);
           return;
         }
@@ -139,7 +141,7 @@ const AccountCentre = () => {
         // If no farmer session, show error
         if (!userId) {
           console.log('❌ No farmer session found');
-          setError('No farmer session found. Please login again.');
+          setError(t('noFarmerSessionFound'));
           setLoading(false);
           return;
         }
@@ -164,9 +166,9 @@ const AccountCentre = () => {
     } catch (error) {
       console.error('❌ Failed to fetch user data:', error);
       if (error.response?.status === 404) {
-        setError('User not found. Please login again.');
+        setError(t('userNotFound'));
       } else {
-        setError('Failed to load profile data - API Error: ' + (error.response?.status || error.message));
+        setError(t('failedToLoadProfileData') + (error.response?.status || error.message));
       }
     } finally {
       setLoading(false);
@@ -249,10 +251,10 @@ const AccountCentre = () => {
         phone
       });
       
-      setSuccess('Email and phone updated successfully!');
+      setSuccess(t('emailPhoneUpdatedSuccessfully'));
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update profile');
+      setError(err.response?.data?.error || t('failedToUpdateProfile'));
     } finally {
       setSaving(false);
     }
@@ -541,8 +543,8 @@ const AccountCentre = () => {
                   <User className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Account Centre</h1>
-                  <p className="text-xs" style={{ color: colors.textSecondary }}>Manage your profile</p>
+                  <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('accountCentre')}</h1>
+                  <p className="text-xs" style={{ color: colors.textSecondary }}>{t('manageYourProfile')}</p>
                 </div>
               </div>
             </div>
@@ -653,15 +655,15 @@ const AccountCentre = () => {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
                   <User className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                 </div>
-                Contact Information
-                <span className="text-sm font-normal ml-auto" style={{ color: colors.success }}>(Updates Instantly)</span>
+                {t('contactInformation')}
+                <span className="text-sm font-normal ml-auto" style={{ color: colors.success }}>({t('updatesInstantly')})</span>
               </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                   <Mail className="w-4 h-4" />
-                  Email Address
+                  {t('emailAddress')}
                 </label>
                 <input
                   type="email"
@@ -679,7 +681,7 @@ const AccountCentre = () => {
               <div>
                 <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                   <Phone className="w-4 h-4" />
-                  Phone Number
+                  {t('phoneNumber')}
                 </label>
                 <input
                   type="tel"
@@ -704,7 +706,7 @@ const AccountCentre = () => {
                 style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
                 <Save className="w-5 h-5" />
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? t('saving') : t('saveChanges')}
               </motion.button>
             </div>
           </div>
@@ -741,13 +743,13 @@ const AccountCentre = () => {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
                   <MapPin className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                 </div>
-                Profile Information
-                <span className="text-sm font-normal ml-auto" style={{ color: colors.warning }}>(Requires Approval)</span>
+                {t('profileInformation')}
+                <span className="text-sm font-normal ml-auto" style={{ color: colors.warning }}>({t('requiresApproval')})</span>
               </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>Full Name</label>
+                <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('fullName')}</label>
                 <input
                   type="text"
                   value={name}
@@ -764,7 +766,7 @@ const AccountCentre = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>State</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('selectState')}</label>
                   <select
                     value={state}
                     onChange={(e) => setState(e.target.value)}
@@ -776,7 +778,7 @@ const AccountCentre = () => {
                       color: colors.textPrimary,
                     }}
                   >
-                    <option key="empty-state" value="">Select State</option>
+                    <option key="empty-state" value="">{t('selectState')}</option>
                     {indiaStates.map(s => (
                       <option key={s.value} value={s.value}>{s.label}</option>
                     ))}
@@ -784,7 +786,7 @@ const AccountCentre = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>District</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('selectDistrict')}</label>
                   <select
                     value={district}
                     onChange={(e) => setDistrict(e.target.value)}
@@ -796,7 +798,7 @@ const AccountCentre = () => {
                       color: colors.textPrimary,
                     }}
                   >
-                    <option key="empty-district" value="">Select District</option>
+                    <option key="empty-district" value="">{t('selectDistrict')}</option>
                     {availableDistricts.map(d => (
                       <option key={d.value} value={d.value}>{d.label}</option>
                     ))}
@@ -806,7 +808,7 @@ const AccountCentre = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>City</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('city')}</label>
                   <input
                     type="text"
                     value={city}
@@ -821,13 +823,13 @@ const AccountCentre = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>PIN Code</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('pinCode')}</label>
                   <input
                     type="text"
                     value={pinCode}
                     onChange={(e) => setPinCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     maxLength="6"
-                    placeholder="6-digit PIN code"
+                    placeholder={t('sixDigitPinCode')}
                     disabled={!!pendingRequest}
                     className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 disabled:opacity-50 transition-colors"
                     style={{ 
@@ -844,7 +846,7 @@ const AccountCentre = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                     <Home className="w-4 h-4" />
-                    Land Size (Acres)
+                    {t('landSizeAcres')}
                   </label>
                   <input
                     type="number"
@@ -867,8 +869,8 @@ const AccountCentre = () => {
                 <div>
                   <label className="block text-sm font-medium mb-2 flex items-center gap-2" style={{ color: colors.textPrimary }}>
                     <Wheat className="w-4 h-4" />
-                    Crop Types
-                    <span className="text-xs font-normal ml-auto" style={{ color: colors.success }}>(Updates Immediately)</span>
+                    {t('cropTypes')}
+                    <span className="text-xs font-normal ml-auto" style={{ color: colors.success }}>({t('updatesInstantly')})</span>
                   </label>
                   <div className="flex gap-2 mb-3">
                     <select
@@ -884,7 +886,7 @@ const AccountCentre = () => {
                         color: colors.textPrimary,
                       }}
                     >
-                      <option key="empty-crop" value="">Select Crop</option>
+                      <option key="empty-crop" value="">{t('selectCrop')}</option>
                       {cropTypes.map(crop => (
                         <option key={crop.value} value={crop.value}>{crop.label}</option>
                       ))}
@@ -925,7 +927,7 @@ const AccountCentre = () => {
                 style={{ backgroundColor: colors.warning, color: '#ffffff' }}
               >
                 <Clock className="w-5 h-5" />
-                {pendingRequest ? 'Request Pending' : saving ? 'Submitting...' : 'Request Approval for Changes'}
+                {pendingRequest ? t('requestPending') : saving ? t('submitting') : t('requestApprovalForChanges')}
               </motion.button>
             </div>
           </div>
@@ -962,11 +964,11 @@ const AccountCentre = () => {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
                   <Phone className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                 </div>
-                Customer Support
+                {t('customerSupport')}
               </h2>
 
             <p className="mb-6" style={{ color: colors.textSecondary }}>
-              Need help? Our support team is here to assist you with any questions or issues about transport, weather, crops, or technical problems.
+              {t('needHelpOurSupport')}
             </p>
 
             <motion.button
@@ -984,7 +986,7 @@ const AccountCentre = () => {
               style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
             >
               <Phone className="w-5 h-5" />
-              Contact Support Team
+              {t('contactSupportTeam')}
             </motion.button>
           </div>
           </motion.div>
@@ -1209,7 +1211,7 @@ const AccountCentre = () => {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: colors.primary }}>
                   <Lock className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                 </div>
-                Security
+                {t('security')}
               </h2>
 
             {!showPasswordSection ? (
@@ -1218,12 +1220,12 @@ const AccountCentre = () => {
                 className="w-full font-semibold py-3 rounded-xl transition-colors"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
               >
-                Change Password
+                {t('changePassword')}
               </button>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>Current PIN</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('currentPin')}</label>
                   <div className="relative">
                     <input
                       type={showCurrentPin ? 'text' : 'password'}
@@ -1249,7 +1251,7 @@ const AccountCentre = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>New PIN</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('newPin')}</label>
                   <div className="relative">
                     <input
                       type={showNewPin ? 'text' : 'password'}
@@ -1275,7 +1277,7 @@ const AccountCentre = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>Confirm New PIN</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: colors.textPrimary }}>{t('confirmNewPin')}</label>
                   <div className="relative">
                     <input
                       type={showConfirmPin ? 'text' : 'password'}
@@ -1320,7 +1322,7 @@ const AccountCentre = () => {
                     className="flex-1 font-semibold py-3 rounded-xl transition-colors disabled:opacity-50 shadow-lg"
                     style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
                   >
-                    {saving ? 'Changing...' : 'Change PIN'}
+                    {saving ? t('changingPin') : t('changePin')}
                   </button>
                 </div>
               </div>

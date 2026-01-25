@@ -22,10 +22,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
-import GlassCard from '../../components/GlassCard';
 import FarmerHeader from '../../components/FarmerHeader';
+import GlassCard from '../../components/GlassCard';
+import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const MyCustomers = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('connected');
   const [buyers, setBuyers] = useState([]);
@@ -232,9 +235,9 @@ const MyCustomers = () => {
   };
 
   const tabs = [
-    { id: 'connected', label: 'My Customers', icon: UserCheck, count: connectedBuyers.length, color: colors.primary },
-    { id: 'available', label: 'Find Buyers', icon: UserPlus, count: filteredBuyers.length, color: '#10B981' },
-    { id: 'requests', label: 'Requests', icon: Clock, count: connectionRequests.length, color: '#F59E0B' }
+    { id: 'connected', label: t('myCustomers'), icon: UserCheck, count: connectedBuyers.length, color: colors.primary },
+    { id: 'available', label: t('findBuyers'), icon: UserPlus, count: filteredBuyers.length, color: '#10B981' },
+    { id: 'requests', label: t('requests'), icon: Clock, count: connectionRequests.length, color: '#F59E0B' }
   ];
 
   // Error state
@@ -276,8 +279,8 @@ const MyCustomers = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: colors.background }}>
       <FarmerHeader 
-        title="My Customers"
-        subtitle="Connect with buyers and grow your business"
+        title={t('myCustomers')}
+        subtitle={t('connectWithBuyersAndGrow')}
         icon={Users}
         onBack={() => navigate('/dashboard')}
       />

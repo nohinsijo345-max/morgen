@@ -17,8 +17,10 @@ import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 import FarmerHeader from '../../components/FarmerHeader';
 import GlassCard from '../../components/GlassCard';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const VehicleDetails = () => {
+  const { t } = useTranslation();
   const { vehicleId } = useParams();
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ const VehicleDetails = () => {
         setSelectedOption(response.data.priceOptions[0]);
       }
     } catch (error) {
-      console.error('Failed to fetch vehicle details:', error);
+      console.error(t('failedToFetch'), error);
     } finally {
       setLoading(false);
     }
@@ -107,8 +109,8 @@ const VehicleDetails = () => {
       >
         <div className="text-center">
           <Truck className="w-16 h-16 mx-auto mb-4" style={{ color: colors.textMuted }} />
-          <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>Vehicle Not Found</h3>
-          <p style={{ color: colors.textSecondary }}>The requested vehicle could not be found.</p>
+          <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>{t('vehicleNotFound')}</h3>
+          <p style={{ color: colors.textSecondary }}>{t('vehicleNotFoundMessage')}</p>
         </div>
       </div>
     );
@@ -150,11 +152,11 @@ const VehicleDetails = () => {
                 <div className="flex items-center gap-4 text-sm" style={{ color: colors.textSecondary }}>
                   <div className="flex items-center gap-1">
                     <Shield className="w-4 h-4" />
-                    <span>Verified Vehicle</span>
+                    <span>{t('verifiedVehicle')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
-                    <span>Available 24/7</span>
+                    <span>{t('available24x7')}</span>
                   </div>
                 </div>
               </div>
@@ -164,13 +166,13 @@ const VehicleDetails = () => {
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="rounded-xl p-4 text-center" style={{ backgroundColor: colors.cardHover }}>
                 <Users className="w-6 h-6 mx-auto mb-2" style={{ color: colors.primary }} />
-                <div className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Professional Driver</div>
-                <div className="text-xs" style={{ color: colors.textSecondary }}>Experienced & Licensed</div>
+                <div className="text-sm font-semibold" style={{ color: colors.textPrimary }}>{t('professionalDriver')}</div>
+                <div className="text-xs" style={{ color: colors.textSecondary }}>{t('experiencedLicensed')}</div>
               </div>
               <div className="rounded-xl p-4 text-center" style={{ backgroundColor: colors.cardHover }}>
                 <Package className="w-6 h-6 mx-auto mb-2" style={{ color: colors.primary }} />
-                <div className="text-sm font-semibold" style={{ color: colors.textPrimary }}>Secure Loading</div>
-                <div className="text-xs" style={{ color: colors.textSecondary }}>Safe Crop Transport</div>
+                <div className="text-sm font-semibold" style={{ color: colors.textPrimary }}>{t('secureLoading')}</div>
+                <div className="text-xs" style={{ color: colors.textSecondary }}>{t('safeCropTransport')}</div>
               </div>
             </div>
           </GlassCard>
@@ -183,7 +185,7 @@ const VehicleDetails = () => {
           transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <h3 className="text-xl font-bold mb-4" style={{ color: colors.textPrimary }}>Choose Your Option</h3>
+          <h3 className="text-xl font-bold mb-4" style={{ color: colors.textPrimary }}>{t('chooseYourOption')}</h3>
           <div className="space-y-3">
             {vehicle.priceOptions.map((option, index) => (
               <motion.div
@@ -253,7 +255,7 @@ const VehicleDetails = () => {
             >
               <div className="flex items-center justify-center gap-2">
                 <IndianRupee className="w-5 h-5" />
-                <span>Book Now - {selectedOption.capacity}</span>
+                <span>{t('bookNow')} - {selectedOption.capacity}</span>
               </div>
             </motion.button>
           </motion.div>

@@ -19,6 +19,7 @@ import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import NeumorphicThemeToggle from '../../components/NeumorphicThemeToggle';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 ChartJS.register(
   CategoryScale,
@@ -32,6 +33,7 @@ ChartJS.register(
 );
 
 const PriceForecast = () => {
+  const { t } = useTranslation();
   const [forecasts, setForecasts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCrop, setSelectedCrop] = useState(null);
@@ -285,8 +287,8 @@ const PriceForecast = () => {
                   <TrendingUp className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Price Forecast</h1>
-                  <p className="text-xs" style={{ color: colors.textSecondary }}>AI-powered predictions</p>
+                  <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('priceForecast')}</h1>
+                  <p className="text-xs" style={{ color: colors.textSecondary }}>{t('aiPoweredPredictions')}</p>
                 </div>
               </div>
             </div>
@@ -298,7 +300,7 @@ const PriceForecast = () => {
                 className="rounded-xl px-4 py-2 shadow-lg hidden sm:block"
                 style={{ backgroundColor: colors.primary }}
               >
-                <div className="text-xs" style={{ color: isDarkMode ? '#0d1117' : '#ffffff', opacity: 0.8 }}>Total Crops</div>
+                <div className="text-xs" style={{ color: isDarkMode ? '#0d1117' : '#ffffff', opacity: 0.8 }}>{t('totalCrops')}</div>
                 <div className="text-lg font-bold" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }}>{forecasts.length}</div>
               </motion.div>
 

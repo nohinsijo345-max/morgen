@@ -8,8 +8,10 @@ import axios from 'axios';
 import { UserSession } from '../../utils/userSession';
 import { useTheme } from '../../context/ThemeContext';
 import NeumorphicThemeToggle from '../../components/NeumorphicThemeToggle';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const HarvestCountdown = () => {
+  const { t } = useTranslation();
   const [countdowns, setCountdowns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -235,9 +237,9 @@ const HarvestCountdown = () => {
             <div>
               <h1 className="text-4xl font-bold flex items-center gap-3" style={{ color: colors.textPrimary }}>
                 <Timer className="w-10 h-10" style={{ color: colors.primary }} />
-                Harvest Countdown
+                {t('harvestCountdown')}
               </h1>
-              <p className="mt-1" style={{ color: colors.textSecondary }}>Manage your crop harvest schedules</p>
+              <p className="mt-1" style={{ color: colors.textSecondary }}>{t('manageHarvestSchedules')}</p>
             </div>
           </div>
           
@@ -480,7 +482,7 @@ const HarvestCountdown = () => {
               style={{ backgroundColor: colors.backgroundCard }}
             >
               <h2 className="text-3xl font-bold mb-6" style={{ color: colors.textPrimary }}>
-                {editingCountdown ? 'Edit Countdown' : 'New Harvest Countdown'}
+                {editingCountdown ? t('editCountdown') : t('newHarvestCountdown')}
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -488,7 +490,7 @@ const HarvestCountdown = () => {
                 <div>
                   <label className="block font-semibold mb-2 flex items-center justify-between"
                          style={{ color: colors.textPrimary }}>
-                    <span>Select Crop *</span>
+                    <span>{t('selectCrop')} *</span>
                     <button
                       type="button"
                       onClick={() => {
@@ -523,13 +525,13 @@ const HarvestCountdown = () => {
                   </select>
                   {presetCrops.length === 0 && (
                     <p className="text-sm text-red-500 mt-2">
-                      Please add crops in your Account Centre first. 
+                      {t('pleaseAddCropsFirst')} 
                       <button
                         type="button"
                         onClick={() => window.location.href = '/account'}
                         className="ml-1 underline hover:text-red-700"
                       >
-                        Go to Account Centre
+                        {t('goToAccountCentre')}
                       </button>
                     </p>
                   )}
@@ -602,7 +604,7 @@ const HarvestCountdown = () => {
                     type="submit"
                     className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-[#082829] to-[#0a3a3c] text-white font-semibold hover:shadow-xl transition-all"
                   >
-                    {editingCountdown ? 'Update Countdown' : 'Create Countdown'}
+                    {editingCountdown ? t('updateCountdown') : t('createCountdown')}
                   </button>
                 </div>
               </form>

@@ -8,21 +8,40 @@ const Connection = require('../models/Connection');
 // Generate next Bid ID
 const generateBidId = async () => {
   try {
-    const lastBid = await Bid.findOne({ 
+    // Get all bids and sort by bidId to find the highest number
+    const allBids = await Bid.find({ 
       bidId: { $regex: /^BID\d+$/ } 
-    }).sort({ bidId: -1 });
+    }).sort({ createdAt: -1 }).limit(100);
     
-    if (!lastBid || !lastBid.bidId) {
+    if (!allBids || allBids.length === 0) {
       return 'BID001';
     }
     
-    const lastNumber = parseInt(lastBid.bidId.replace('BID', ''));
-    const nextNumber = lastNumber + 1;
+    // Extract all numbers and find the maximum
+    const numbers = allBids
+      .map(bid => parseInt(bid.bidId.replace('BID', '')))
+      .filter(num => !isNaN(num));
     
-    return `BID${String(nextNumber).padStart(3, '0')}`;
+    const maxNumber = Math.max(...numbers, 0);
+    const nextNumber = maxNumber + 1;
+    
+    // Format with at least 3 digits
+    const paddedNumber = String(nextNumber).padStart(3, '0');
+    const newBidId = `BID${paddedNumber}`;
+    
+    // Double check this ID doesn't exist
+    const exists = await Bid.findOne({ bidId: newBidId });
+    if (exists) {
+      // If it exists, try the next number
+      return `BID${String(nextNumber + 1).padStart(3, '0')}`;
+    }
+    
+    return newBidId;
   } catch (err) {
     console.error('Error generating bid ID:', err);
-    return 'BID001';
+    // Generate a random ID as fallback
+    const randomNum = Math.floor(Math.random() * 10000) + 1000;
+    return `BID${randomNum}`;
   }
 };
 

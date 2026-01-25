@@ -16,8 +16,10 @@ import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const FarmerOrders = () => {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -61,7 +63,7 @@ const FarmerOrders = () => {
       setError(null);
       
       if (!farmerUser?.farmerId) {
-        setError('Farmer ID not found. Please login again.');
+        setError(t('fieldRequired'));
         setLoading(false);
         return;
       }
@@ -78,7 +80,7 @@ const FarmerOrders = () => {
       setError(null);
     } catch (err) {
       console.error('❌ Orders fetch failed:', err);
-      setError(`Failed to load orders: ${err.response?.data?.error || err.message}`);
+      setError(`${t('unableToLoadCrops')}: ${err.response?.data?.error || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -121,11 +123,11 @@ const FarmerOrders = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'pending': return 'Awaiting Response';
-      case 'approved': return 'Approved';
-      case 'rejected': return 'Rejected';
-      case 'completed': return 'Completed';
-      case 'cancelled': return 'Cancelled';
+      case 'pending': return t('pending');
+      case 'approved': return t('approved');
+      case 'rejected': return t('rejected');
+      case 'completed': return t('completed');
+      case 'cancelled': return t('cancelled');
       default: return status;
     }
   };
@@ -193,7 +195,7 @@ const FarmerOrders = () => {
           className="w-16 h-16 border-4 rounded-full"
           style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
-        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading purchase requests...</p>
+        <p className="mt-4" style={{ color: colors.textSecondary }}>{t('loadingYourCrops')}</p>
       </div>
     );
   }
@@ -202,7 +204,7 @@ const FarmerOrders = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
         <Package className="w-16 h-16 mb-4" style={{ color: colors.textMuted }} />
-        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>Unable to Load Orders</p>
+        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>{t('unableToLoadCrops')}</p>
         <p className="mb-4" style={{ color: colors.textSecondary }}>{error}</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -211,7 +213,7 @@ const FarmerOrders = () => {
           className="px-6 py-2 rounded-xl font-semibold"
           style={{ backgroundColor: colors.primary, color: '#ffffff' }}
         >
-          Try Again
+          {t('tryAgain')}
         </motion.button>
       </div>
     );
@@ -240,10 +242,10 @@ const FarmerOrders = () => {
             
             <div>
               <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
-                Purchase Requests
+                {t('orders')}
               </h1>
               <p className="text-sm" style={{ color: colors.textSecondary }}>
-                Manage crop purchase requests from buyers
+                {t('manageBidListings')}
               </p>
             </div>
           </div>
@@ -254,11 +256,11 @@ const FarmerOrders = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex gap-2 overflow-x-auto">
           {[
-            { key: 'all', label: 'All Requests', count: orders.length },
-            { key: 'pending', label: 'Pending', count: orders.filter(o => o.status === 'pending').length },
-            { key: 'approved', label: 'Approved', count: orders.filter(o => o.status === 'approved').length },
-            { key: 'completed', label: 'Completed', count: orders.filter(o => o.status === 'completed').length },
-            { key: 'rejected', label: 'Rejected', count: orders.filter(o => o.status === 'rejected').length }
+            { key: 'all', label: t('viewAllOrders'), count: orders.length },
+            { key: 'pending', label: t('pending'), count: orders.filter(o => o.status === 'pending').length },
+            { key: 'approved', label: t('approved'), count: orders.filter(o => o.status === 'approved').length },
+            { key: 'completed', label: t('completed'), count: orders.filter(o => o.status === 'completed').length },
+            { key: 'rejected', label: t('rejected'), count: orders.filter(o => o.status === 'rejected').length }
           ].map((tab) => (
             <motion.button
               key={tab.key}
@@ -286,12 +288,12 @@ const FarmerOrders = () => {
           <GlassCard className="text-center py-12">
             <Package className="w-16 h-16 mx-auto mb-4" style={{ color: colors.textMuted }} />
             <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>
-              No purchase requests found
+              {t('noOrdersYet')}
             </h3>
             <p style={{ color: colors.textSecondary }}>
               {filter === 'all' 
-                ? 'No buyers have requested to purchase your crops yet.'
-                : `No ${filter} requests found.`
+                ? t('noData')
+                : `${t('noData')} ${filter}`
               }
             </p>
           </GlassCard>
@@ -327,7 +329,7 @@ const FarmerOrders = () => {
                   </div>
                 </div>
 
-                {/* Crop Details */}
+                {/* {t('cropDetails')} */}
                 <div className="mb-4">
                   <h3 className="font-bold text-lg mb-1" style={{ color: colors.textPrimary }}>
                     {order.cropDetails.name}
@@ -383,7 +385,7 @@ const FarmerOrders = () => {
                         color: '#EF4444'
                       }}
                     >
-                      Reject
+                      {t('rejected')}
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.02 }}
@@ -395,7 +397,7 @@ const FarmerOrders = () => {
                       className="flex-1 py-2 px-3 rounded-lg text-sm font-medium"
                       style={{ backgroundColor: colors.primary, color: '#ffffff' }}
                     >
-                      Approve
+                      {t('approved')}
                     </motion.button>
                   </div>
                 )}
@@ -405,7 +407,7 @@ const FarmerOrders = () => {
         )}
       </div>
 
-      {/* Order Details Modal */}
+      {/* {t('orderDetails')} Modal */}
       {showDetails && selectedOrder && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -420,7 +422,7 @@ const FarmerOrders = () => {
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
-                Purchase Request Details
+                {t('orderDetails')}
               </h3>
               <div 
                 className="flex items-center gap-2 px-3 py-1 rounded-lg font-medium"
@@ -437,20 +439,20 @@ const FarmerOrders = () => {
             {/* Order Info */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
-                <label className="text-sm font-medium" style={{ color: colors.textSecondary }}>Order ID</label>
+                <label className="text-sm font-medium" style={{ color: colors.textSecondary }}>{t('orderId')}</label>
                 <p className="font-bold" style={{ color: colors.textPrimary }}>{selectedOrder.orderId}</p>
               </div>
               <div>
-                <label className="text-sm font-medium" style={{ color: colors.textSecondary }}>Request Date</label>
+                <label className="text-sm font-medium" style={{ color: colors.textSecondary }}>{t('requestDate')}</label>
                 <p className="font-bold" style={{ color: colors.textPrimary }}>
                   {new Date(selectedOrder.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </div>
 
-            {/* Crop Details */}
+            {/* {t('cropDetails')} */}
             <div className="rounded-xl p-4 mb-6 border" style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-              <h4 className="font-bold mb-3" style={{ color: colors.textPrimary }}>Crop Details</h4>
+              <h4 className="font-bold mb-3" style={{ color: colors.textPrimary }}>{t('cropDetails')}</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm" style={{ color: colors.textSecondary }}>Crop Name</label>
@@ -481,9 +483,9 @@ const FarmerOrders = () => {
               </div>
             </div>
 
-            {/* Buyer Contact */}
+            {/* {t('buyer')} Contact */}
             <div className="rounded-xl p-4 mb-6 border" style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-              <h4 className="font-bold mb-3" style={{ color: colors.textPrimary }}>Buyer Contact</h4>
+              <h4 className="font-bold mb-3" style={{ color: colors.textPrimary }}>{t('buyer')} Contact</h4>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <User className="w-5 h-5" style={{ color: colors.primary }} />
@@ -548,7 +550,7 @@ const FarmerOrders = () => {
                   color: colors.textSecondary
                 }}
               >
-                Close
+                {t('close')}
               </motion.button>
 
               {selectedOrder.status === 'pending' && (
@@ -583,7 +585,7 @@ const FarmerOrders = () => {
                   style={{ backgroundColor: colors.primary, color: '#ffffff' }}
                 >
                   <CheckCircle className="w-5 h-5" />
-                  Mark as Completed
+                  {t('completed')}
                 </motion.button>
               )}
             </div>
@@ -605,7 +607,7 @@ const FarmerOrders = () => {
             style={{ backgroundColor: colors.backgroundCard }}
           >
             <h3 className="text-xl font-bold mb-4" style={{ color: colors.textPrimary }}>
-              Respond to Purchase Request
+              {t('orderDetails')}
             </h3>
             
             <div className="mb-4">
@@ -647,7 +649,7 @@ const FarmerOrders = () => {
                   color: colors.textSecondary
                 }}
               >
-                Cancel
+                {t('cancel')}
               </motion.button>
               
               <motion.button
@@ -657,7 +659,7 @@ const FarmerOrders = () => {
                 className="flex-1 py-3 rounded-xl font-semibold"
                 style={{ backgroundColor: '#EF4444', color: '#ffffff' }}
               >
-                Reject
+                {t('rejected')}
               </motion.button>
 
               <motion.button
@@ -667,7 +669,7 @@ const FarmerOrders = () => {
                 className="flex-1 py-3 rounded-xl font-semibold"
                 style={{ backgroundColor: colors.primary, color: '#ffffff' }}
               >
-                Approve
+                {t('approved')}
               </motion.button>
             </div>
           </motion.div>

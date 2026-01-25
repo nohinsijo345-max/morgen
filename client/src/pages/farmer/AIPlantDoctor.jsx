@@ -16,8 +16,10 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 export default function AIPlantDoctor() {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -65,7 +67,7 @@ export default function AIPlantDoctor() {
       setMessages(response.data.messages || []);
       setChatStats(response.data.sessionStats || {});
     } catch (error) {
-      console.error('Failed to load chat session:', error);
+      console.error(t('failedToLoadChatSession'), error);
     } finally {
       setChatLoading(false);
     }
@@ -86,12 +88,16 @@ export default function AIPlantDoctor() {
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      
+      // Get current language from localStorage or default to 'en'
+      const currentLanguage = localStorage.getItem('language') || 'en';
 
       if (imageFile) {
         // Send image with question
         const formData = new FormData();
         formData.append('plantImage', imageFile);
-        formData.append('question', messageText || 'Please analyze this plant image');
+        formData.append('question', messageText || t('pleaseAnalyzeImage'));
+        formData.append('language', currentLanguage);
 
         const response = await axios.post(`${API_URL}/api/ai-doctor/chat/${farmerId}/image`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
@@ -109,7 +115,8 @@ export default function AIPlantDoctor() {
         
         const response = await axios.post(`${API_URL}/api/ai-doctor/chat/${farmerId}/message`, {
           message: messageText,
-          messageId: uniqueMessageId
+          messageId: uniqueMessageId,
+          language: currentLanguage
         });
 
         // Add user message first, then AI response
@@ -129,7 +136,7 @@ export default function AIPlantDoctor() {
       setMessages(prev => [...prev, {
         id: `msg_${Date.now()}_error`,
         role: 'assistant',
-        content: '🌱 Sorry, I encountered an error. Please try again or ask me about your farming needs.',
+        content: `🌱 ${t('sorryEncounteredError')}`,
         timestamp: new Date()
       }]);
     } finally {
@@ -166,7 +173,7 @@ export default function AIPlantDoctor() {
       await axios.delete(`${API_URL}/api/ai-doctor/chat/${farmerId}/clear`);
       await loadChatSession();
     } catch (error) {
-      console.error('Failed to clear chat:', error);
+      console.error(t('failedToClearChat'), error);
     }
   };
 
@@ -185,7 +192,7 @@ export default function AIPlantDoctor() {
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           className="w-16 h-16 border-4 border-emerald-300/20 border-t-emerald-300 rounded-full"
         />
-        <p className="mt-4 text-emerald-100">Loading AI Plant Doctor...</p>
+        <p className="mt-4 text-emerald-100">{t('loadingAiPlantDoctor')}</p>
       </div>
     );
   }
@@ -223,8 +230,8 @@ export default function AIPlantDoctor() {
                   <Stethoscope className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-emerald-100">AI Plant Doctor</h1>
-                  <p className="text-emerald-300 text-sm">Your agricultural health expert</p>
+                  <h1 className="text-2xl font-bold text-emerald-100">{t('aiPlantDoctor')}</h1>
+                  <p className="text-emerald-300 text-sm">{t('yourAgriculturalHealthExpert')}</p>
                 </div>
               </div>
             </div>
@@ -232,10 +239,10 @@ export default function AIPlantDoctor() {
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
                 <p className="text-emerald-200 text-sm font-medium">
-                  {chatStats.questionsAsked || 0} consultations
+                  {chatStats.questionsAsked || 0} {t('consultations')}
                 </p>
                 <p className="text-emerald-300 text-xs">
-                  {chatStats.imagesAnalyzed || 0} images analyzed
+                  {chatStats.imagesAnalyzed || 0} {t('imagesAnalyzed')}
                 </p>
               </div>
               
@@ -295,7 +302,7 @@ export default function AIPlantDoctor() {
                               <div className="mb-3">
                                 <img 
                                   src={`${import.meta.env.VITE_API_URL || 'http://localhost:5050'}${message.imageUrl}`}
-                                  alt="Plant analysis" 
+                                  alt={t('plantAnalysis')} 
                                   className="max-w-xs rounded-xl shadow-md"
                                 />
                               </div>
@@ -334,7 +341,7 @@ export default function AIPlantDoctor() {
                     <div className="bg-gradient-to-br from-emerald-50/90 to-green-50/90 px-4 py-3 rounded-2xl shadow-lg border border-emerald-200/50">
                       <div className="flex items-center gap-2">
                         <Loader className="w-4 h-4 animate-spin text-emerald-600" />
-                        <span className="text-emerald-700 text-sm">AI Doctor is analyzing...</span>
+                        <span className="text-emerald-700 text-sm">{t('aiDoctorAnalyzing')}</span>
                       </div>
                     </div>
                   </div>
@@ -355,7 +362,7 @@ export default function AIPlantDoctor() {
                 >
                   <img 
                     src={imagePreview} 
-                    alt="Plant to analyze" 
+                    alt={t('plantToAnalyze')} 
                     className="max-h-32 rounded-xl shadow-lg border border-emerald-300/50"
                   />
                   <button
@@ -390,7 +397,7 @@ export default function AIPlantDoctor() {
                         sendMessage();
                       }
                     }}
-                    placeholder="Ask about plant diseases, crop care, or upload an image..."
+                    placeholder={t('askAboutPlantDiseases')}
                     className="w-full px-4 py-3 bg-emerald-50/90 border border-emerald-300/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none text-emerald-900 placeholder-emerald-600/70"
                     rows="2"
                     disabled={loading}

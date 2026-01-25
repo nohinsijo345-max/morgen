@@ -11,8 +11,10 @@ import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const FarmerBidHistory = () => {
+  const { t } = useTranslation();
   const [bidHistory, setBidHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,7 +41,7 @@ const FarmerBidHistory = () => {
       setError(null);
     } catch (err) {
       console.error('Bid history fetch failed:', err);
-      setError(`Failed to load bid history: ${err.response?.data?.error || err.message}`);
+      setError(`${t('failedToLoadBidHistory')}: ${err.response?.data?.error || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -126,10 +128,10 @@ const FarmerBidHistory = () => {
             
             <div>
               <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
-                My Bid History
+                {t('myBidHistory')}
               </h1>
               <p className="text-sm" style={{ color: colors.textSecondary }}>
-                Track your created bids and their outcomes
+                {t('trackYourCreatedBids')}
               </p>
             </div>
           </div>
@@ -140,10 +142,10 @@ const FarmerBidHistory = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex gap-2 overflow-x-auto">
           {[
-            { key: 'all', label: 'All Bids', count: bidHistory.length },
-            { key: 'won', label: 'With Winners', count: bidHistory.filter(b => b.winnerName).length },
-            { key: 'active', label: 'Active', count: bidHistory.filter(b => b.bidStatus === 'active').length },
-            { key: 'ended', label: 'Ended', count: bidHistory.filter(b => b.bidStatus === 'ended').length }
+            { key: 'all', label: t('allBids'), count: bidHistory.length },
+            { key: 'won', label: t('withWinners'), count: bidHistory.filter(b => b.winnerName).length },
+            { key: 'active', label: t('active'), count: bidHistory.filter(b => b.bidStatus === 'active').length },
+            { key: 'ended', label: t('ended'), count: bidHistory.filter(b => b.bidStatus === 'ended').length }
           ].map((tab) => (
             <motion.button
               key={tab.key}
@@ -220,7 +222,7 @@ const FarmerBidHistory = () => {
                 {/* Crop Details */}
                 <div className="mb-4">
                   <h3 className="font-bold text-lg mb-1" style={{ color: colors.textPrimary }}>
-                    {String(bid.cropName || 'Unknown Crop')}
+                    {String(bid.cropName || t('unknownCrop'))}
                   </h3>
                   <p className="text-sm mb-2" style={{ color: colors.textSecondary }}>
                     {String(bid.quantity || 0)} {String(bid.unit || '')} • Grade {String(bid.quality || 'N/A')}

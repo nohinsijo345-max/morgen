@@ -1,0 +1,2537 @@
+// COMPREHENSIVE TRANSLATIONS FOR ALL FARMER PAGES
+// This file contains translations for 6 languages: English, Hindi, Tamil, Telugu, Malayalam, Kannada
+// Generated for complete farmer module translation support
+
+export const translations = {
+  en: {
+    // Dashboard
+    dashboard: 'Dashboard', welcome: 'Welcome', totalCrops: 'Total Crops', activeBids: 'Active Bids', totalSales: 'Total Sales', revenue: 'Revenue',
+    
+    // Navigation
+    sellCrops: 'Sell Crops', myBids: 'My Bids', createBid: 'Create Bid', orders: 'Orders', transport: 'Transport', localTransport: 'Local Transport',
+    weather: 'Weather', priceForecast: 'Price Forecast', aiDoctor: 'AI Plant Doctor', harvestCountdown: 'Harvest Countdown', myCustomers: 'My Customers',
+    customerSupport: 'Customer Support', accountCentre: 'Account Centre', logout: 'Logout', orderTracking: 'Order Tracking', orderHistory: 'Order History',
+    bidHistory: 'Bid History', transportBooking: 'Transport Booking', vehicleDetails: 'Vehicle Details', back: 'Back', home: 'Home',
+    
+    // Common Actions
+    save: 'Save', cancel: 'Cancel', submit: 'Submit', delete: 'Delete', edit: 'Edit', view: 'View', search: 'Search', filter: 'Filter',
+    loading: 'Loading...', noData: 'No data available', add: 'Add', manage: 'Manage', create: 'Create', update: 'Update', refresh: 'Refresh',
+    close: 'Close', confirm: 'Confirm', tryAgain: 'Try Again',
+    
+    // Crop Details
+    cropName: 'Crop Name', quantity: 'Quantity', quality: 'Quality', price: 'Price', pricePerUnit: 'Price per Unit', harvestDate: 'Harvest Date',
+    expiryDate: 'Expiry Date', category: 'Category', unit: 'Unit', description: 'Description',
+    
+    // Bidding
+    startingPrice: 'Starting Price', currentPrice: 'Current Price', bidEndDate: 'Bid End Date', placeBid: 'Place Bid', bidAmount: 'Bid Amount',
+    totalBids: 'Total Bids', highestBid: 'Highest Bid', createNewBid: 'Create New Bid', endBid: 'End Bid', bidDetails: 'Bid Details',
+    noBidsYet: 'No bids yet', createFirstBid: 'Create Your First Bid', manageBidListings: 'Manage your crop bidding listings',
+    listCropForBidding: 'List your crop for bidding', bidCreatedSuccessfully: 'Bid Created Successfully!',
+    buyersWillBeNotified: 'Connected buyers will be notified about your bid.', endBidEarly: 'End Bid Early?',
+    areYouSureEndBid: 'Are you sure you want to end this bid for', highestBidderWins: 'The highest bidder will be declared the winner.',
+    noBidsNoWinner: 'There are no bids yet, so there will be no winner.',
+    
+    // Status
+    active: 'Active', pending: 'Pending', completed: 'Completed', cancelled: 'Cancelled', delivered: 'Delivered', approved: 'Approved',
+    rejected: 'Rejected', inProgress: 'In Progress',
+    
+    // Messages
+    success: 'Success', error: 'Error', warning: 'Warning', info: 'Information',
+    
+    // Sell Crops Page
+    addListing: 'Add Listing', noListingsYet: 'No listings yet',
+    createFirstListing: 'Create your first listing to sell crops directly to public buyers',
+    listCropsForSale: 'List your crops for direct sale to public buyers', addNewListing: 'Add New Listing', createListing: 'Create Listing',
+    cropListedSuccessfully: 'Crop listed successfully!', listingDeletedSuccessfully: 'Listing deleted successfully!',
+    areYouSureDelete: 'Are you sure you want to delete this listing?', unableToLoadCrops: 'Unable to Load Crops',
+    loadingYourCrops: 'Loading your crops...', lastUpdated: 'Last updated',
+    
+    // Form Labels
+    required: 'Required', optional: 'Optional', vegetables: 'Vegetables', fruits: 'Fruits', grains: 'Grains', spices: 'Spices', other: 'Other',
+    premium: 'Premium', gradeA: 'Grade A', gradeB: 'Grade B', gradeC: 'Grade C', standard: 'Standard', kilograms: 'Kilograms',
+    quintal: 'Quintal', ton: 'Ton',
+    
+    // Transport
+    vehicle: 'Vehicle', driver: 'Driver', booking: 'Booking', route: 'Route', distance: 'Distance', duration: 'Duration',
+    bookTransport: 'Book Transport', viewVehicles: 'View Vehicles', bookingHistory: 'Booking History', trackBooking: 'Track Booking',
+    vehicleType: 'Vehicle Type', capacity: 'Capacity', availability: 'Availability', bookNow: 'Book Now',
+    fromLocation: 'From Location', toLocation: 'To Location', pickupLocation: 'Pickup Location', destination: 'Destination',
+    
+    // Orders
+    orderDetails: 'Order Details', trackOrder: 'Track Order', orderStatus: 'Order Status', orderId: 'Order ID', orderDate: 'Order Date',
+    deliveryDate: 'Delivery Date', buyer: 'Buyer', seller: 'Seller', totalAmount: 'Total Amount', paymentStatus: 'Payment Status',
+    noOrdersYet: 'No orders yet', viewAllOrders: 'View All Orders',
+    
+    // Customer Support
+    supportTickets: 'Support Tickets', createTicket: 'Create Ticket', ticketId: 'Ticket ID', subject: 'Subject', message: 'Message',
+    sendMessage: 'Send Message', chatWithSupport: 'Chat with Support',
+    
+    // AI Plant Doctor
+    askDoctor: 'Ask Doctor', plantHealth: 'Plant Health', diagnosis: 'Diagnosis', treatment: 'Treatment', uploadImage: 'Upload Image',
+    analyzeImage: 'Analyze Image',
+    
+    // Harvest Countdown
+    daysUntilHarvest: 'Days Until Harvest', readyToHarvest: 'Ready to Harvest', upcomingHarvests: 'Upcoming Harvests',
+    
+    // Price Forecast
+    forecastedPrice: 'Forecasted Price', marketTrends: 'Market Trends', priceAnalysis: 'Price Analysis',
+    
+    // Validation Messages
+    fieldRequired: 'This field is required', invalidEmail: 'Invalid email address', invalidPhone: 'Invalid phone number',
+    invalidDate: 'Invalid date', dateMustBeFuture: 'Date must be in the future', quantityMustBePositive: 'Quantity must be positive',
+    priceMustBePositive: 'Price must be positive',
+    
+    // Vehicle Details
+    vehicleNotFound: 'Vehicle Not Found', vehicleNotFoundMessage: 'The requested vehicle could not be found.',
+    verifiedVehicle: 'Verified Vehicle', available24x7: 'Available 24/7', professionalDriver: 'Professional Driver',
+    experiencedLicensed: 'Experienced & Licensed', secureLoading: 'Secure Loading', safeCropTransport: 'Safe Crop Transport',
+    chooseYourOption: 'Choose Your Option',
+    
+    // Common UI Text
+    startingFrom: 'Starting from', farmerSessionNotFound: 'Farmer session not found. Please login again.',
+    failedToCreate: 'Failed to create', failedToFetch: 'Failed to fetch', loadingText: 'Loading...',
+    errorOccurred: 'An error occurred', tryAgainLater: 'Please try again later',
+    
+    // AI Plant Doctor
+    aiPlantDoctor: 'AI Plant Doctor', yourAgriculturalHealthExpert: 'Your agricultural health expert',
+    consultations: 'consultations', imagesAnalyzed: 'images analyzed', 
+    loadingAiPlantDoctor: 'Loading AI Plant Doctor...', 
+    askAboutPlantDiseases: 'Ask about plant diseases, crop care, or upload an image...',
+    sorryEncounteredError: 'Sorry, I encountered an error. Please try again or ask me about your farming needs.',
+    
+    // Dashboard Transport Section
+    popularRoute: 'Popular Route', rating: 'Rating', vehicles: 'Vehicles', 
+    hours: 'hours', km: 'km', retry: 'Retry', chat: 'Chat', addCrop: 'Add Crop',
+    
+    // Additional UI Text
+    hello: 'Hello', welcomeBack: 'Welcome back to your dashboard', account: 'Account', customers: 'Customers',
+    failedToLoadDashboard: 'Failed to load dashboard data', aiDoctorAnalyzing: 'AI Doctor is analyzing...',
+    readyToHelp: 'Ready to Help!', askAboutPlantDiseasesAndCare: 'Ask about plant diseases, pests & care',
+    available247: '24/7 Available', consults: 'Consults', images: 'Images', powered: 'Powered',
+    scan: 'Scan', totalListings: 'Total Listings', avgPriceKg: 'Avg Price/kg', totalValue: 'Total Value',
+    cropsSold: 'crops sold', activeBidsCount: 'active bids', available: 'available',
+    manageAccountInfo: 'Manage your account information', accountCenter: 'Account Center',
+    farmerProfile: 'Farmer Profile', accountManagementComingSoon: 'Account management features coming soon...',
+    manageHarvestSchedules: 'Manage your crop harvest schedules', pleaseAddCropsFirst: 'Please add crops in your Account Centre first.',
+    goToAccountCentre: 'Go to Account Centre', failedToLoadBidHistory: 'Failed to load bid history',
+    failedToLoadCrops: 'Failed to load crops', failedToLoadBids: 'Failed to load bids',
+    pleaseAnalyzeImage: 'Please analyze this plant image', failedToLoadChatSession: 'Failed to load chat session',
+    failedToClearChat: 'Failed to clear chat',
+    
+    // Additional missing keys for Weather.jsx
+    notRecommended: 'Not recommended',
+    idealConditions: 'Ideal conditions',
+    eveningPreferred: 'Evening preferred',
+    good: 'Good',
+    unhealthy: 'Unhealthy',
+    veryUnhealthy: 'Very Unhealthy',
+    rainExpected: 'Rain expected',
+    noRainExpected: 'No Rain Expected',
+    newMoon: 'New Moon',
+    
+    // Additional weather and farming terms
+    bestTimesToday: 'Best Times Today',
+    irrigation: 'Irrigation',
+    harvesting: 'Harvesting',
+    spraying: 'Spraying',
+    fieldWork: 'Field Work',
+    transplanting: 'Transplanting',
+    airQuality: 'Air Quality',
+    overallAqi: 'Overall AQI',
+    avgTemperature: 'Avg Temperature',
+    maxWind: 'Max Wind',
+    totalPrecipitation: 'Total Precipitation',
+    avgHumidity: 'Avg Humidity',
+    fungalDiseaseRisk: 'Fungal Disease Risk',
+    applyFungicide: 'Apply fungicide preventively. Ensure good air circulation.',
+    monitorCrops: 'Monitor crops closely for early signs of disease.',
+    conditionsUnfavorable: 'Conditions unfavorable for fungal growth.',
+    pestActivityLevel: 'Pest Activity Level',
+    warmHumidConditions: 'Warm humid conditions favor pest breeding. Scout fields regularly.',
+    normalPestActivity: 'Normal pest activity expected. Continue regular monitoring.',
+    coolConditions: 'Cool conditions reduce pest activity.',
+    moonPhase: 'Moon Phase',
+    moonrise: 'Moonrise',
+    moonset: 'Moonset',
+    dewPoint: 'Dew Point',
+    min: 'Min',
+    max: 'Max',
+    current: 'Current',
+    last: 'Last',
+    updating: 'Updating...',
+    nextRefresh: 'Next refresh',
+    autoRefresh: 'Auto-Refresh',
+    soilMoisture: 'Soil Moisture',
+    low: 'Low',
+    cropConditions: 'Crop Conditions',
+    farmingAdvice: 'Farming Advice',
+    moonAstronomy: 'Moon & Astronomy',
+    temperatureRange: 'Temperature Range',
+    next6Hours: 'Next 6 Hours (Live)',
+    weatherAlerts: 'Weather Alerts',
+    pestDiseaseRisk: 'Pest & Disease Risk',
+    todaysAgricultureSummary: "Today's Agriculture Summary",
+    
+    // Buyer Dashboard specific
+    morgen: 'Morgen',
+    publicBuyerDashboard: 'Public Buyer Dashboard',
+    commercialBuyerDashboard: 'Commercial Buyer Dashboard',
+    loadingBuyerDashboard: 'Loading buyer dashboard...',
+    failedToLoadDashboardData: 'Failed to load dashboard data',
+    retry: 'Retry',
+    myFarmers: 'My Farmers',
+    updates: 'Updates',
+    noUpdatesAvailable: 'No updates available',
+    liveBidding: 'Live Bidding',
+    activeBids: 'active bids',
+    biddingStats: 'Bidding Stats',
+    joinLiveAuctions: 'Join Live Auctions',
+    buyCrops: 'Buy Crops',
+    localDistrictCropsOnly: 'Local district crops only',
+    availableCrops: 'Available Crops',
+    avgPrice: 'Avg Price',
+    browseLocalCrops: 'Browse Local Crops',
+    orderTracking: 'Order Tracking',
+    activeOrders: 'active orders',
+    recentOrders: 'Recent Orders',
+    lastSevenDays: 'Last 7 days',
+    transport: 'Transport',
+    bookCargoTransport: 'Book cargo transport',
+    transportOptions: 'Transport Options',
+    availableNow: 'Available now',
+    vehicles: 'Vehicles',
+    rate: 'Rate',
+    bookTransport: 'Book Transport',
+    
+    // Common UI elements
+    morgenLogo: 'Morgen Logo',
+    signIn: 'Sign In',
+    loading: 'Loading...',
+    
+    // Driver specific
+    driverDashboard: 'Driver Dashboard',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'Admin Buyer Feature - Coming Soon',
+    recentActivity: 'Recent Activity',
+    activityTrackingComingSoon: 'Activity tracking coming soon...',
+    
+    // Session management
+    farmerSessionExtended: 'Farmer session extended',
+    buyerSessionExtended: 'Buyer session extended',
+    adminSessionExtended: 'Admin session extended',
+    driverSessionExtended: 'Driver session extended',
+    
+    // Transport tracking
+    vehicle: 'Vehicle',
+    distance: 'Distance',
+    amount: 'Amount',
+    pickupDate: 'Pickup Date',
+    bookingId: 'Booking ID',
+    trackingId: 'Tracking ID',
+    routeInformation: 'Route Information',
+    deliveryInformation: 'Delivery Information',
+    expectedDelivery: 'Expected Delivery',
+    vehicleType: 'Vehicle Type',
+    totalAmount: 'Total Amount',
+    
+    // Customer support
+    you: 'You',
+    supportTeam: 'Support Team',
+    justNow: 'Just now',
+    sending: 'Sending...',
+    send: 'Send',
+    
+    // Live bidding
+    ended: 'Ended',
+    unknownFarmer: 'Unknown Farmer',
+    customAmount: 'Custom amount',
+    
+    // General
+    info: 'Info',
+    noData: 'No data available',
+    
+    // Account Centre specific
+    accountCentre: 'Account Centre',
+    manageYourProfile: 'Manage your profile',
+    contactInformation: 'Contact Information',
+    updatesInstantly: '(Updates Instantly)',
+    emailAddress: 'Email Address',
+    phoneNumber: 'Phone Number',
+    saveChanges: 'Save Changes',
+    saving: 'Saving...',
+    profileInformation: 'Profile Information',
+    requiresApproval: '(Requires Approval)',
+    fullName: 'Full Name',
+    selectState: 'Select State',
+    selectDistrict: 'Select District',
+    city: 'City',
+    pinCode: 'PIN Code',
+    sixDigitPinCode: '6-digit PIN code',
+    landSizeAcres: 'Land Size (Acres)',
+    cropTypes: 'Crop Types',
+    selectCrop: 'Select Crop',
+    requestPending: 'Request Pending',
+    submitting: 'Submitting...',
+    requestApprovalForChanges: 'Request Approval for Changes',
+    customerSupport: 'Customer Support',
+    needHelpOurSupport: 'Need help? Our support team is here to assist you with any questions or issues about transport, weather, crops, or technical problems.',
+    contactSupportTeam: 'Contact Support Team',
+    bidLimitManagement: 'Bid Limit Management',
+    currentBidLimit: 'Current Bid Limit:',
+    requestBidLimitIncrease: 'Request Bid Limit Increase',
+    requestedBidLimit: 'Requested Bid Limit (₹)',
+    enterNewBidLimitAmount: 'Enter new bid limit amount',
+    reasonForIncrease: 'Reason for Increase',
+    pleaseExplainWhyNeedHigher: 'Please explain why you need a higher bid limit (minimum 10 characters)',
+    submitRequest: 'Submit Request',
+    security: 'Security',
+    changePassword: 'Change Password',
+    currentPin: 'Current PIN',
+    newPin: 'New PIN',
+    confirmNewPin: 'Confirm New PIN',
+    changingPin: 'Changing...',
+    changePin: 'Change PIN',
+    pendingApproval: 'Pending Approval',
+    profileChangeRequestWaiting: 'Your profile change request is waiting for admin approval. You\'ll be notified once it\'s reviewed.',
+    
+    // Success/Error messages
+    emailPhoneUpdatedSuccessfully: 'Email and phone updated successfully!',
+    changeRequestSubmitted: 'Change request submitted!',
+    cropTypesUpdatedImmediately: ' Crop types updated immediately.',
+    cropTypesUpdatedSuccessfully: 'Crop types updated successfully!',
+    profileUpdatedSuccessfully: 'Profile updated successfully!',
+    passwordChangedSuccessfully: 'Password changed successfully!',
+    bidLimitRequestSubmittedSuccessfully: 'Bid limit increase request submitted successfully! Admin will review your request.',
+    
+    // Validation messages
+    cityNameMustContainLetter: 'City name must contain at least one letter',
+    noUserSessionFound: 'No user session found',
+    noChangesDetected: 'No changes detected. Please modify at least one field.',
+    pinMustBeFourDigits: 'PIN must be exactly 4 digits',
+    pinsDoNotMatch: 'PINs do not match',
+    pleaseEnterValidBidLimit: 'Please enter a valid bid limit amount',
+    requestedLimitMustBeGreater: 'Requested limit must be greater than current limit of ₹',
+    pleaseProvideDetailedReason: 'Please provide a detailed reason (at least 10 characters)',
+    noBuyerSessionFound: 'No buyer session found. Please login again.',
+    noFarmerSessionFound: 'No farmer session found. Please login again.',
+    userNotFound: 'User not found. Please login again.',
+    failedToLoadProfileData: 'Failed to load profile data - API Error: ',
+    failedToUpdateProfile: 'Failed to update profile',
+    failedToSubmitRequest: 'Failed to submit request',
+    failedToChangePassword: 'Failed to change password',
+    failedToSubmitBidLimitRequest: 'Failed to submit bid limit request',
+    
+    // Character count messages
+    needMoreCharacters: 'Need {count} more characters',
+    minimumLengthMet: '✓ Minimum length met',
+    minimumTenCharactersRequired: 'Minimum 10 characters required',
+    charactersCount: '{current}/{max} characters',
+    
+    // Bid limit validation messages
+    mustBeGreaterThanCurrentLimit: '❌ Must be greater than current limit of ₹{amount}',
+    validAmount: '✓ Valid amount (₹{amount})',
+    mustBeGreaterThanCurrentLimitOf: 'Must be greater than current limit of ₹{amount}',
+    
+    // Additional weather and farming terms for Weather.jsx
+    todaysAgricultureSummary: "Today's Agriculture Summary",
+    farmingAdvice: 'Farming Advice',
+    avgTemperature: 'Avg Temperature',
+    maxWind: 'Max Wind',
+    totalPrecipitation: 'Total Precipitation',
+    avgHumidity: 'Avg Humidity',
+    fungalDiseaseRisk: 'Fungal Disease Risk',
+    applyFungicide: 'Apply fungicide preventively. Ensure good air circulation.',
+    monitorCrops: 'Monitor crops closely for early signs of disease.',
+    conditionsUnfavorable: 'Conditions unfavorable for fungal growth.',
+    pestActivityLevel: 'Pest Activity Level',
+    warmHumidConditions: 'Warm humid conditions favor pest breeding. Scout fields regularly.',
+    normalPestActivity: 'Normal pest activity expected. Continue regular monitoring.',
+    coolConditions: 'Cool conditions reduce pest activity.',
+    moonPhase: 'Moon Phase',
+    moonrise: 'Moonrise',
+    moonset: 'Moonset',
+    dewPoint: 'Dew Point',
+    notRecommended: 'Not recommended',
+    idealConditions: 'Ideal conditions',
+    eveningPreferred: 'Evening preferred',
+    good: 'Good',
+    unhealthy: 'Unhealthy',
+    veryUnhealthy: 'Very Unhealthy',
+    noRainExpected: 'No Rain Expected',
+    newMoon: 'New Moon',
+    
+    // Additional missing keys for farmer pages
+    unknownCrop: 'Unknown Crop',
+    noTimesAvailableToday: 'No times available today',
+    selectTime: 'Select Time',
+    orderPlaced: 'Order Placed',
+    orderAccepted: 'Order Accepted',
+    pickupStarted: 'Pickup Started',
+    orderPickedUp: 'Order Picked Up',
+    inTransit: 'In Transit',
+    delivered: 'Delivered',
+    cancelled: 'Cancelled',
+    updateCountdown: 'Update Countdown',
+    createCountdown: 'Create Countdown',
+    transportLogistics: 'Transport & Logistics',
+    weatherServices: 'Weather Services',
+    cropManagement: 'Crop Management',
+    auctionMarketplace: 'Auction & Marketplace',
+    technicalIssues: 'Technical Issues',
+    billingPayments: 'Billing & Payments',
+    generalInquiry: 'General Inquiry',
+    
+    // Buyer Dashboard specific
+    morgen: 'Morgen',
+    publicBuyerDashboard: 'Public Buyer Dashboard',
+    commercialBuyerDashboard: 'Commercial Buyer Dashboard',
+    loadingBuyerDashboard: 'Loading buyer dashboard...',
+    failedToLoadDashboardData: 'Failed to load dashboard data',
+    retry: 'Retry',
+    myFarmers: 'My Farmers',
+    updates: 'Updates',
+    noUpdatesAvailable: 'No updates available',
+    liveBidding: 'Live Bidding',
+    activeBids: 'active bids',
+    biddingStats: 'Bidding Stats',
+    joinLiveAuctions: 'Join Live Auctions',
+    buyCrops: 'Buy Crops',
+    localDistrictCropsOnly: 'Local district crops only',
+    availableCrops: 'Available Crops',
+    avgPrice: 'Avg Price',
+    browseLocalCrops: 'Browse Local Crops',
+    orderTracking: 'Order Tracking',
+    activeOrders: 'active orders',
+    recentOrders: 'Recent Orders',
+    lastSevenDays: 'Last 7 days',
+    transport: 'Transport',
+    bookCargoTransport: 'Book cargo transport',
+    transportOptions: 'Transport Options',
+    availableNow: 'Available now',
+    vehicles: 'Vehicles',
+    rate: 'Rate',
+    bookTransport: 'Book Transport',
+    
+    // Common UI elements
+    morgenLogo: 'Morgen Logo',
+    signIn: 'Sign In',
+    loading: 'Loading...',
+    
+    // Driver specific
+    driverDashboard: 'Driver Dashboard',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'Admin Buyer Feature - Coming Soon',
+    recentActivity: 'Recent Activity',
+    activityTrackingComingSoon: 'Activity tracking coming soon...',
+    
+    // Session management
+    farmerSessionExtended: 'Farmer session extended',
+    buyerSessionExtended: 'Buyer session extended',
+    adminSessionExtended: 'Admin session extended',
+    driverSessionExtended: 'Driver session extended',
+    
+    // Transport tracking
+    vehicle: 'Vehicle',
+    distance: 'Distance',
+    amount: 'Amount',
+    pickupDate: 'Pickup Date',
+    bookingId: 'Booking ID',
+    trackingId: 'Tracking ID',
+    routeInformation: 'Route Information',
+    deliveryInformation: 'Delivery Information',
+    expectedDelivery: 'Expected Delivery',
+    vehicleType: 'Vehicle Type',
+    totalAmount: 'Total Amount',
+    
+    // Customer support
+    you: 'You',
+    supportTeam: 'Support Team',
+    justNow: 'Just now',
+    sending: 'Sending...',
+    send: 'Send',
+    
+    // Live bidding
+    ended: 'Ended',
+    unknownFarmer: 'Unknown Farmer',
+    customAmount: 'Custom amount',
+    
+    // General
+    info: 'Info',
+    noData: 'No data available',
+    
+    // Account Centre specific
+    accountCentre: 'Account Centre',
+    manageYourProfile: 'Manage your profile',
+    contactInformation: 'Contact Information',
+    updatesInstantly: '(Updates Instantly)',
+    emailAddress: 'Email Address',
+    phoneNumber: 'Phone Number',
+    saveChanges: 'Save Changes',
+    saving: 'Saving...',
+    profileInformation: 'Profile Information',
+    requiresApproval: '(Requires Approval)',
+    fullName: 'Full Name',
+    selectState: 'Select State',
+    selectDistrict: 'Select District',
+    city: 'City',
+    pinCode: 'PIN Code',
+    sixDigitPinCode: '6-digit PIN code',
+    landSizeAcres: 'Land Size (Acres)',
+    cropTypes: 'Crop Types',
+    selectCrop: 'Select Crop',
+    requestPending: 'Request Pending',
+    submitting: 'Submitting...',
+    requestApprovalForChanges: 'Request Approval for Changes',
+    customerSupport: 'Customer Support',
+    needHelpOurSupport: 'Need help? Our support team is here to assist you with any questions or issues about transport, weather, crops, or technical problems.',
+    contactSupportTeam: 'Contact Support Team',
+    bidLimitManagement: 'Bid Limit Management',
+    currentBidLimit: 'Current Bid Limit:',
+    requestBidLimitIncrease: 'Request Bid Limit Increase',
+    requestedBidLimit: 'Requested Bid Limit (₹)',
+    enterNewBidLimitAmount: 'Enter new bid limit amount',
+    reasonForIncrease: 'Reason for Increase',
+    pleaseExplainWhyNeedHigher: 'Please explain why you need a higher bid limit (minimum 10 characters)',
+    submitRequest: 'Submit Request',
+    security: 'Security',
+    changePassword: 'Change Password',
+    currentPin: 'Current PIN',
+    newPin: 'New PIN',
+    confirmNewPin: 'Confirm New PIN',
+    changingPin: 'Changing...',
+    changePin: 'Change PIN',
+    pendingApproval: 'Pending Approval',
+    profileChangeRequestWaiting: 'Your profile change request is waiting for admin approval. You\'ll be notified once it\'s reviewed.',
+    
+    // Success/Error messages
+    emailPhoneUpdatedSuccessfully: 'Email and phone updated successfully!',
+    changeRequestSubmitted: 'Change request submitted!',
+    cropTypesUpdatedImmediately: ' Crop types updated immediately.',
+    cropTypesUpdatedSuccessfully: 'Crop types updated successfully!',
+    profileUpdatedSuccessfully: 'Profile updated successfully!',
+    passwordChangedSuccessfully: 'Password changed successfully!',
+    bidLimitRequestSubmittedSuccessfully: 'Bid limit increase request submitted successfully! Admin will review your request.',
+    
+    // Validation messages
+    cityNameMustContainLetter: 'City name must contain at least one letter',
+    noUserSessionFound: 'No user session found',
+    noChangesDetected: 'No changes detected. Please modify at least one field.',
+    pinMustBeFourDigits: 'PIN must be exactly 4 digits',
+    pinsDoNotMatch: 'PINs do not match',
+    pleaseEnterValidBidLimit: 'Please enter a valid bid limit amount',
+    requestedLimitMustBeGreater: 'Requested limit must be greater than current limit of ₹',
+    pleaseProvideDetailedReason: 'Please provide a detailed reason (at least 10 characters)',
+    noBuyerSessionFound: 'No buyer session found. Please login again.',
+    noFarmerSessionFound: 'No farmer session found. Please login again.',
+    userNotFound: 'User not found. Please login again.',
+    failedToLoadProfileData: 'Failed to load profile data - API Error: ',
+    failedToUpdateProfile: 'Failed to update profile',
+    failedToSubmitRequest: 'Failed to submit request',
+    failedToChangePassword: 'Failed to change password',
+    failedToSubmitBidLimitRequest: 'Failed to submit bid limit request',
+    
+    // Character count messages
+    needMoreCharacters: 'Need {count} more characters',
+    minimumLengthMet: '✓ Minimum length met',
+    minimumTenCharactersRequired: 'Minimum 10 characters required',
+    charactersCount: '{current}/{max} characters',
+    
+    // Bid limit validation messages
+    mustBeGreaterThanCurrentLimit: '❌ Must be greater than current limit of ₹{amount}',
+    validAmount: '✓ Valid amount (₹{amount})',
+    mustBeGreaterThanCurrentLimitOf: 'Must be greater than current limit of ₹{amount}',
+  },
+  te: {
+    // Dashboard
+    dashboard: 'డాష్‌బోర్డ్', welcome: 'స్వాగతం', totalCrops: 'మొత్తం పంటలు', activeBids: 'క్రియాశీల బిడ్‌లు', totalSales: 'మొత్తం అమ్మకాలు', revenue: 'ఆదాయం',
+    
+    // Navigation
+    sellCrops: 'పంటలు అమ్మండి', myBids: 'నా బిడ్‌లు', createBid: 'బిడ్ సృష్టించండి', orders: 'ఆర్డర్లు', transport: 'రవాణా', localTransport: 'స్థానిక రవాణా',
+    weather: 'వాతావరణం', priceForecast: 'ధర అంచనా', aiDoctor: 'AI మొక్క వైద్యుడు', harvestCountdown: 'పంట కోత కౌంట్‌డౌన్', myCustomers: 'నా కస్టమర్లు',
+    customerSupport: 'కస్టమర్ మద్దతు', accountCentre: 'ఖాతా కేంద్రం', logout: 'లాగ్అవుట్', orderTracking: 'ఆర్డర్ ట్రాకింగ్', orderHistory: 'ఆర్డర్ చరిత్ర',
+    bidHistory: 'బిడ్ చరిత్ర', transportBooking: 'రవాణా బుకింగ్', vehicleDetails: 'వాహన వివరాలు', back: 'వెనుకకు', home: 'హోమ్',
+    
+    // Common Actions
+    save: 'సేవ్ చేయండి', cancel: 'రద్దు చేయండి', submit: 'సమర్పించండి', delete: 'తొలగించండి', edit: 'సవరించండి', view: 'చూడండి', search: 'శోధించండి', filter: 'ఫిల్టర్',
+    loading: 'లోడ్ అవుతోంది...', noData: 'డేటా అందుబాటులో లేదు', add: 'జోడించండి', manage: 'నిర్వహించండి', create: 'సృష్టించండి', update: 'నవీకరించండి', refresh: 'రిఫ్రెష్ చేయండి',
+    close: 'మూసివేయండి', confirm: 'నిర్ధారించండి', tryAgain: 'మళ్లీ ప్రయత్నించండి',
+    
+    // Crop Details
+    cropName: 'పంట పేరు', quantity: 'పరిమాణం', quality: 'నాణ్యత', price: 'ధర', pricePerUnit: 'యూనిట్ ధర', harvestDate: 'పంట కోత తేదీ',
+    expiryDate: 'గడువు తేదీ', category: 'వర్గం', unit: 'యూనిట్', description: 'వివరణ',
+    
+    // Bidding
+    startingPrice: 'ప్రారంభ ధర', currentPrice: 'ప్రస్తుత ధర', bidEndDate: 'బిడ్ ముగింపు తేదీ', placeBid: 'బిడ్ వేయండి', bidAmount: 'బిడ్ మొత్తం',
+    totalBids: 'మొత్తం బిడ్‌లు', highestBid: 'అత్యధిక బిడ్', createNewBid: 'కొత్త బిడ్ సృష్టించండి', endBid: 'బిడ్ ముగించండి', bidDetails: 'బిడ్ వివరాలు',
+    noBidsYet: 'ఇంకా బిడ్‌లు లేవు', createFirstBid: 'మీ మొదటి బిడ్ సృష్టించండి', manageBidListings: 'మీ పంట బిడ్డింగ్ జాబితాలను నిర్వహించండి',
+    listCropForBidding: 'బిడ్డింగ్ కోసం మీ పంటను జాబితా చేయండి', bidCreatedSuccessfully: 'బిడ్ విజయవంతంగా సృష్టించబడింది!',
+    buyersWillBeNotified: 'కనెక్ట్ చేయబడిన కొనుగోలుదారులకు మీ బిడ్ గురించి తెలియజేయబడుతుంది.', endBidEarly: 'బిడ్‌ను ముందుగానే ముగించాలా?',
+    areYouSureEndBid: 'మీరు ఈ బిడ్‌ను ముగించాలనుకుంటున్నారా', highestBidderWins: 'అత్యధిక బిడ్డర్ విజేతగా ప్రకటించబడతారు.',
+    noBidsNoWinner: 'ఇంకా బిడ్‌లు లేవు, కాబట్టి విజేత ఉండరు.',
+    
+    // Status
+    active: 'క్రియాశీలం', pending: 'పెండింగ్', completed: 'పూర్తయింది', cancelled: 'రద్దు చేయబడింది', delivered: 'డెలివరీ చేయబడింది', approved: 'ఆమోదించబడింది',
+    rejected: 'తిరస్కరించబడింది', inProgress: 'ప్రగతిలో ఉంది',
+    
+    // Messages
+    success: 'విజయం', error: 'లోపం', warning: 'హెచ్చరిక', info: 'సమాచారం',
+    
+    // Sell Crops Page
+    addListing: 'జాబితా జోడించండి', noListingsYet: 'ఇంకా జాబితాలు లేవు',
+    createFirstListing: 'పబ్లిక్ కొనుగోలుదారులకు పంటలను నేరుగా అమ్మడానికి మీ మొదటి జాబితాను సృష్టించండి',
+    listCropsForSale: 'పబ్లిక్ కొనుగోలుదారులకు నేరుగా అమ్మకానికి మీ పంటలను జాబితా చేయండి', addNewListing: 'కొత్త జాబితా జోడించండి', createListing: 'జాబితా సృష్టించండి',
+    cropListedSuccessfully: 'పంట విజయవంతంగా జాబితా చేయబడింది!', listingDeletedSuccessfully: 'జాబితా విజయవంతంగా తొలగించబడింది!',
+    areYouSureDelete: 'మీరు ఈ జాబితాను తొలగించాలనుకుంటున్నారా?', unableToLoadCrops: 'పంటలను లోడ్ చేయలేకపోయింది',
+    loadingYourCrops: 'మీ పంటలను లోడ్ చేస్తోంది...', lastUpdated: 'చివరిగా నవీకరించబడింది',
+    
+    // Form Labels
+    required: 'అవసరం', optional: 'ఐచ్ఛికం', vegetables: 'కూరగాయలు', fruits: 'పండ్లు', grains: 'ధాన్యాలు', spices: 'మసాలాలు', other: 'ఇతర',
+    premium: 'ప్రీమియం', gradeA: 'గ్రేడ్ A', gradeB: 'గ్రేడ్ B', gradeC: 'గ్రేడ్ C', standard: 'ప్రామాణికం', kilograms: 'కిలోగ్రాములు',
+    quintal: 'క్వింటల్', ton: 'టన్ను',
+    
+    // Transport
+    vehicle: 'వాహనం', driver: 'డ్రైవర్', booking: 'బుకింగ్', route: 'మార్గం', distance: 'దూరం', duration: 'వ్యవధి',
+    bookTransport: 'రవాణా బుక్ చేయండి', viewVehicles: 'వాహనాలను చూడండి', bookingHistory: 'బుకింగ్ చరిత్ర', trackBooking: 'బుకింగ్‌ను ట్రాక్ చేయండి',
+    vehicleType: 'వాహన రకం', capacity: 'సామర్థ్యం', availability: 'అందుబాటు', bookNow: 'ఇప్పుడే బుక్ చేయండి',
+    fromLocation: 'నుండి స్థానం', toLocation: 'వరకు స్థానం', pickupLocation: 'పికప్ స్థానం', destination: 'గమ్యం',
+    
+    // Orders
+    orderDetails: 'ఆర్డర్ వివరాలు', trackOrder: 'ఆర్డర్‌ను ట్రాక్ చేయండి', orderStatus: 'ఆర్డర్ స్థితి', orderId: 'ఆర్డర్ ID', orderDate: 'ఆర్డర్ తేదీ',
+    deliveryDate: 'డెలివరీ తేదీ', buyer: 'కొనుగోలుదారు', seller: 'అమ్మకందారు', totalAmount: 'మొత్తం మొత్తం', paymentStatus: 'చెల్లింపు స్థితి',
+    noOrdersYet: 'ఇంకా ఆర్డర్లు లేవు', viewAllOrders: 'అన్ని ఆర్డర్లను చూడండి',
+    
+    // Customer Support
+    supportTickets: 'మద్దతు టిక్కెట్లు', createTicket: 'టిక్కెట్ సృష్టించండి', ticketId: 'టిక్కెట్ ID', subject: 'విషయం', message: 'సందేశం',
+    sendMessage: 'సందేశం పంపండి', chatWithSupport: 'మద్దతుతో చాట్ చేయండి',
+    
+    // AI Plant Doctor
+    askDoctor: 'వైద్యుడిని అడగండి', plantHealth: 'మొక్క ఆరోగ్యం', diagnosis: 'రోగ నిర్ధారణ', treatment: 'చికిత్స', uploadImage: 'చిత్రాన్ని అప్‌లోడ్ చేయండి',
+    analyzeImage: 'చిత్రాన్ని విశ్లేషించండి',
+    
+    // Harvest Countdown
+    daysUntilHarvest: 'పంట కోతకు రోజులు', readyToHarvest: 'పంట కోతకు సిద్ధం', upcomingHarvests: 'రాబోయే పంటలు',
+    
+    // Price Forecast
+    forecastedPrice: 'అంచనా ధర', marketTrends: 'మార్కెట్ ట్రెండ్‌లు', priceAnalysis: 'ధర విశ్లేషణ',
+    
+    // Validation Messages
+    fieldRequired: 'ఈ ఫీల్డ్ అవసరం', invalidEmail: 'చెల్లని ఇమెయిల్ చిరునామా', invalidPhone: 'చెల్లని ఫోన్ నంబర్',
+    invalidDate: 'చెల్లని తేదీ', dateMustBeFuture: 'తేదీ భవిష్యత్తులో ఉండాలి', quantityMustBePositive: 'పరిమాణం సానుకూలంగా ఉండాలి',
+    priceMustBePositive: 'ధర సానుకూలంగా ఉండాలి',
+    
+    // Vehicle Details
+    vehicleNotFound: 'వాహనం కనుగొనబడలేదు', vehicleNotFoundMessage: 'అభ్యర్థించిన వాహనం కనుగొనబడలేదు.',
+    verifiedVehicle: 'ధృవీకరించబడిన వాహనం', available24x7: '24/7 అందుబాటులో', professionalDriver: 'వృత్తిపరమైన డ్రైవర్',
+    experiencedLicensed: 'అనుభవజ్ఞుడు & లైసెన్స్ పొందిన', secureLoading: 'సురక్షిత లోడింగ్', safeCropTransport: 'సురక్షిత పంట రవాణా',
+    chooseYourOption: 'మీ ఎంపికను ఎంచుకోండి',
+    
+    // Common UI Text
+    startingFrom: 'నుండి ప్రారంభం', farmerSessionNotFound: 'రైతు సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి.',
+    failedToCreate: 'సృష్టించడంలో విఫలమైంది', failedToFetch: 'పొందడంలో విఫలమైంది', loadingText: 'లోడ్ అవుతోంది...',
+    errorOccurred: 'లోపం సంభవించింది', tryAgainLater: 'దయచేసి మళ్లీ ప్రయత్నించండి',
+    
+    // AI Plant Doctor
+    aiPlantDoctor: 'AI మొక్క వైద్యుడు', yourAgriculturalHealthExpert: 'మీ వ్యవసాయ ఆరోగ్య నిపుణుడు',
+    consultations: 'సంప్రదింపులు', imagesAnalyzed: 'చిత్రాలు విశ్లేషించబడ్డాయి', 
+    loadingAiPlantDoctor: 'AI మొక్క వైద్యుడు లోడ్ అవుతోంది...', 
+    askAboutPlantDiseases: 'మొక్కల వ్యాధులు, పంట సంరక్షణ గురించి అడగండి లేదా చిత్రాన్ని అప్‌లోడ్ చేయండి...',
+    sorryEncounteredError: 'క్షమించండి, నేను లోపాన్ని ఎదుర్కొన్నాను. దయచేసి మళ్లీ ప్రయత్నించండి లేదా మీ వ్యవసాయ అవసరాల గురించి నన్ను అడగండి.',
+    
+    // Dashboard Transport Section
+    popularRoute: 'ప్రసిద్ధ మార్గం', rating: 'రేటింగ్', vehicles: 'వాహనాలు', 
+    hours: 'గంటలు', km: 'కిమీ', retry: 'మళ్లీ ప్రయత్నించండి', chat: 'చాట్', addCrop: 'పంట జోడించండి',
+    
+    // Additional UI Text
+    hello: 'హలో', welcomeBack: 'మీ డాష్‌బోర్డ్‌కు తిరిగి స్వాగతం', account: 'ఖాతా', customers: 'కస్టమర్లు',
+    failedToLoadDashboard: 'డాష్‌బోర్డ్ డేటా లోడ్ చేయడంలో విఫలమైంది', aiDoctorAnalyzing: 'AI డాక్టర్ విశ్లేషిస్తోంది...',
+    readyToHelp: 'సహాయానికి సిద్ధం!', askAboutPlantDiseasesAndCare: 'మొక్కల వ్యాధులు, కీటకాలు & సంరక్షణ గురించి అడగండి',
+    available247: '24/7 అందుబాటులో', consults: 'సంప్రదింపులు', images: 'చిత్రాలు', powered: 'శక్తివంతం',
+    scan: 'స్కాన్', totalListings: 'మొత్తం జాబితాలు', avgPriceKg: 'సగటు ధర/కిలో', totalValue: 'మొత్తం విలువ',
+    cropsSold: 'పంటలు అమ్మబడ్డాయి', activeBidsCount: 'సక్రియ బిడ్‌లు', available: 'అందుబాటులో',
+    manageAccountInfo: 'మీ ఖాతా సమాచారాన్ని నిర్వహించండి', accountCenter: 'ఖాతా కేంద్రం',
+    farmerProfile: 'రైతు ప్రొఫైల్', accountManagementComingSoon: 'ఖాతా నిర్వహణ లక్షణాలు త్వరలో వస్తాయి...',
+    manageHarvestSchedules: 'మీ పంట కోత షెడ్యూల్‌లను నిర్వహించండి', pleaseAddCropsFirst: 'దయచేసి మొదట మీ ఖాతా కేంద్రంలో పంటలను జోడించండి.',
+    goToAccountCentre: 'ఖాతా కేంద్రానికి వెళ్లండి', failedToLoadBidHistory: 'బిడ్ చరిత్రను లోడ్ చేయడంలో విఫలమైంది',
+    failedToLoadCrops: 'పంటలను లోడ్ చేయడంలో విఫలమైంది', failedToLoadBids: 'బిడ్‌లను లోడ్ చేయడంలో విఫలమైంది',
+    pleaseAnalyzeImage: 'దయచేసి ఈ మొక్క చిత్రాన్ని విశ్లేషించండి', failedToLoadChatSession: 'చాట్ సెషన్‌ను లోడ్ చేయడంలో విఫలమైంది',
+    failedToClearChat: 'చాట్‌ను క్లియర్ చేయడంలో విఫలమైంది',
+    
+    // Additional missing keys
+    bidEndedSuccessfully: 'బిడ్ విజయవంతంగా ముగిసింది!',
+    
+    // Missing UI text that appears in farmer pages
+    listed: 'జాబితా చేయబడింది',
+    premiumGrade: 'ప్రీమియం గ్రేడ్',
+    goodGrade: 'మంచి గ్రేడ్',
+    daysLeft: 'మిగిలిన రోజులు',
+    planted: 'నాటబడింది',
+    newCountdown: 'కొత్త కౌంట్‌డౌన్',
+    partlyCloudy: 'పాక్షిక మేఘావృతం',
+    liveWeatherData: 'లైవ్ వాతావరణ డేటా',
+    updated: 'అప్‌డేట్ చేయబడింది',
+    hourly: 'గంటవారీ',
+    fiveDay: '5-రోజు',
+    now: 'ఇప్పుడు',
+    
+    // New keys for farmer pages
+    bidMustEndBeforeHarvest: 'గమనిక: బిడ్ పంట కోత తేదీకి ముందు ముగియాలి',
+    copyFromPickup: 'పికప్ నుండి కాపీ చేయండి',
+    pickupSchedule: 'పికప్ షెడ్యూల్',
+    date: 'తేదీ',
+    time: 'సమయం',
+    myBidHistory: 'నా బిడ్ చరిత్ర',
+    trackYourCreatedBids: 'మీ సృష్టించిన బిడ్‌లు మరియు వాటి ఫలితాలను ట్రాక్ చేయండి',
+    allBids: 'అన్ని బిడ్‌లు',
+    withWinners: 'విజేతలతో',
+    trackById: 'ID ద్వారా ట్రాక్ చేయండి',
+    trackYourTransportOrders: 'మీ రవాణా ఆర్డర్‌లను ట్రాక్ చేయండి',
+    viewAllTransportBookings: 'మీ అన్ని రవాణా బుకింగ్‌లను చూడండి',
+    totalOrders: 'మొత్తం ఆర్డర్‌లు',
+    aiPoweredPredictions: 'AI-శక్తితో అంచనాలు',
+    editCountdown: 'కౌంట్‌డౌన్ సవరించండి',
+    newHarvestCountdown: 'కొత్త పంట కోత కౌంట్‌డౌన్',
+    newSupportTicket: 'కొత్త మద్దతు టిక్కెట్',
+    findBuyers: 'కొనుగోలుదారులను కనుగొనండి',
+    connectWithBuyersAndGrow: 'కొనుగోలుదారులతో కనెక్ట్ అవ్వండి మరియు మీ వ్యాపారాన్ని పెంచుకోండి',
+    requestDate: 'కోరిక్కై తేదీ',
+    
+    // Weather page specific translations
+    yourLocation: 'మీ స్థానం',
+    liveWeatherData: 'లైవ్ వాతావరణ డేటా',
+    simulatedData: 'అనుకరణ డేటా',
+    hourly: 'గంటవారీ',
+    weekly: 'వారపు',
+    fiveDay: '5-రోజు',
+    now: 'ఇప్పుడు',
+    today: 'ఈరోజు',
+    sun: 'ఆది',
+    mon: 'సోమ',
+    tue: 'మంగళ',
+    wed: 'బుధ',
+    thu: 'గురు',
+    fri: 'శుక్ర',
+    sat: 'శని',
+    
+    // Weather conditions and advice
+    highHeatIrrigateEarlyMorning: 'అధిక వేడిమి - ఉదయం లేదా సాయంత్రం పంటలకు నీరు పెట్టండి',
+    coolWeatherProtectFromFrost: 'చల్లని వాతావరణం - సున్నితమైన పంటలను మంచు నుండి రక్షించండి',
+    goodTemperatureForFarming: 'చాలా వ్యవసాయ కార్యకలాపాలకు మంచి ఉష్ణోగ్రత',
+    rainExpectedAvoidSpraying: 'వర్షం అంచనా - ఈరోజు పురుగుమందులు చల్లకండి',
+    goodTimeForTransplanting: 'మొలకలను మార్చడానికి మంచి సమయం',
+    highHumidityWatchFungal: 'అధిక తేమ - ఫంగల్ వ్యాధుల కోసం చూడండి',
+    clearSkiesIdealForHarvesting: 'స్పష్టమైన ఆకాశం - పంట కోత మరియు ఎండబెట్టడానికి అనువైనది',
+    
+    // Weather details
+    wind: 'గాలి',
+    humidity: 'తేమ',
+    visibility: 'దృశ్యమానత',
+    pressure: 'ఒత్తిడి',
+    sunrise: 'సూర్యోదయం',
+    sunset: 'సూర్యాస్తమయం',
+    feelsLike: 'అనుభవం',
+    uvIndex: 'UV సూచిక',
+    rainChance: 'వర్షం అవకాశం',
+    
+    // Weather quality descriptions
+    lightBreeze: 'తేలికపాటి గాలి',
+    comfortable: 'సౌకర్యవంతమైన',
+    clear: 'స్పష్టమైన',
+    hazy: 'మబ్బుగా',
+    normal: 'సాధారణ',
+    high: 'అధిక',
+    veryHot: 'చాలా వేడిమి',
+    warm: 'వెచ్చని',
+    lowProbability: 'తక్కువ అవకాశం',
+    rainExpected: 'వర్షం అంచనా',
+    none: 'ఏదీ లేదు',
+    useProtection: 'రక్షణ ఉపయోగించండి',
+    moderate: 'మధ్యస్థ',
+    
+    // Form placeholders and labels
+    state: 'రాష్ట్రం',
+    district: 'జిల్లా',
+    city: 'నగరం',
+    pinCode: 'పిన్ కోడ్',
+    detailedAddress: 'వివరణాత్మక చిరునామా',
+    orEnterExactDistance: 'లేదా ఖచ్చితమైన దూరం నమోదు చేయండి',
+    enterBuyerPhoneNumber: 'క్రాస్-ప్లాట్‌ఫారమ్ ట్రాకింగ్ కోసం కొనుగోలుదారు ఫోన్ నంబర్ నమోదు చేయండి',
+    plantAnalysis: 'మొక్క విశ్లేషణ',
+    plantToAnalyze: 'విశ్లేషణ కోసం మొక్క',
+    
+    // Additional form placeholders
+    enterTrackingId: 'ట్రాకింగ్ ID నమోదు చేయండి (ఉదా., TRK123456)',
+    selectCrop: 'పంట ఎంచుకోండి',
+    
+    // Buyer Dashboard specific
+    morgen: 'మోర్గెన్',
+    publicBuyerDashboard: 'పబ్లిక్ కొనుగోలుదారు డాష్‌బోర్డ్',
+    commercialBuyerDashboard: 'వాణిజ్య కొనుగోలుదారు డాష్‌బోర్డ్',
+    loadingBuyerDashboard: 'కొనుగోలుదారు డాష్‌బోర్డ్ లోడ్ అవుతోంది...',
+    failedToLoadDashboardData: 'డాష్‌బోర్డ్ డేటా లోడ్ చేయడంలో విఫలమైంది',
+    retry: 'మళ్లీ ప్రయత్నించండి',
+    myFarmers: 'నా రైతులు',
+    updates: 'అప్‌డేట్‌లు',
+    noUpdatesAvailable: 'అప్‌డేట్‌లు అందుబాటులో లేవు',
+    liveBidding: 'లైవ్ బిడ్డింగ్',
+    activeBids: 'సక్రియ బిడ్‌లు',
+    biddingStats: 'బిడ్డింగ్ గణాంకాలు',
+    joinLiveAuctions: 'లైవ్ వేలంలో చేరండి',
+    buyCrops: 'పంటలు కొనండి',
+    localDistrictCropsOnly: 'స్థానిక జిల్లా పంటలు మాత్రమే',
+    availableCrops: 'అందుబాటులో ఉన్న పంటలు',
+    avgPrice: 'సగటు ధర',
+    browseLocalCrops: 'స్థానిక పంటలను బ్రౌజ్ చేయండి',
+    orderTracking: 'ఆర్డర్ ట్రాకింగ్',
+    activeOrders: 'సక్రియ ఆర్డర్‌లు',
+    recentOrders: 'ఇటీవలి ఆర్డర్‌లు',
+    lastSevenDays: 'గత 7 రోజులు',
+    transport: 'రవాణా',
+    bookCargoTransport: 'కార్గో రవాణా బుక్ చేయండి',
+    transportOptions: 'రవాణా ఎంపికలు',
+    availableNow: 'ఇప్పుడు అందుబాటులో',
+    vehicles: 'వాహనాలు',
+    rate: 'రేటు',
+    bookTransport: 'రవాణా బుక్ చేయండి',
+    
+    // Common UI elements
+    morgenLogo: 'మోర్గెన్ లోగో',
+    signIn: 'సైన్ ఇన్',
+    loading: 'లోడ్ అవుతోంది...',
+    
+    // Driver specific
+    driverDashboard: 'డ్రైవర్ డాష్‌బోర్డ్',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'అడ్మిన్ కొనుగోలుదారు ఫీచర్ - త్వరలో వస్తుంది',
+    recentActivity: 'ఇటీవలి కార్యకలాపాలు',
+    activityTrackingComingSoon: 'కార్యకలాప ట్రాకింగ్ త్వరలో వస్తుంది...',
+    
+    // Session management
+    farmerSessionExtended: 'రైతు సెషన్ పొడిగించబడింది',
+    buyerSessionExtended: 'కొనుగోలుదారు సెషన్ పొడిగించబడింది',
+    adminSessionExtended: 'అడ్మిన్ సెషన్ పొడిగించబడింది',
+    driverSessionExtended: 'డ్రైవర్ సెషన్ పొడిగించబడింది',
+    
+    // Transport tracking
+    vehicle: 'వాహనం',
+    distance: 'దూరం',
+    amount: 'మొత్తం',
+    pickupDate: 'పికప్ తేదీ',
+    bookingId: 'బుకింగ్ ID',
+    trackingId: 'ట్రాకింగ్ ID',
+    routeInformation: 'మార్గ సమాచారం',
+    deliveryInformation: 'డెలివరీ సమాచారం',
+    expectedDelivery: 'ఆశించిన డెలివరీ',
+    vehicleType: 'వాహన రకం',
+    totalAmount: 'మొత్తం మొత్తం',
+    
+    // Customer support
+    you: 'మీరు',
+    supportTeam: 'మద్దతు బృందం',
+    justNow: 'ఇప్పుడే',
+    sending: 'పంపుతోంది...',
+    send: 'పంపండి',
+    
+    // Live bidding
+    ended: 'ముగిసింది',
+    unknownFarmer: 'తెలియని రైతు',
+    customAmount: 'కస్టమ్ మొత్తం',
+    
+    // General
+    info: 'సమాచారం',
+    noData: 'డేటా అందుబాటులో లేదు',
+    
+    // Account Centre specific
+    accountCentre: 'ఖాతా కేంద్రం',
+    manageYourProfile: 'మీ ప్రొఫైల్‌ను నిర్వహించండి',
+    contactInformation: 'సంప్రదింపు సమాచారం',
+    updatesInstantly: '(తక్షణం అప్‌డేట్ అవుతుంది)',
+    emailAddress: 'ఇమెయిల్ చిరునామా',
+    phoneNumber: 'ఫోన్ నంబర్',
+    saveChanges: 'మార్పులను సేవ్ చేయండి',
+    saving: 'సేవ్ చేస్తోంది...',
+    profileInformation: 'ప్రొఫైల్ సమాచారం',
+    requiresApproval: '(ఆమోదం అవసరం)',
+    fullName: 'పూర్తి పేరు',
+    selectState: 'రాష్ట్రాన్ని ఎంచుకోండి',
+    selectDistrict: 'జిల్లాను ఎంచుకోండి',
+    city: 'నగరం',
+    pinCode: 'పిన్ కోడ్',
+    sixDigitPinCode: '6-అంకెల పిన్ కోడ్',
+    landSizeAcres: 'భూమి పరిమాణం (ఎకరాలు)',
+    cropTypes: 'పంట రకాలు',
+    selectCrop: 'పంటను ఎంచుకోండి',
+    requestPending: 'అభ్యర్థన పెండింగ్‌లో',
+    submitting: 'సమర్పిస్తోంది...',
+    requestApprovalForChanges: 'మార్పులకు ఆమోదం అభ్యర్థించండి',
+    customerSupport: 'కస్టమర్ మద్దతు',
+    needHelpOurSupport: 'సహాయం కావాలా? రవాణా, వాతావరణం, పంటలు లేదా సాంకేతిక సమస్యల గురించి ఏవైనా ప్రశ్నలు లేదా సమస్యలతో మీకు సహాయం చేయడానికి మా మద్దతు బృందం ఇక్కడ ఉంది.',
+    contactSupportTeam: 'మద్దతు బృందాన్ని సంప్రదించండి',
+    bidLimitManagement: 'బిడ్ పరిమితి నిర్వహణ',
+    currentBidLimit: 'ప్రస్తుత బిడ్ పరిమితి:',
+    requestBidLimitIncrease: 'బిడ్ పరిమితి పెరుగుదల అభ్యర్థించండి',
+    requestedBidLimit: 'అభ్యర్థించిన బిడ్ పరిమితి (₹)',
+    enterNewBidLimitAmount: 'కొత్త బిడ్ పరిమితి మొత్తాన్ని నమోదు చేయండి',
+    reasonForIncrease: 'పెరుగుదలకు కారణం',
+    pleaseExplainWhyNeedHigher: 'దయచేసి మీకు ఎందుకు అధిక బిడ్ పరిమితి అవసరమో వివరించండి (కనీసం 10 అక్షరాలు)',
+    submitRequest: 'అభ్యర్థనను సమర్పించండి',
+    security: 'భద్రత',
+    changePassword: 'పాస్‌వర్డ్ మార్చండి',
+    currentPin: 'ప్రస్తుత పిన్',
+    newPin: 'కొత్త పిన్',
+    confirmNewPin: 'కొత్త పిన్‌ను నిర్ధారించండి',
+    changingPin: 'మార్చుతోంది...',
+    changePin: 'పిన్ మార్చండి',
+    pendingApproval: 'ఆమోదం పెండింగ్‌లో',
+    profileChangeRequestWaiting: 'మీ ప్రొఫైల్ మార్పు అభ్యర్థన అడ్మిన్ ఆమోదం కోసం వేచి ఉంది. అది సమీక్షించబడిన తర్వాత మీకు తెలియజేయబడుతుంది.',
+    
+    // Success/Error messages
+    emailPhoneUpdatedSuccessfully: 'ఇమెయిల్ మరియు ఫోన్ విజయవంతంగా అప్‌డేట్ చేయబడ్డాయి!',
+    changeRequestSubmitted: 'మార్పు అభ్యర్థన సమర్పించబడింది!',
+    cropTypesUpdatedImmediately: ' పంట రకాలు తక్షణం అప్‌డేట్ చేయబడ్డాయి.',
+    cropTypesUpdatedSuccessfully: 'పంట రకాలు విజయవంతంగా అప్‌డేట్ చేయబడ్డాయి!',
+    profileUpdatedSuccessfully: 'ప్రొఫైల్ విజయవంతంగా అప్‌డేట్ చేయబడింది!',
+    passwordChangedSuccessfully: 'పాస్‌వర్డ్ విజయవంతంగా మార్చబడింది!',
+    bidLimitRequestSubmittedSuccessfully: 'బిడ్ పరిమితి పెరుగుదల అభ్యర్థన విజయవంతంగా సమర్పించబడింది! అడ్మిన్ మీ అభ్యర్థనను సమీక్షిస్తారు.',
+    
+    // Validation messages
+    cityNameMustContainLetter: 'నగర పేరులో కనీసం ఒక అక్షరం ఉండాలి',
+    noUserSessionFound: 'వినియోగదారు సెషన్ కనుగొనబడలేదు',
+    noChangesDetected: 'మార్పులు గుర్తించబడలేదు. దయచేసి కనీసం ఒక ఫీల్డ్‌ను సవరించండి.',
+    pinMustBeFourDigits: 'పిన్ సరిగ్గా 4 అంకెలు ఉండాలి',
+    pinsDoNotMatch: 'పిన్‌లు సరిపోలలేదు',
+    pleaseEnterValidBidLimit: 'దయచేసి చెల్లుబాటు అయ్యే బిడ్ పరిమితి మొత్తాన్ని నమోదు చేయండి',
+    requestedLimitMustBeGreater: 'అభ్యర్థించిన పరిమితి ప్రస్తుత పరిమితి ₹ కంటే ఎక్కువ ఉండాలి',
+    pleaseProvideDetailedReason: 'దయచేసి వివరణాత్మక కారణాన్ని అందించండి (కనీసం 10 అక్షరాలు)',
+    noBuyerSessionFound: 'కొనుగోలుదారు సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి.',
+    noFarmerSessionFound: 'రైతు సెషన్ కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి.',
+    userNotFound: 'వినియోగదారు కనుగొనబడలేదు. దయచేసి మళ్లీ లాగిన్ చేయండి.',
+    failedToLoadProfileData: 'ప్రొఫైల్ డేటా లోడ్ చేయడంలో విఫలమైంది - API లోపం: ',
+    failedToUpdateProfile: 'ప్రొఫైల్ అప్‌డేట్ చేయడంలో విఫలమైంది',
+    failedToSubmitRequest: 'అభ్యర్థనను సమర్పించడంలో విఫలమైంది',
+    failedToChangePassword: 'పాస్‌వర్డ్ మార్చడంలో విఫలమైంది',
+    failedToSubmitBidLimitRequest: 'బిడ్ పరిమితి అభ్యర్థనను సమర్పించడంలో విఫలమైంది',
+    
+    // Character count messages
+    needMoreCharacters: '{count} మరిన్ని అక్షరాలు అవసరం',
+    minimumLengthMet: '✓ కనీస పొడవు చేరుకుంది',
+    minimumTenCharactersRequired: 'కనీసం 10 అక్షరాలు అవసరం',
+    charactersCount: '{current}/{max} అక్షరాలు',
+    
+    // Bid limit validation messages
+    mustBeGreaterThanCurrentLimit: '❌ ప్రస్తుత పరిమితి ₹{amount} కంటే ఎక్కువ ఉండాలి',
+    validAmount: '✓ చెల్లుబాటు అయ్యే మొత్తం (₹{amount})',
+    mustBeGreaterThanCurrentLimitOf: 'ప్రస్తుత పరిమితి ₹{amount} కంటే ఎక్కువ ఉండాలి',
+    
+    // Additional weather and farming terms for Weather.jsx
+    todaysAgricultureSummary: 'నేటి వ్యవసాయ సారాంశం',
+    farmingAdvice: 'వ్యవసాయ సలహా',
+    avgTemperature: 'సగటు ఉష్ణోగ్రత',
+    maxWind: 'గరిష్ట గాలి',
+    totalPrecipitation: 'మొత్తం వర్షపాతం',
+    avgHumidity: 'సగటు తేమ',
+    fungalDiseaseRisk: 'ఫంగల్ వ్యాధి ప్రమాదం',
+    applyFungicide: 'ఫంగిసైడ్‌ను నివారణగా వర్తించండి. మంచి గాలి ప్రసరణను నిర్ధారించండి.',
+    monitorCrops: 'వ్యాధి యొక్క ప్రారంభ సంకేతాల కోసం పంటలను దగ్గరగా పర్యవేక్షించండి.',
+    conditionsUnfavorable: 'ఫంగల్ పెరుగుదలకు పరిస్థితులు అనుకూలం కాదు.',
+    pestActivityLevel: 'కీట కార్యకలాప స్థాయి',
+    warmHumidConditions: 'వెచ్చని తేమతో కూడిన పరిస్థితులు కీట పెంపకానికి అనుకూలం. క్షేత్రాలను క్రమం తప్పకుండా పరిశీలించండి.',
+    normalPestActivity: 'సాధారణ కీట కార్యకలాపాలు ఆశించబడతాయి. క్రమం తప్పకుండా పర్యవేక్షణ కొనసాగించండి.',
+    coolConditions: 'చల్లని పరిస్థితులు కీట కార్యకలాపాలను తగ్గిస్తాయి.',
+    moonPhase: 'చంద్ర దశ',
+    moonrise: 'చంద్రోదయం',
+    moonset: 'చంద్రాస్తమయం',
+    dewPoint: 'మంచు బిందువు',
+    notRecommended: 'సిఫార్సు చేయబడలేదు',
+    idealConditions: 'ఆదర్శ పరిస్థితులు',
+    eveningPreferred: 'సాయంత్రం ప్రాధాన్యత',
+    good: 'మంచి',
+    unhealthy: 'అనారోగ్యకరమైన',
+    veryUnhealthy: 'చాలా అనారోగ్యకరమైన',
+    noRainExpected: 'వర్షం ఆశించబడలేదు',
+    newMoon: 'అమావాస్య',
+    
+    // Additional missing keys for farmer pages
+    unknownCrop: 'తెలియని పంట',
+    noTimesAvailableToday: 'ఈరోజు సమయాలు అందుబాటులో లేవు',
+    selectTime: 'సమయం ఎంచుకోండి',
+    orderPlaced: 'ఆర్డర్ ఇవ్వబడింది',
+    orderAccepted: 'ఆర్డర్ అంగీకరించబడింది',
+    pickupStarted: 'పికప్ ప్రారంభించబడింది',
+    orderPickedUp: 'ఆర్డర్ పికప్ చేయబడింది',
+    inTransit: 'రవాణాలో',
+    delivered: 'డెలివరీ చేయబడింది',
+    cancelled: 'రద్దు చేయబడింది',
+    updateCountdown: 'కౌంట్‌డౌన్ అప్‌డేట్ చేయండి',
+    createCountdown: 'కౌంట్‌డౌన్ సృష్టించండి',
+    transportLogistics: 'రవాణా & లాజిస్టిక్స్',
+    weatherServices: 'వాతావరణ సేవలు',
+    cropManagement: 'పంట నిర్వహణ',
+    auctionMarketplace: 'వేలం & మార్కెట్‌ప్లేస్',
+    technicalIssues: 'సాంకేతిక సమస్యలు',
+    billingPayments: 'బిల్లింగ్ & చెల్లింపులు',
+    generalInquiry: 'సాధారణ విచారణ',
+  },
+  hi: {
+    // Dashboard
+    dashboard: 'डैशबोर्ड', welcome: 'स्वागत', totalCrops: 'कुल फसलें', activeBids: 'सक्रिय बोलियां', totalSales: 'कुल बिक्री', revenue: 'आय',
+    
+    // Navigation
+    sellCrops: 'फसल बेचें', myBids: 'मेरी बोलियां', createBid: 'बोली बनाएं', orders: 'ऑर्डर', transport: 'परिवहन', localTransport: 'स्थानीय परिवहन',
+    weather: 'मौसम', priceForecast: 'मूल्य पूर्वानुमान', aiDoctor: 'AI पौधे डॉक्टर', harvestCountdown: 'फसल काउंटडाउन', myCustomers: 'मेरे ग्राहक',
+    customerSupport: 'ग्राहक सहायता', accountCentre: 'खाता केंद्र', logout: 'लॉग आउट', orderTracking: 'ऑर्डर ट्रैकिंग', orderHistory: 'ऑर्डर इतिहास',
+    bidHistory: 'बोली इतिहास', transportBooking: 'परिवहन बुकिंग', vehicleDetails: 'वाहन विवरण', back: 'वापस', home: 'होम',
+    
+    // Common Actions
+    save: 'सेव करें', cancel: 'रद्द करें', submit: 'जमा करें', delete: 'हटाएं', edit: 'संपादित करें', view: 'देखें', search: 'खोजें', filter: 'फिल्टर',
+    loading: 'लोड हो रहा है...', noData: 'कोई डेटा उपलब्ध नहीं', add: 'जोड़ें', manage: 'प्रबंधित करें', create: 'बनाएं', update: 'अपडेट करें', refresh: 'रिफ्रेश करें',
+    close: 'बंद करें', confirm: 'पुष्टि करें', tryAgain: 'फिर कोशिश करें',
+    
+    // Crop Details
+    cropName: 'फसल का नाम', quantity: 'मात्रा', quality: 'गुणवत्ता', price: 'मूल्य', pricePerUnit: 'प्रति यूनिट मूल्य', harvestDate: 'फसल की तारीख',
+    expiryDate: 'समाप्ति तिथि', category: 'श्रेणी', unit: 'यूनिट', description: 'विवरण',
+    
+    // Bidding
+    startingPrice: 'शुरुआती मूल्य', currentPrice: 'वर्तमान मूल्य', bidEndDate: 'बोली समाप्ति तिथि', placeBid: 'बोली लगाएं', bidAmount: 'बोली राशि',
+    totalBids: 'कुल बोलियां', highestBid: 'सबसे अधिक बोली', createNewBid: 'नई बोली बनाएं', endBid: 'बोली समाप्त करें', bidDetails: 'बोली विवरण',
+    noBidsYet: 'अभी तक कोई बोली नहीं', createFirstBid: 'अपनी पहली बोली बनाएं', manageBidListings: 'अपनी फसल बोली सूची प्रबंधित करें',
+    listCropForBidding: 'बोली के लिए अपनी फसल सूचीबद्ध करें', bidCreatedSuccessfully: 'बोली सफलतापूर्वक बनाई गई!',
+    buyersWillBeNotified: 'जुड़े खरीदारों को आपकी बोली के बारे में सूचित किया जाएगा।', endBidEarly: 'बोली जल्दी समाप्त करें?',
+    areYouSureEndBid: 'क्या आप वाकई इस बोली को समाप्त करना चाहते हैं', highestBidderWins: 'सबसे अधिक बोली लगाने वाले को विजेता घोषित किया जाएगा।',
+    noBidsNoWinner: 'अभी तक कोई बोली नहीं है, इसलिए कोई विजेता नहीं होगा।',
+    
+    // Status
+    active: 'सक्रिय', pending: 'लंबित', completed: 'पूर्ण', cancelled: 'रद्द', delivered: 'वितरित', approved: 'अनुमोदित',
+    rejected: 'अस्वीकृत', inProgress: 'प्रगति में',
+    
+    // Messages
+    success: 'सफलता', error: 'त्रुटि', warning: 'चेतावनी', info: 'जानकारी',
+    
+    // Sell Crops Page
+    addListing: 'सूची जोड़ें', noListingsYet: 'अभी तक कोई सूची नहीं',
+    createFirstListing: 'सार्वजनिक खरीदारों को फसल सीधे बेचने के लिए अपनी पहली सूची बनाएं',
+    listCropsForSale: 'सार्वजनिक खरीदारों को सीधी बिक्री के लिए अपनी फसलों को सूचीबद्ध करें', addNewListing: 'नई सूची जोड़ें', createListing: 'सूची बनाएं',
+    cropListedSuccessfully: 'फसल सफलतापूर्वक सूचीबद्ध!', listingDeletedSuccessfully: 'सूची सफलतापूर्वक हटाई गई!',
+    areYouSureDelete: 'क्या आप वाकई इस सूची को हटाना चाहते हैं?', unableToLoadCrops: 'फसलें लोड करने में असमर्थ',
+    loadingYourCrops: 'आपकी फसलें लोड हो रही हैं...', lastUpdated: 'अंतिम अपडेट',
+    
+    // Form Labels
+    required: 'आवश्यक', optional: 'वैकल्पिक', vegetables: 'सब्जियां', fruits: 'फल', grains: 'अनाज', spices: 'मसाले', other: 'अन्य',
+    premium: 'प्रीमियम', gradeA: 'ग्रेड A', gradeB: 'ग्रेड B', gradeC: 'ग्रेड C', standard: 'मानक', kilograms: 'किलोग्राम',
+    quintal: 'क्विंटल', ton: 'टन',
+    
+    // Transport
+    vehicle: 'वाहन', driver: 'चालक', booking: 'बुकिंग', route: 'मार्ग', distance: 'दूरी', duration: 'अवधि',
+    bookTransport: 'परिवहन बुक करें', viewVehicles: 'वाहन देखें', bookingHistory: 'बुकिंग इतिहास', trackBooking: 'बुकिंग ट्रैक करें',
+    vehicleType: 'वाहन प्रकार', capacity: 'क्षमता', availability: 'उपलब्धता', bookNow: 'अभी बुक करें',
+    fromLocation: 'से स्थान', toLocation: 'तक स्थान', pickupLocation: 'पिकअप स्थान', destination: 'गंतव्य',
+    
+    // Orders
+    orderDetails: 'ऑर्डर विवरण', trackOrder: 'ऑर्डर ट्रैक करें', orderStatus: 'ऑर्डर स्थिति', orderId: 'ऑर्डर ID', orderDate: 'ऑर्डर तिथि',
+    deliveryDate: 'डिलीवरी तिथि', buyer: 'खरीदार', seller: 'विक्रेता', totalAmount: 'कुल राशि', paymentStatus: 'भुगतान स्थिति',
+    noOrdersYet: 'अभी तक कोई ऑर्डर नहीं', viewAllOrders: 'सभी ऑर्डर देखें',
+    
+    // Customer Support
+    supportTickets: 'सहायता टिकट', createTicket: 'टिकट बनाएं', ticketId: 'टिकट ID', subject: 'विषय', message: 'संदेश',
+    sendMessage: 'संदेश भेजें', chatWithSupport: 'सहायता से चैट करें',
+    
+    // AI Plant Doctor
+    askDoctor: 'डॉक्टर से पूछें', plantHealth: 'पौधे का स्वास्थ्य', diagnosis: 'निदान', treatment: 'उपचार', uploadImage: 'छवि अपलोड करें',
+    analyzeImage: 'छवि का विश्लेषण करें',
+    
+    // Harvest Countdown
+    daysUntilHarvest: 'फसल तक दिन', readyToHarvest: 'फसल के लिए तैयार', upcomingHarvests: 'आगामी फसलें',
+    
+    // Price Forecast
+    forecastedPrice: 'पूर्वानुमानित मूल्य', marketTrends: 'बाजार रुझान', priceAnalysis: 'मूल्य विश्लेषण',
+    
+    // Validation Messages
+    fieldRequired: 'यह फ़ील्ड आवश्यक है', invalidEmail: 'अमान्य ईमेल पता', invalidPhone: 'अमान्य फोन नंबर',
+    invalidDate: 'अमान्य तिथि', dateMustBeFuture: 'तिथि भविष्य में होनी चाहिए', quantityMustBePositive: 'मात्रा सकारात्मक होनी चाहिए',
+    priceMustBePositive: 'मूल्य सकारात्मक होना चाहिए',
+    
+    // Vehicle Details
+    vehicleNotFound: 'वाहन नहीं मिला', vehicleNotFoundMessage: 'अनुरोधित वाहन नहीं मिल सका।',
+    verifiedVehicle: 'सत्यापित वाहन', available24x7: '24/7 उपलब्ध', professionalDriver: 'पेशेवर चालक',
+    experiencedLicensed: 'अनुभवी और लाइसेंसशुदा', secureLoading: 'सुरक्षित लोडिंग', safeCropTransport: 'सुरक्षित फसल परिवहन',
+    chooseYourOption: 'अपना विकल्प चुनें',
+    
+    // Common UI Text
+    startingFrom: 'से शुरू', farmerSessionNotFound: 'किसान सत्र नहीं मिला। कृपया फिर से लॉगिन करें।',
+    failedToCreate: 'बनाने में विफल', failedToFetch: 'प्राप्त करने में विफल', loadingText: 'लोड हो रहा है...',
+    errorOccurred: 'एक त्रुटि हुई', tryAgainLater: 'कृपया फिर से कोशिश करें',
+    
+    // AI Plant Doctor
+    aiPlantDoctor: 'AI पौधे डॉक्टर', yourAgriculturalHealthExpert: 'आपके कृषि स्वास्थ्य विशेषज्ञ',
+    consultations: 'परामर्श', imagesAnalyzed: 'चित्र विश्लेषित', 
+    loadingAiPlantDoctor: 'AI पौधे डॉक्टर लोड हो रहा है...', 
+    askAboutPlantDiseases: 'पौधों की बीमारियों, फसल देखभाल के बारे में पूछें या एक छवि अपलोड करें...',
+    sorryEncounteredError: 'खुशी, मुझे एक त्रुटि का सामना करना पड़ा। कृपया फिर से कोशिश करें या मुझसे अपनी खेती की जरूरतों के बारे में पूछें।',
+    
+    // Dashboard Transport Section
+    popularRoute: 'लोकप्रिय मार्ग', rating: 'रेटिंग', vehicles: 'वाहन', 
+    hours: 'घंटे', km: 'किमी', retry: 'फिर कोशिश करें', chat: 'चैट', addCrop: 'फसल जोड़ें',
+    
+    // Additional UI Text
+    hello: 'हैलो', welcomeBack: 'आपके डैशबोर्ड में वापस स्वागत है', account: 'खाता', customers: 'ग्राहक',
+    failedToLoadDashboard: 'डैशबोर्ड डेटा लोड करने में विफल', aiDoctorAnalyzing: 'AI डॉक्टर विश्लेषण कर रहा है...',
+    readyToHelp: 'मदद के लिए तैयार!', askAboutPlantDiseasesAndCare: 'पौधों की बीमारियों, कीटों और देखभाल के बारे में पूछें',
+    available247: '24/7 उपलब्ध', consults: 'परामर्श', images: 'चित्र', powered: 'संचालित',
+    scan: 'स्कैन', totalListings: 'कुल सूचियां', avgPriceKg: 'औसत मूल्य/किलो', totalValue: 'कुल मूल्य',
+    cropsSold: 'फसलें बेची गईं', activeBidsCount: 'सक्रिय बोलियां', available: 'उपलब्ध',
+    manageAccountInfo: 'अपनी खाता जानकारी प्रबंधित करें', accountCenter: 'खाता केंद्र',
+    farmerProfile: 'किसान प्रोफ़ाइल', accountManagementComingSoon: 'खाता प्रबंधन सुविधाएं जल्द आ रही हैं...',
+    manageHarvestSchedules: 'अपने फसल कटाई कार्यक्रम प्रबंधित करें', pleaseAddCropsFirst: 'कृपया पहले अपने खाता केंद्र में फसलें जोड़ें।',
+    goToAccountCentre: 'खाता केंद्र पर जाएं', failedToLoadBidHistory: 'बोली इतिहास लोड करने में विफल',
+    failedToLoadCrops: 'फसलें लोड करने में विफल', failedToLoadBids: 'बोलियां लोड करने में विफल',
+    pleaseAnalyzeImage: 'कृपया इस पौधे की छवि का विश्लेषण करें', failedToLoadChatSession: 'चैट सत्र लोड करने में विफल',
+    failedToClearChat: 'चैट साफ़ करने में विफल',
+    
+    // Additional missing keys
+    bidEndedSuccessfully: 'बोली सफलतापूर्वक समाप्त!',
+    
+    // Missing UI text that appears in farmer pages
+    listed: 'सूचीबद्ध',
+    premiumGrade: 'प्रीमियम ग्रेड',
+    goodGrade: 'अच्छा ग्रेड',
+    daysLeft: 'बचे दिन',
+    planted: 'बोया गया',
+    newCountdown: 'नया काउंटडाउन',
+    partlyCloudy: 'आंशिक बादल',
+    liveWeatherData: 'लाइव मौसम डेटा',
+    updated: 'अपडेट किया गया',
+    hourly: 'प्रति घंटा',
+    fiveDay: '5-दिन',
+    now: 'अभी',
+    
+    // New keys for farmer pages
+    bidMustEndBeforeHarvest: 'नोट: बोली फसल की तारीख से पहले समाप्त होनी चाहिए',
+    copyFromPickup: 'पिकअप से कॉपी करें',
+    pickupSchedule: 'पिकअप शेड्यूल',
+    date: 'तारीख',
+    time: 'समय',
+    myBidHistory: 'मेरी बोली का इतिहास',
+    trackYourCreatedBids: 'अपनी बनाई गई बोलियों और उनके परिणामों को ट्रैक करें',
+    allBids: 'सभी बोलियां',
+    withWinners: 'विजेताओं के साथ',
+    trackById: 'ID द्वारा ट्रैक करें',
+    trackYourTransportOrders: 'अपने परिवहन ऑर्डर ट्रैक करें',
+    viewAllTransportBookings: 'अपनी सभी परिवहन बुकिंग देखें',
+    totalOrders: 'कुल ऑर्डर',
+    aiPoweredPredictions: 'AI-संचालित भविष्यवाणियां',
+    editCountdown: 'काउंटडाउन संपादित करें',
+    newHarvestCountdown: 'नया फसल काउंटडाउन',
+    newSupportTicket: 'नया सहायता टिकट',
+    findBuyers: 'खरीदार खोजें',
+    connectWithBuyersAndGrow: 'खरीदारों से जुड़ें और अपना व्यापार बढ़ाएं',
+    requestDate: 'अनुरोध तिथि',
+    
+    // Weather page specific translations
+    yourLocation: 'आपका स्थान',
+    liveWeatherData: 'लाइव मौसम डेटा',
+    simulatedData: 'सिमुलेटेड डेटा',
+    hourly: 'प्रति घंटा',
+    weekly: 'साप्ताहिक',
+    fiveDay: '5-दिन',
+    now: 'अभी',
+    today: 'आज',
+    sun: 'रवि',
+    mon: 'सोम',
+    tue: 'मंगल',
+    wed: 'बुध',
+    thu: 'गुरु',
+    fri: 'शुक्र',
+    sat: 'शनि',
+    
+    // Weather conditions and advice
+    highHeatIrrigateEarlyMorning: 'अधिक गर्मी - सुबह या शाम को फसलों की सिंचाई करें',
+    coolWeatherProtectFromFrost: 'ठंडा मौसम - संवेदनशील फसलों को पाले से बचाएं',
+    goodTemperatureForFarming: 'अधिकांश कृषि गतिविधियों के लिए अच्छा तापमान',
+    rainExpectedAvoidSpraying: 'बारिश की उम्मीद - आज कीटनाशक का छिड़काव न करें',
+    goodTimeForTransplanting: 'पौधे रोपने का अच्छा समय',
+    highHumidityWatchFungal: 'अधिक नमी - फंगल रोगों के लिए देखें',
+    clearSkiesIdealForHarvesting: 'साफ आसमान - फसल काटने और सुखाने के लिए आदर्श',
+    
+    // Weather details
+    wind: 'हवा',
+    humidity: 'नमी',
+    visibility: 'दृश्यता',
+    pressure: 'दबाव',
+    sunrise: 'सूर्योदय',
+    sunset: 'सूर्यास्त',
+    feelsLike: 'महसूस होता है',
+    uvIndex: 'UV सूचकांक',
+    rainChance: 'बारिश की संभावना',
+    
+    // Weather quality descriptions
+    lightBreeze: 'हल्की हवा',
+    comfortable: 'आरामदायक',
+    clear: 'साफ',
+    hazy: 'धुंधला',
+    normal: 'सामान्य',
+    high: 'अधिक',
+    veryHot: 'बहुत गर्म',
+    warm: 'गर्म',
+    lowProbability: 'कम संभावना',
+    rainExpected: 'बारिश की उम्मीद',
+    none: 'कोई नहीं',
+    useProtection: 'सुरक्षा का उपयोग करें',
+    moderate: 'मध्यम',
+    
+    // Form placeholders and labels
+    state: 'राज्य',
+    district: 'जिला',
+    city: 'शहर',
+    pinCode: 'पिन कोड',
+    detailedAddress: 'विस्तृत पता',
+    orEnterExactDistance: 'या सटीक दूरी दर्ज करें',
+    enterBuyerPhoneNumber: 'क्रॉस-प्लेटफॉर्म ट्रैकिंग के लिए खरीदार का फोन नंबर दर्ज करें',
+    plantAnalysis: 'पौधे का विश्लेषण',
+    plantToAnalyze: 'विश्लेषण के लिए पौधा',
+    
+    // Additional form placeholders
+    enterTrackingId: 'ट्रैकिंग ID दर्ज करें (जैसे, TRK123456)',
+    selectCrop: 'फसल चुनें',
+    
+    // Additional missing keys
+    listed: 'सूचीबद्ध',
+    premiumGrade: 'प्रीमियम ग्रेड',
+    goodGrade: 'अच्छा ग्रेड',
+    available: 'उपलब्ध',
+    totalValue: 'कुल मूल्य',
+    harvestDate: 'फसल की तारीख',
+    edit: 'संपादित करें',
+    delete: 'हटाएं',
+    daysLeft: 'बचे दिन',
+    quantity: 'मात्रा',
+    planted: 'बोया गया',
+    newCountdown: 'नया काउंटडाउन',
+    partlyCloudy: 'आंशिक बादल',
+    liveWeatherData: 'लाइव मौसम डेटा',
+    updated: 'अपडेट किया गया',
+    hourly: 'प्रति घंटा',
+    fiveDay: '5-दिन',
+    now: 'अभी',
+    vegetables: 'सब्जियां',
+    
+    // Buyer Dashboard specific
+    morgen: 'मॉर्गन',
+    publicBuyerDashboard: 'सार्वजनिक खरीदार डैशबोर्ड',
+    commercialBuyerDashboard: 'वाणिज्यिक खरीदार डैशबोर्ड',
+    loadingBuyerDashboard: 'खरीदार डैशबोर्ड लोड हो रहा है...',
+    failedToLoadDashboardData: 'डैशबोर्ड डेटा लोड करने में विफल',
+    retry: 'फिर कोशिश करें',
+    myFarmers: 'मेरे किसान',
+    updates: 'अपडेट',
+    noUpdatesAvailable: 'कोई अपडेट उपलब्ध नहीं',
+    liveBidding: 'लाइव बिडिंग',
+    activeBids: 'सक्रिय बोलियां',
+    biddingStats: 'बिडिंग आंकड़े',
+    joinLiveAuctions: 'लाइव नीलामी में शामिल हों',
+    buyCrops: 'फसल खरीदें',
+    localDistrictCropsOnly: 'केवल स्थानीय जिला फसलें',
+    availableCrops: 'उपलब्ध फसलें',
+    avgPrice: 'औसत मूल्य',
+    browseLocalCrops: 'स्थानीय फसलों को ब्राउज़ करें',
+    orderTracking: 'ऑर्डर ट्रैकिंग',
+    activeOrders: 'सक्रिय ऑर्डर',
+    recentOrders: 'हाल के ऑर्डर',
+    lastSevenDays: 'पिछले 7 दिन',
+    transport: 'परिवहन',
+    bookCargoTransport: 'कार्गो परिवहन बुक करें',
+    transportOptions: 'परिवहन विकल्प',
+    availableNow: 'अभी उपलब्ध',
+    vehicles: 'वाहन',
+    rate: 'दर',
+    bookTransport: 'परिवहन बुक करें',
+    
+    // Common UI elements
+    morgenLogo: 'मॉर्गन लोगो',
+    signIn: 'साइन इन',
+    loading: 'लोड हो रहा है...',
+    
+    // Driver specific
+    driverDashboard: 'ड्राइवर डैशबोर्ड',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'एडमिन खरीदार फीचर - जल्द आ रहा है',
+    recentActivity: 'हाल की गतिविधि',
+    activityTrackingComingSoon: 'गतिविधि ट्रैकिंग जल्द आ रही है...',
+    
+    // Session management
+    farmerSessionExtended: 'किसान सत्र बढ़ाया गया',
+    buyerSessionExtended: 'खरीदार सत्र बढ़ाया गया',
+    adminSessionExtended: 'एडमिन सत्र बढ़ाया गया',
+    driverSessionExtended: 'ड्राइवर सत्र बढ़ाया गया',
+    
+    // Transport tracking
+    vehicle: 'वाहन',
+    distance: 'दूरी',
+    amount: 'राशि',
+    pickupDate: 'पिकअप तारीख',
+    bookingId: 'बुकिंग ID',
+    trackingId: 'ट्रैकिंग ID',
+    routeInformation: 'मार्ग जानकारी',
+    deliveryInformation: 'डिलीवरी जानकारी',
+    expectedDelivery: 'अपेक्षित डिलीवरी',
+    vehicleType: 'वाहन प्रकार',
+    totalAmount: 'कुल राशि',
+    
+    // Customer support
+    you: 'आप',
+    supportTeam: 'सहायता टीम',
+    justNow: 'अभी',
+    sending: 'भेज रहे हैं...',
+    send: 'भेजें',
+    
+    // Live bidding
+    ended: 'समाप्त',
+    unknownFarmer: 'अज्ञात किसान',
+    customAmount: 'कस्टम राशि',
+    
+    // General
+    info: 'जानकारी',
+    noData: 'कोई डेटा उपलब्ध नहीं',
+    
+    // Additional weather and farming terms for Weather.jsx
+    todaysAgricultureSummary: 'आज का कृषि सारांश',
+    farmingAdvice: 'कृषि सलाह',
+    avgTemperature: 'औसत तापमान',
+    maxWind: 'अधिकतम हवा',
+    totalPrecipitation: 'कुल वर्षा',
+    avgHumidity: 'औसत नमी',
+    fungalDiseaseRisk: 'फंगल रोग जोखिम',
+    applyFungicide: 'फंगिसाइड को रोकथाम के रूप में लगाएं। अच्छी हवा के संचार को सुनिश्चित करें।',
+    monitorCrops: 'बीमारी के शुरुआती संकेतों के लिए फसलों की बारीकी से निगरानी करें।',
+    conditionsUnfavorable: 'फंगल वृद्धि के लिए स्थितियां प्रतिकूल हैं।',
+    pestActivityLevel: 'कीट गतिविधि स्तर',
+    warmHumidConditions: 'गर्म नम स्थितियां कीट प्रजनन के लिए अनुकूल हैं। नियमित रूप से खेतों की जांच करें।',
+    normalPestActivity: 'सामान्य कीट गतिविधि की उम्मीद है। नियमित निगरानी जारी रखें।',
+    coolConditions: 'ठंडी स्थितियां कीट गतिविधि को कम करती हैं।',
+    moonPhase: 'चंद्र चरण',
+    moonrise: 'चंद्रोदय',
+    moonset: 'चंद्रास्त',
+    dewPoint: 'ओस बिंदु',
+    notRecommended: 'अनुशंसित नहीं',
+    idealConditions: 'आदर्श स्थितियां',
+    eveningPreferred: 'शाम को प्राथमिकता',
+    good: 'अच्छा',
+    unhealthy: 'अस्वस्थ',
+    veryUnhealthy: 'बहुत अस्वस्थ',
+    noRainExpected: 'बारिश की उम्मीद नहीं',
+    newMoon: 'नया चांद',
+    
+    // Additional missing keys for farmer pages
+    unknownCrop: 'अज्ञात फसल',
+    noTimesAvailableToday: 'आज कोई समय उपलब्ध नहीं',
+    selectTime: 'समय चुनें',
+    orderPlaced: 'ऑर्डर दिया गया',
+    orderAccepted: 'ऑर्डर स्वीकार किया गया',
+    pickupStarted: 'पिकअप शुरू किया गया',
+    orderPickedUp: 'ऑर्डर पिकअप किया गया',
+    inTransit: 'ट्रांजिट में',
+    delivered: 'डिलीवर किया गया',
+    cancelled: 'रद्द किया गया',
+    updateCountdown: 'काउंटडाउन अपडेट करें',
+    createCountdown: 'काउंटडाउन बनाएं',
+    transportLogistics: 'परिवहन और रसद',
+    weatherServices: 'मौसम सेवाएं',
+    cropManagement: 'फसल प्रबंधन',
+    auctionMarketplace: 'नीलामी और बाजार',
+    technicalIssues: 'तकनीकी समस्याएं',
+    billingPayments: 'बिलिंग और भुगतान',
+    generalInquiry: 'सामान्य पूछताछ',
+  },
+  ta: {
+    // Dashboard
+    dashboard: 'டாஷ்போர்டு', welcome: 'வரவேற்கிறோம்', totalCrops: 'மொத்த பயிர்கள்', activeBids: 'செயலில் உள்ள ஏலங்கள்', totalSales: 'மொத்த விற்பனை', revenue: 'வருமானம்',
+    
+    // Navigation
+    sellCrops: 'பயிர்களை விற்க', myBids: 'என் ஏலங்கள்', createBid: 'ஏலம் உருவாக்க', orders: 'ஆர்டர்கள்', transport: 'போக்குவரத்து', localTransport: 'உள்ளூர் போக்குவரத்து',
+    weather: 'வானிலை', priceForecast: 'விலை முன்னறிவிப்பு', aiDoctor: 'AI தாவர மருத்துவர்', harvestCountdown: 'அறுவடை கவுண்ட்டவுன்', myCustomers: 'என் வாடிக்கையாளர்கள்',
+    customerSupport: 'வாடிக்கையாளர் ஆதரவு', accountCentre: 'கணக்கு மையம்', logout: 'வெளியேறு', orderTracking: 'ஆர்டர் கண்காணிப்பு', orderHistory: 'ஆர்டர் வரலாறு',
+    bidHistory: 'ஏல வரலாறு', transportBooking: 'போக்குவரத்து முன்பதிவு', vehicleDetails: 'வாகன விவரங்கள்', back: 'பின்னால்', home: 'முகப்பு',
+    
+    // Common Actions
+    save: 'சேமிக்க', cancel: 'ரத்து செய்', submit: 'சமர்ப்பிக்க', delete: 'நீக்க', edit: 'திருத்த', view: 'பார்க்க', search: 'தேடல்', filter: 'வடிகட்டி',
+    loading: 'ஏற்றுகிறது...', noData: 'தரவு இல்லை', add: 'சேர்க்க', manage: 'நிர்வகிக்க', create: 'உருவாக்க', update: 'புதுப்பிக்க', refresh: 'புதுப்பிக்க',
+    close: 'மூடு', confirm: 'உறுதிப்படுத்து', tryAgain: 'மீண்டும் முயற்சிக்க',
+    
+    // Crop Details
+    cropName: 'பயிர் பெயர்', quantity: 'அளவு', quality: 'தரம்', price: 'விலை', pricePerUnit: 'யூனிட் விலை', harvestDate: 'அறுவடை தேதி',
+    expiryDate: 'காலாவதி தேதி', category: 'வகை', unit: 'யூனிட்', description: 'விளக்கம்',
+    
+    // Bidding
+    startingPrice: 'தொடக்க விலை', currentPrice: 'தற்போதைய விலை', bidEndDate: 'ஏல முடிவு தேதி', placeBid: 'ஏலம் வைக்க', bidAmount: 'ஏல தொகை',
+    totalBids: 'மொத்த ஏலங்கள்', highestBid: 'அதிக ஏலம்', createNewBid: 'புதிய ஏலம் உருவாக்க', endBid: 'ஏலம் முடிக்க', bidDetails: 'ஏல விவரங்கள்',
+    noBidsYet: 'இன்னும் ஏலங்கள் இல்லை', createFirstBid: 'உங்கள் முதல் ஏலத்தை உருவாக்குங்கள்', manageBidListings: 'உங்கள் பயிர் ஏல பட்டியல்களை நிர்வகிக்கவும்',
+    listCropForBidding: 'ஏலத்திற்காக உங்கள் பயிரை பட்டியலிடுங்கள்', bidCreatedSuccessfully: 'ஏலம் வெற்றிகரமாக உருவாக்கப்பட்டது!',
+    buyersWillBeNotified: 'இணைக்கப்பட்ட வாங்குபவர்களுக்கு உங்கள் ஏலம் பற்றி அறிவிக்கப்படும்.', endBidEarly: 'ஏலத்தை முன்கூட்டியே முடிக்கவா?',
+    areYouSureEndBid: 'நீங்கள் உண்மையில் இந்த ஏலத்தை முடிக்க விரும்புகிறீர்களா', highestBidderWins: 'அதிக ஏலம் எடுத்தவர் வெற்றியாளராக அறிவிக்கப்படுவார்.',
+    noBidsNoWinner: 'இன்னும் ஏலங்கள் இல்லை, எனவே வெற்றியாளர் இருக்க மாட்டார்.',
+    
+    // Status
+    active: 'செயலில்', pending: 'நிலுவையில்', completed: 'முடிந்தது', cancelled: 'ரத்து செய்யப்பட்டது', delivered: 'வழங்கப்பட்டது', approved: 'அங்கீகரிக்கப்பட்டது',
+    rejected: 'நிராகரிக்கப்பட்டது', inProgress: 'முன்னேற்றத்தில்',
+    
+    // Messages
+    success: 'வெற்றி', error: 'பிழை', warning: 'எச்சரிக்கை', info: 'தகவல்',
+    
+    // Sell Crops Page
+    addListing: 'பட்டியல் சேர்க்க', noListingsYet: 'இன்னும் பட்டியல்கள் இல்லை',
+    createFirstListing: 'பொது வாங்குபவர்களுக்கு பயிர்களை நேரடியாக விற்க உங்கள் முதல் பட்டியலை உருவாக்குங்கள்',
+    listCropsForSale: 'பொது வாங்குபவர்களுக்கு நேரடி விற்பனைக்காக உங்கள் பயிர்களை பட்டியலிடுங்கள்', addNewListing: 'புதிய பட்டியல் சேர்க்க', createListing: 'பட்டியல் உருவாக்க',
+    cropListedSuccessfully: 'பயிர் வெற்றிகரமாக பட்டியலிடப்பட்டது!', listingDeletedSuccessfully: 'பட்டியல் வெற்றிகரமாக நீக்கப்பட்டது!',
+    areYouSureDelete: 'நீங்கள் உண்மையில் இந்த பட்டியலை நீக்க விரும்புகிறீர்களா?', unableToLoadCrops: 'பயிர்களை ஏற்ற முடியவில்லை',
+    loadingYourCrops: 'உங்கள் பயிர்கள் ஏற்றப்படுகின்றன...', lastUpdated: 'கடைசியாக புதுப்பிக்கப்பட்டது',
+    
+    // Form Labels
+    required: 'தேவையான', optional: 'விருப்பமான', vegetables: 'காய்கறிகள்', fruits: 'பழங்கள்', grains: 'தானியங்கள்', spices: 'மசாலாப் பொருட்கள்', other: 'மற்றவை',
+    premium: 'பிரீமியம்', gradeA: 'தரம் A', gradeB: 'தரம் B', gradeC: 'தரம் C', standard: 'நிலையான', kilograms: 'கிலோகிராம்',
+    quintal: 'குவிண்டல்', ton: 'டன்',
+    
+    // Transport
+    vehicle: 'வாகனம்', driver: 'ஓட்டுநர்', booking: 'முன்பதிவு', route: 'வழி', distance: 'தூரம்', duration: 'கால அளவு',
+    bookTransport: 'போக்குவரத்து முன்பதிவு', viewVehicles: 'வாகனங்களை பார்க்க', bookingHistory: 'முன்பதிவு வரலாறு', trackBooking: 'முன்பதிவு கண்காணிப்பு',
+    vehicleType: 'வாகன வகை', capacity: 'திறன்', availability: 'கிடைக்கும் தன்மை', bookNow: 'இப்போது முன்பதிவு செய்',
+    fromLocation: 'இருந்து இடம்', toLocation: 'வரை இடம்', pickupLocation: 'பிக்கப் இடம்', destination: 'இலக்கு',
+    
+    // Orders
+    orderDetails: 'ஆர்டர் விவரங்கள்', trackOrder: 'ஆர்டர் கண்காணிப்பு', orderStatus: 'ஆர்டர் நிலை', orderId: 'ஆர்டர் ID', orderDate: 'ஆர்டர் தேதி',
+    deliveryDate: 'டெலிவரி தேதி', buyer: 'வாங்குபவர்', seller: 'விற்பவர்', totalAmount: 'மொத்த தொகை', paymentStatus: 'பணம் செலுத்தும் நிலை',
+    noOrdersYet: 'இன்னும் ஆர்டர்கள் இல்லை', viewAllOrders: 'அனைத்து ஆர்டர்களையும் பார்க்க',
+    
+    // Customer Support
+    supportTickets: 'ஆதரவு டிக்கெட்டுகள்', createTicket: 'டிக்கெட் உருவாக்க', ticketId: 'டிக்கெட் ID', subject: 'விषயம்', message: 'செய்தி',
+    sendMessage: 'செய்தி அனுப்ப', chatWithSupport: 'ஆதரவுடன் அரட்டை',
+    
+    // AI Plant Doctor
+    askDoctor: 'மருத்துவரிடம் கேள்', plantHealth: 'தாவர ஆரோக்கியம்', diagnosis: 'நோய் கண்டறிதல்', treatment: 'சிகிச்சை', uploadImage: 'படம் பதிவேற்ற',
+    analyzeImage: 'படம் பகுப்பாய்வு',
+    
+    // Harvest Countdown
+    daysUntilHarvest: 'அறுவடைக்கு நாட்கள்', readyToHarvest: 'அறுவடைக்கு தயார்', upcomingHarvests: 'வரவிருக்கும் அறுவடைகள்',
+    
+    // Price Forecast
+    forecastedPrice: 'முன்னறிவிப்பு விலை', marketTrends: 'சந்தை போக்குகள்', priceAnalysis: 'விலை பகுப்பாய்வு',
+    
+    // Validation Messages
+    fieldRequired: 'இந்த புலம் தேவை', invalidEmail: 'தவறான மின்னஞ்சல் முகவரி', invalidPhone: 'தவறான தொலைபேசி எண்',
+    invalidDate: 'தவறான தேதி', dateMustBeFuture: 'தேதி எதிர்காலத்தில் இருக்க வேண்டும்', quantityMustBePositive: 'அளவு நேர்மறையாக இருக்க வேண்டும்',
+    priceMustBePositive: 'விலை நேர்மறையாக இருக்க வேண்டும்',
+    
+    // Vehicle Details
+    vehicleNotFound: 'வாகனம் கிடைக்கவில்லை', vehicleNotFoundMessage: 'கோரப்பட்ட வாகனம் கண்டுபிடிக்க முடியவில்லை.',
+    verifiedVehicle: 'சரிபார்க்கப்பட்ட வாகனம்', available24x7: '24/7 கிடைக்கும்', professionalDriver: 'தொழில்முறை ஓட்டுநர்',
+    experiencedLicensed: 'அனுபவம் & உரிமம் பெற்ற', secureLoading: 'பாதுகாப்பான ஏற்றுதல்', safeCropTransport: 'பாதுகாப்பான பயிர் போக்குவரத்து',
+    chooseYourOption: 'உங்கள் விருப்பத்தை தேர்வு செய்யுங்கள்',
+    
+    // Common UI Text
+    startingFrom: 'இருந்து தொடங்கி', farmerSessionNotFound: 'விவசாயி அமர்வு கிடைக்கவில்லை. தயவுசெய்து மீண்டும் உள்நுழையுங்கள்.',
+    failedToCreate: 'உருவாக்க முடியவில்லை', failedToFetch: 'பெற முடியவில்லை', loadingText: 'ஏற்றுகிறது...',
+    errorOccurred: 'பிழை ஏற்பட்டது', tryAgainLater: 'தயவுசெய்து மீண்டும் முயற்சிக்கவும்',
+    
+    // AI Plant Doctor
+    aiPlantDoctor: 'AI தாவர மருத்துவர்', yourAgriculturalHealthExpert: 'உங்கள் விவசாய சுகாதார நிபுணர்',
+    consultations: 'ஆலோசனைகள்', imagesAnalyzed: 'படங்கள் பகுப்பாய்வு செய்யப்பட்டன', 
+    loadingAiPlantDoctor: 'AI தாவர மருத்துவர் ஏற்றப்படுகிறது...', 
+    askAboutPlantDiseases: 'தாவர நோய்கள், பயிர் பராமரிப்பு பற்றி கேளுங்கள் அல்லது ஒரு படத்தை பதிவேற்றுங்கள்...',
+    sorryEncounteredError: 'மன்னிக்கவும், நான் ஒரு பிழையை எதிர்கொண்டேன். தயவுசெய்து மீண்டும் முயற்சிக்கவும் அல்லது உங்கள் விவசாய தேவைகளைப் பற்றி என்னிடம் கேளுங்கள்.',
+    
+    // Dashboard Transport Section
+    popularRoute: 'பிரபலமான வழி', rating: 'மதிப்பீடு', vehicles: 'வாகனங்கள்', 
+    hours: 'மணிநேரங்கள்', km: 'கிமீ', retry: 'மீண்டும் முயற்சிக்கவும்', chat: 'அரட்டை', addCrop: 'பயிர் சேர்க்கவும்',
+    
+    // Additional UI Text
+    hello: 'வணக்கம்', welcomeBack: 'உங்கள் டாஷ்போர்டுக்கு மீண்டும் வரவேற்கிறோம்', account: 'கணக்கு', customers: 'வாடிக்கையாளர்கள்',
+    failedToLoadDashboard: 'டாஷ்போர்டு தரவு ஏற்ற முடியவில்லை', aiDoctorAnalyzing: 'AI மருத்துவர் பகுப்பாய்வு செய்கிறார்...',
+    readyToHelp: 'உதவ தயார்!', askAboutPlantDiseasesAndCare: 'தாவர நோய்கள், பூச்சிகள் மற்றும் பராமரிப்பு பற்றி கேளுங்கள்',
+    available247: '24/7 கிடைக்கும்', consults: 'ஆலோசனைகள்', images: 'படங்கள்', powered: 'இயக்கப்படுகிறது',
+    scan: 'ஸ்கேன்', totalListings: 'மொத்த பட்டியல்கள்', avgPriceKg: 'சராசரி விலை/கிலோ', totalValue: 'மொத்த மதிப்பு',
+    cropsSold: 'பயிர்கள் விற்கப்பட்டன', activeBidsCount: 'செயலில் உள்ள ஏலங்கள்', available: 'கிடைக்கும்',
+    manageAccountInfo: 'உங்கள் கணக்கு தகவலை நிர்வகிக்கவும்', accountCenter: 'கணக்கு மையம்',
+    farmerProfile: 'விவசாயி சுயவிவரம்', accountManagementComingSoon: 'கணக்கு நிர்வாக அம்சங்கள் விரைவில் வருகின்றன...',
+    manageHarvestSchedules: 'உங்கள் பயிர் அறுவடை அட்டவணைகளை நிர்வகிக்கவும்', pleaseAddCropsFirst: 'தயவுசெய்து முதலில் உங்கள் கணக்கு மையத்தில் பயிர்களை சேர்க்கவும்.',
+    goToAccountCentre: 'கணக்கு மையத்திற்கு செல்லுங்கள்', failedToLoadBidHistory: 'ஏல வரலாறு ஏற்ற முடியவில்லை',
+    failedToLoadCrops: 'பயிர்கள் ஏற்ற முடியவில்லை', failedToLoadBids: 'ஏலங்கள் ஏற்ற முடியவில்லை',
+    pleaseAnalyzeImage: 'தயவுசெய்து இந்த தாவர படத்தை பகுப்பாய்வு செய்யுங்கள்', failedToLoadChatSession: 'அரட்டை அமர்வு ஏற்ற முடியவில்லை',
+    failedToClearChat: 'அரட்டை அழிக்க முடியவில்லை',
+    
+    // Additional missing keys
+    bidEndedSuccessfully: 'ஏலம் வெற்றிகரமாக முடிந்தது!',
+    
+    // Missing UI text that appears in farmer pages
+    listed: 'பட்டியலிடப்பட்டது',
+    premiumGrade: 'பிரீமியம் தரம்',
+    goodGrade: 'நல்ல தரம்',
+    daysLeft: 'மீதமுள்ள நாட்கள்',
+    planted: 'நடப்பட்டது',
+    newCountdown: 'புதிய கவுண்ட்டவுன்',
+    partlyCloudy: 'பகுதி மேகமூட்டம்',
+    liveWeatherData: 'நேரடி வானிலை தரவு',
+    updated: 'புதுப்பிக்கப்பட்டது',
+    hourly: 'மணிநேர',
+    fiveDay: '5-நாள்',
+    now: 'இப்போது',
+    
+    // New keys for farmer pages
+    bidMustEndBeforeHarvest: 'குறிப்பு: ஏலம் அறுவடை தேதிக்கு முன் முடிய வேண்டும்',
+    copyFromPickup: 'பிக்கப்பிலிருந்து நகலெடுக்கவும்',
+    pickupSchedule: 'பிக்கப் அட்டவணை',
+    date: 'தேதி',
+    time: 'நேரம்',
+    myBidHistory: 'என் ஏல வரலாறு',
+    trackYourCreatedBids: 'உங்கள் உருவாக்கிய ஏலங்கள் மற்றும் அவற்றின் முடிவுகளை கண்காணிக்கவும்',
+    allBids: 'அனைத்து ஏலங்கள்',
+    withWinners: 'வெற்றியாளர்களுடன்',
+    trackById: 'ID மூலம் கண்காணிக்கவும்',
+    trackYourTransportOrders: 'உங்கள் போக்குவரத்து ஆர்டர்களை கண்காணிக்கவும்',
+    viewAllTransportBookings: 'உங்கள் அனைத்து போக்குவரத்து முன்பதிவுகளையும் பார்க்கவும்',
+    totalOrders: 'மொத்த ஆர்டர்கள்',
+    aiPoweredPredictions: 'AI-இயங்கும் கணிப்புகள்',
+    editCountdown: 'கவுண்ட்டவுன் திருத்தவும்',
+    newHarvestCountdown: 'புதிய அறுவடை கவுண்ட்டவுன்',
+    newSupportTicket: 'புதிய ஆதரவு டிக்கெட்',
+    findBuyers: 'வாங்குபவர்களை கண்டறியவும்',
+    connectWithBuyersAndGrow: 'வாங்குபவர்களுடன் இணைந்து உங்கள் வணிகத்தை வளர்க்கவும்',
+    requestDate: 'கோரிக்கை தேதி',
+    
+    // Weather page specific translations
+    yourLocation: 'உங்கள் இடம்',
+    liveWeatherData: 'நேரடி வானிலை தரவு',
+    simulatedData: 'உருவகப்படுத்தப்பட்ட தரவு',
+    hourly: 'மணிநேர',
+    weekly: 'வாராந்திர',
+    fiveDay: '5-நாள்',
+    now: 'இப்போது',
+    today: 'இன்று',
+    sun: 'ஞாயிறு',
+    mon: 'திங்கள்',
+    tue: 'செவ்வாய்',
+    wed: 'புதன்',
+    thu: 'வியாழன்',
+    fri: 'வெள்ளி',
+    sat: 'சனி',
+    
+    // Weather conditions and advice
+    highHeatIrrigateEarlyMorning: 'அதிக வெப்பம் - காலை அல்லது மாலை பயிர்களுக்கு நீர் பாய்ச்சுங்கள்',
+    coolWeatherProtectFromFrost: 'குளிர்ந்த வானிலை - உணர்திறன் பயிர்களை உறைபனியிலிருந்து பாதுகாக்கவும்',
+    goodTemperatureForFarming: 'பெரும்பாலான விவசாய நடவடிக்கைகளுக்கு நல்ல வெப்பநிலை',
+    rainExpectedAvoidSpraying: 'மழை எதிர்பார்க்கப்படுகிறது - இன்று பூச்சிக்கொல்லி தெளிக்க வேண்டாம்',
+    goodTimeForTransplanting: 'நாற்றுகளை நடவு செய்ய நல்ல நேரம்',
+    highHumidityWatchFungal: 'அதிக ஈரப்பதம் - பூஞ்சை நோய்களைக் கவனிக்கவும்',
+    clearSkiesIdealForHarvesting: 'தெளிவான வானம் - அறுவடை மற்றும் உலர்த்துவதற்கு ஏற்றது',
+    
+    // Weather details
+    wind: 'காற்று',
+    humidity: 'ஈரப்பதம்',
+    visibility: 'தெரிவுநிலை',
+    pressure: 'அழுத்தம்',
+    sunrise: 'சூரிய உதயம்',
+    sunset: 'சூரிய அஸ்தமனம்',
+    feelsLike: 'உணர்வு',
+    uvIndex: 'UV குறியீடு',
+    rainChance: 'மழை வாய்ப்பு',
+    
+    // Weather quality descriptions
+    lightBreeze: 'லேசான காற்று',
+    comfortable: 'வசதியான',
+    clear: 'தெளிவான',
+    hazy: 'மங்கலான',
+    normal: 'சாதாரண',
+    high: 'அதிக',
+    veryHot: 'மிகவும் வெப்பம்',
+    warm: 'சூடான',
+    lowProbability: 'குறைந்த வாய்ப்பு',
+    rainExpected: 'மழை எதிர்பார்க்கப்படுகிறது',
+    none: 'எதுவும் இல்லை',
+    useProtection: 'பாதுகாப்பு பயன்படுத்தவும்',
+    moderate: 'மிதமான',
+    
+    // Form placeholders and labels
+    state: 'மாநிலம்',
+    district: 'மாவட்டம்',
+    city: 'நகரம்',
+    pinCode: 'பின் கோட்',
+    detailedAddress: 'விரிவான முகவரி',
+    orEnterExactDistance: 'அல்லது சரியான தூரத்தை உள்ளிடவும்',
+    enterBuyerPhoneNumber: 'கிராஸ்-பிளாட்ஃபார்ம் கண்காணிப்புக்காக வாங்குபவரின் தொலைபேசி எண்ணை உள்ளிடவும்',
+    plantAnalysis: 'தாவர பகுப்பாய்வு',
+    plantToAnalyze: 'பகுப்பாய்வுக்கான தாவரம்',
+    
+    // Additional form placeholders
+    enterTrackingId: 'ட்ராக்கிங் ID ஐ உள்ளிடவும் (எ.கா., TRK123456)',
+    selectCrop: 'பயிரை தேர்வு செய்யுங்கள்',
+    
+    // Buyer Dashboard specific
+    morgen: 'மோர்கன்',
+    publicBuyerDashboard: 'பொது வாங்குபவர் டாஷ்போர்டு',
+    commercialBuyerDashboard: 'வணிக வாங்குபவர் டாஷ்போர்டு',
+    loadingBuyerDashboard: 'வாங்குபவர் டாஷ்போர்டு ஏற்றப்படுகிறது...',
+    failedToLoadDashboardData: 'டாஷ்போர்டு தரவு ஏற்ற முடியவில்லை',
+    retry: 'மீண்டும் முயற்சிக்கவும்',
+    myFarmers: 'என் விவசாயிகள்',
+    updates: 'புதுப்பிப்புகள்',
+    noUpdatesAvailable: 'புதுப்பிப்புகள் இல்லை',
+    liveBidding: 'நேரடி ஏலம்',
+    activeBids: 'செயலில் உள்ள ஏலங்கள்',
+    biddingStats: 'ஏல புள்ளிவிவரங்கள்',
+    joinLiveAuctions: 'நேரடி ஏலத்தில் சேரவும்',
+    buyCrops: 'பயிர்கள் வாங்கவும்',
+    localDistrictCropsOnly: 'உள்ளூர் மாவட்ட பயிர்கள் மட்டும்',
+    availableCrops: 'கிடைக்கும் பயிர்கள்',
+    avgPrice: 'சராசரி விலை',
+    browseLocalCrops: 'உள்ளூர் பயிர்களை உலாவவும்',
+    orderTracking: 'ஆர்டர் கண்காணிப்பு',
+    activeOrders: 'செயலில் உள்ள ஆர்டர்கள்',
+    recentOrders: 'சமீபத்திய ஆர்டர்கள்',
+    lastSevenDays: 'கடந்த 7 நாட்கள்',
+    transport: 'போக்குவரத்து',
+    bookCargoTransport: 'சரக்கு போக்குவரத்து முன்பதிவு',
+    transportOptions: 'போக்குவரத்து விருப்பங்கள்',
+    availableNow: 'இப்போது கிடைக்கும்',
+    vehicles: 'வாகனங்கள்',
+    rate: 'விலை',
+    bookTransport: 'போக்குவரத்து முன்பதிவு',
+    
+    // Common UI elements
+    morgenLogo: 'மோர்கன் லோகோ',
+    signIn: 'உள்நுழைய',
+    loading: 'ஏற்றுகிறது...',
+    
+    // Driver specific
+    driverDashboard: 'ஓட்டுநர் டாஷ்போர்டு',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'நிர்வாக வாங்குபவர் அம்சம் - விரைவில் வருகிறது',
+    recentActivity: 'சமீபத்திய செயல்பாடு',
+    activityTrackingComingSoon: 'செயல்பாடு கண்காணிப்பு விரைவில் வருகிறது...',
+    
+    // Session management
+    farmerSessionExtended: 'விவசாயி அமர்வு நீட்டிக்கப்பட்டது',
+    buyerSessionExtended: 'வாங்குபவர் அமர்வு நீட்டிக்கப்பட்டது',
+    adminSessionExtended: 'நிர்வாக அமர்வு நீட்டிக்கப்பட்டது',
+    driverSessionExtended: 'ஓட்டுநர் அமர்வு நீட்டிக்கப்பட்டது',
+    
+    // Transport tracking
+    vehicle: 'வாகனம்',
+    distance: 'தூரம்',
+    amount: 'தொகை',
+    pickupDate: 'பிக்கப் தேதி',
+    bookingId: 'முன்பதிவு ID',
+    trackingId: 'கண்காணிப்பு ID',
+    routeInformation: 'வழி தகவல்',
+    deliveryInformation: 'டெலிவரி தகவல்',
+    expectedDelivery: 'எதிர்பார்க்கப்படும் டெலிவரி',
+    vehicleType: 'வாகன வகை',
+    totalAmount: 'மொத்த தொகை',
+    
+    // Customer support
+    you: 'நீங்கள்',
+    supportTeam: 'ஆதரவு குழு',
+    justNow: 'இப்போதே',
+    sending: 'அனுப்புகிறது...',
+    send: 'அனுப்பு',
+    
+    // Live bidding
+    ended: 'முடிந்தது',
+    unknownFarmer: 'தெரியாத விவசாயி',
+    customAmount: 'தனிப்பயன் தொகை',
+    
+    // General
+    info: 'தகவல்',
+    noData: 'தரவு இல்லை',
+    
+    // Additional weather and farming terms for Weather.jsx
+    todaysAgricultureSummary: 'இன்றைய விவசாய சுருக்கம்',
+    farmingAdvice: 'விவசாய ஆலோசனை',
+    avgTemperature: 'சராசரி வெப்பநிலை',
+    maxWind: 'அதிகபட்ச காற்று',
+    totalPrecipitation: 'மொத்த மழைப்பொழிவு',
+    avgHumidity: 'சராசரி ஈரப்பதம்',
+    fungalDiseaseRisk: 'பூஞ்சை நோய் ஆபத்து',
+    applyFungicide: 'பூஞ்சைக் கொல்லியை தடுப்பு நடவடிக்கையாக பயன்படுத்துங்கள். நல்ல காற்று சுழற்சியை உறுதி செய்யுங்கள்.',
+    monitorCrops: 'நோயின் ஆரம்ப அறிகுறிகளுக்கு பயிர்களை உன்னிப்பாக கண்காணிக்கவும்.',
+    conditionsUnfavorable: 'பூஞ்சை வளர்ச்சிக்கு நிலைமைகள் சாதகமற்றவை.',
+    pestActivityLevel: 'பூச்சி செயல்பாட்டு நிலை',
+    warmHumidConditions: 'வெப்பமான ஈரமான நிலைமைகள் பூச்சி இனப்பெருக்கத்திற்கு சாதகமானவை. வயல்களை தொடர்ந்து ஆய்வு செய்யுங்கள்.',
+    normalPestActivity: 'சாதாரண பூச்சி செயல்பாடு எதிர்பார்க்கப்படுகிறது. தொடர்ந்து கண்காணிப்பை தொடருங்கள்.',
+    coolConditions: 'குளிர்ந்த நிலைமைகள் பூச்சி செயல்பாட்டை குறைக்கின்றன.',
+    moonPhase: 'சந்திர கட்டம்',
+    moonrise: 'சந்திர உதயம்',
+    moonset: 'சந்திர அஸ்தமனம்',
+    dewPoint: 'பனி புள்ளி',
+    notRecommended: 'பரிந்துரைக்கப்படவில்லை',
+    idealConditions: 'சிறந்த நிலைமைகள்',
+    eveningPreferred: 'மாலை விரும்பத்தக்கது',
+    good: 'நல்லது',
+    unhealthy: 'ஆரோக்கியமற்ற',
+    veryUnhealthy: 'மிகவும் ஆரோக்கியமற்ற',
+    noRainExpected: 'மழை எதிர்பார்க்கப்படவில்லை',
+    newMoon: 'அமாவாசை',
+    
+    // Additional missing keys for farmer pages
+    unknownCrop: 'தெரியாத பயிர்',
+    noTimesAvailableToday: 'இன்று நேரம் கிடைக்கவில்லை',
+    selectTime: 'நேரத்தை தேர்ந்தெடுக்கவும்',
+    orderPlaced: 'ஆர்டர் வைக்கப்பட்டது',
+    orderAccepted: 'ஆர்டர் ஏற்றுக்கொள்ளப்பட்டது',
+    pickupStarted: 'பிக்கப் தொடங்கப்பட்டது',
+    orderPickedUp: 'ஆர்டர் எடுக்கப்பட்டது',
+    inTransit: 'போக்குவரத்தில்',
+    delivered: 'வழங்கப்பட்டது',
+    cancelled: 'ரத்து செய்யப்பட்டது',
+    updateCountdown: 'கவுண்ட்டவுனை புதுப்பிக்கவும்',
+    createCountdown: 'கவுண்ட்டவுன் உருவாக்கவும்',
+    transportLogistics: 'போக்குவரத்து மற்றும் தளவாடங்கள்',
+    weatherServices: 'வானிலை சேவைகள்',
+    cropManagement: 'பயிர் மேலாண்மை',
+    auctionMarketplace: 'ஏலம் மற்றும் சந்தை',
+    technicalIssues: 'தொழில்நுட்ப சிக்கல்கள்',
+    billingPayments: 'பில்லிங் மற்றும் பணம் செலுத்துதல்',
+    generalInquiry: 'பொது விசாரணை',
+  },
+  ml: {
+    // Dashboard
+    dashboard: 'ഡാഷ്‌ബോർഡ്', welcome: 'സ്വാഗതം', totalCrops: 'മൊത്തം വിളകൾ', activeBids: 'സജീവ ലേലങ്ങൾ', totalSales: 'മൊത്തം വിൽപ്പന', revenue: 'വരുമാനം',
+    
+    // Navigation
+    sellCrops: 'വിളകൾ വിൽക്കുക', myBids: 'എന്റെ ലേലങ്ങൾ', createBid: 'ലേലം സൃഷ്ടിക്കുക', orders: 'ഓർഡറുകൾ', transport: 'ഗതാഗതം', localTransport: 'പ്രാദേശിക ഗതാഗതം',
+    weather: 'കാലാവസ്ഥ', priceForecast: 'വില പ്രവചനം', aiDoctor: 'AI സസ്യ ഡോക്ടർ', harvestCountdown: 'വിളവെടുപ്പ് കൗണ്ട്ഡൗൺ', myCustomers: 'എന്റെ ഉപഭോക്താക്കൾ',
+    customerSupport: 'ഉപഭോക്തൃ പിന്തുണ', accountCentre: 'അക്കൗണ്ട് സെന്റർ', logout: 'ലോഗൗട്ട്', orderTracking: 'ഓർഡർ ട്രാക്കിംഗ്', orderHistory: 'ഓർഡർ ചരിത്രം',
+    bidHistory: 'ലേല ചരിത്രം', transportBooking: 'ഗതാഗത ബുക്കിംഗ്', vehicleDetails: 'വാഹന വിശദാംശങ്ങൾ', back: 'തിരികെ', home: 'ഹോം',
+    
+    // Common Actions
+    save: 'സേവ് ചെയ്യുക', cancel: 'റദ്ദാക്കുക', submit: 'സമർപ്പിക്കുക', delete: 'ഇല്ലാതാക്കുക', edit: 'എഡിറ്റ് ചെയ്യുക', view: 'കാണുക', search: 'തിരയുക', filter: 'ഫിൽട്ടർ',
+    loading: 'ലോഡ് ചെയ്യുന്നു...', noData: 'ഡാറ്റ ലഭ്യമല്ല', add: 'ചേർക്കുക', manage: 'കൈകാര്യം ചെയ്യുക', create: 'സൃഷ്ടിക്കുക', update: 'അപ്ഡേറ്റ് ചെയ്യുക', refresh: 'പുതുക്കുക',
+    close: 'അടയ്ക്കുക', confirm: 'സ്ഥിരീകരിക്കുക', tryAgain: 'വീണ്ടും ശ്രമിക്കുക',
+    
+    // Crop Details
+    cropName: 'വിള പേര്', quantity: 'അളവ്', quality: 'ഗുണനിലവാരം', price: 'വില', pricePerUnit: 'യൂണിറ്റ് വില', harvestDate: 'വിളവെടുപ്പ് തീയതി',
+    expiryDate: 'കാലാവധി തീയതി', category: 'വിഭാഗം', unit: 'യൂണിറ്റ്', description: 'വിവരണം',
+    
+    // Bidding
+    startingPrice: 'ആരംഭ വില', currentPrice: 'നിലവിലെ വില', bidEndDate: 'ലേലം അവസാന തീയതി', placeBid: 'ലേലം വയ്ക്കുക', bidAmount: 'ലേല തുക',
+    totalBids: 'മൊത്തം ലേലങ്ങൾ', highestBid: 'ഏറ്റവും ഉയർന്ന ലേലം', createNewBid: 'പുതിയ ലേലം സൃഷ്ടിക്കുക', endBid: 'ലേലം അവസാനിപ്പിക്കുക', bidDetails: 'ലേല വിശദാംശങ്ങൾ',
+    noBidsYet: 'ഇതുവരെ ലേലങ്ങളില്ല', createFirstBid: 'നിങ്ങളുടെ ആദ്യ ലേലം സൃഷ്ടിക്കുക', manageBidListings: 'നിങ്ങളുടെ വിള ലേല ലിസ്റ്റിംഗുകൾ കൈകാര്യം ചെയ്യുക',
+    listCropForBidding: 'ലേലത്തിനായി നിങ്ങളുടെ വിള ലിസ്റ്റ് ചെയ്യുക', bidCreatedSuccessfully: 'ലേലം വിജയകരമായി സൃഷ്ടിച്ചു!',
+    buyersWillBeNotified: 'കണക്റ്റ് ചെയ്ത വാങ്ങുന്നവരെ നിങ്ങളുടെ ലേലത്തെക്കുറിച്ച് അറിയിക്കും.', endBidEarly: 'ലേലം നേരത്തേ അവസാനിപ്പിക്കണോ?',
+    areYouSureEndBid: 'നിങ്ങൾക്ക് ഈ ലേലം അവസാനിപ്പിക്കണമെന്ന് ഉറപ്പാണോ', highestBidderWins: 'ഏറ്റവും ഉയർന്ന ലേലക്കാരനെ വിജയിയായി പ്രഖ്യാപിക്കും.',
+    noBidsNoWinner: 'ഇതുവരെ ലേലങ്ങളില്ല, അതിനാൽ വിജയി ഉണ്ടാകില്ല.',
+    
+    // Status
+    active: 'സജീവം', pending: 'തീർപ്പുകൽപ്പിക്കാത്ത', completed: 'പൂർത്തിയായി', cancelled: 'റദ്ദാക്കി', delivered: 'ഡെലിവർ ചെയ്തു', approved: 'അംഗീകരിച്ചു',
+    rejected: 'നിരസിച്ചു', inProgress: 'പുരോഗതിയിൽ',
+    
+    // Messages
+    success: 'വിജയം', error: 'പിശക്', warning: 'മുന്നറിയിപ്പ്', info: 'വിവരം',
+    
+    // Sell Crops Page
+    addListing: 'ലിസ്റ്റിംഗ് ചേർക്കുക', noListingsYet: 'ഇതുവരെ ലിസ്റ്റിംഗുകളില്ല',
+    createFirstListing: 'പൊതു വാങ്ങുന്നവർക്ക് വിളകൾ നേരിട്ട് വിൽക്കാൻ നിങ്ങളുടെ ആദ്യ ലിസ്റ്റിംഗ് സൃഷ്ടിക്കുക',
+    listCropsForSale: 'പൊതു വാങ്ങുന്നവർക്ക് നേരിട്ടുള്ള വിൽപ്പനയ്ക്കായി നിങ്ങളുടെ വിളകൾ ലിസ്റ്റ് ചെയ്യുക', addNewListing: 'പുതിയ ലിസ്റ്റിംഗ് ചേർക്കുക', createListing: 'ലിസ്റ്റിംഗ് സൃഷ്ടിക്കുക',
+    cropListedSuccessfully: 'വിള വിജയകരമായി ലിസ്റ്റ് ചെയ്തു!', listingDeletedSuccessfully: 'ലിസ്റ്റിംഗ് വിജയകരമായി ഇല്ലാതാക്കി!',
+    areYouSureDelete: 'നിങ്ങൾക്ക് ഈ ലിസ്റ്റിംഗ് ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ?', unableToLoadCrops: 'വിളകൾ ലോഡ് ചെയ്യാൻ കഴിയുന്നില്ല',
+    loadingYourCrops: 'നിങ്ങളുടെ വിളകൾ ലോഡ് ചെയ്യുന്നു...', lastUpdated: 'അവസാനം അപ്ഡേറ്റ് ചെയ്തത്',
+    
+    // Form Labels
+    required: 'ആവശ്യമായ', optional: 'ഓപ്ഷണൽ', vegetables: 'പച്ചക്കറികൾ', fruits: 'പഴങ്ങൾ', grains: 'ധാന്യങ്ങൾ', spices: 'സുഗന്ധവ്യഞ്ജനങ്ങൾ', other: 'മറ്റുള്ളവ',
+    premium: 'പ്രീമിയം', gradeA: 'ഗ്രേഡ് A', gradeB: 'ഗ്രേഡ് B', gradeC: 'ഗ്രേഡ് C', standard: 'സ്റ്റാൻഡേർഡ്', kilograms: 'കിലോഗ്രാം',
+    quintal: 'ക്വിന്റൽ', ton: 'ടൺ',
+    
+    // Transport
+    vehicle: 'വാഹനം', driver: 'ഡ്രൈവർ', booking: 'ബുക്കിംഗ്', route: 'റൂട്ട്', distance: 'ദൂരം', duration: 'കാലാവധി',
+    bookTransport: 'ഗതാഗതം ബുക്ക് ചെയ്യുക', viewVehicles: 'വാഹനങ്ങൾ കാണുക', bookingHistory: 'ബുക്കിംഗ് ചരിത്രം', trackBooking: 'ബുക്കിംഗ് ട്രാക്ക് ചെയ്യുക',
+    vehicleType: 'വാഹന തരം', capacity: 'ശേഷി', availability: 'ലഭ്യത', bookNow: 'ഇപ്പോൾ ബുക്ക് ചെയ്യുക',
+    fromLocation: 'നിന്ന് സ്ഥലം', toLocation: 'വരെ സ്ഥലം', pickupLocation: 'പിക്കപ്പ് സ്ഥലം', destination: 'ലക്ഷ്യസ്ഥാനം',
+    
+    // Orders
+    orderDetails: 'ഓർഡർ വിശദാംശങ്ങൾ', trackOrder: 'ഓർഡർ ട്രാക്ക് ചെയ്യുക', orderStatus: 'ഓർഡർ സ്റ്റാറ്റസ്', orderId: 'ഓർഡർ ID', orderDate: 'ഓർഡർ തീയതി',
+    deliveryDate: 'ഡെലിവറി തീയതി', buyer: 'വാങ്ങുന്നവൻ', seller: 'വിൽക്കുന്നവൻ', totalAmount: 'മൊത്തം തുക', paymentStatus: 'പേയ്മെന്റ് സ്റ്റാറ്റസ്',
+    noOrdersYet: 'ഇതുവരെ ഓർഡറുകളില്ല', viewAllOrders: 'എല്ലാ ഓർഡറുകളും കാണുക',
+    
+    // Customer Support
+    supportTickets: 'സപ്പോർട്ട് ടിക്കറ്റുകൾ', createTicket: 'ടിക്കറ്റ് സൃഷ്ടിക്കുക', ticketId: 'ടിക്കറ്റ് ID', subject: 'വിഷയം', message: 'സന്ദേശം',
+    sendMessage: 'സന്ദേശം അയയ്ക്കുക', chatWithSupport: 'സപ്പോർട്ടുമായി ചാറ്റ് ചെയ്യുക',
+    
+    // AI Plant Doctor
+    askDoctor: 'ഡോക്ടറോട് ചോദിക്കുക', plantHealth: 'സസ്യ ആരോഗ്യം', diagnosis: 'രോഗനിർണയം', treatment: 'ചികിത്സ', uploadImage: 'ചിത്രം അപ്‌ലോഡ് ചെയ്യുക',
+    analyzeImage: 'ചിത്രം വിശകലനം ചെയ്യുക',
+    
+    // Harvest Countdown
+    daysUntilHarvest: 'വിളവെടുപ്പിന് ദിവസങ്ങൾ', readyToHarvest: 'വിളവെടുപ്പിന് തയ്യാർ', upcomingHarvests: 'വരാനിരിക്കുന്ന വിളവെടുപ്പുകൾ',
+    
+    // Price Forecast
+    forecastedPrice: 'പ്രവചിച്ച വില', marketTrends: 'മാർക്കറ്റ് ട്രെൻഡുകൾ', priceAnalysis: 'വില വിശകലനം',
+    
+    // Validation Messages
+    fieldRequired: 'ഈ ഫീൽഡ് ആവശ്യമാണ്', invalidEmail: 'അസാധുവായ ഇമെയിൽ വിലാസം', invalidPhone: 'അസാധുവായ ഫോൺ നമ്പർ',
+    invalidDate: 'അസാധുവായ തീയതി', dateMustBeFuture: 'തീയതി ഭാവിയിൽ ആയിരിക്കണം', quantityMustBePositive: 'അളവ് പോസിറ്റീവ് ആയിരിക്കണം',
+    priceMustBePositive: 'വില പോസിറ്റീവ് ആയിരിക്കണം',
+    
+    // Vehicle Details
+    vehicleNotFound: 'വാഹനം കണ്ടെത്തിയില്ല', vehicleNotFoundMessage: 'അഭ്യർത്ഥിച്ച വാഹനം കണ്ടെത്താൻ കഴിഞ്ഞില്ല.',
+    verifiedVehicle: 'സ്ഥിരീകരിച്ച വാഹനം', available24x7: '24/7 ലഭ്യം', professionalDriver: 'പ്രൊഫഷണൽ ഡ്രൈവർ',
+    experiencedLicensed: 'അനുഭവസമ്പന്നനും ലൈസൻസുള്ളവനും', secureLoading: 'സുരക്ഷിത ലോഡിംഗ്', safeCropTransport: 'സുരക്ഷിത വിള ഗതാഗതം',
+    chooseYourOption: 'നിങ്ങളുടെ ഓപ്ഷൻ തിരഞ്ഞെടുക്കുക',
+    
+    // Common UI Text
+    startingFrom: 'മുതൽ ആരംഭിക്കുന്നു', farmerSessionNotFound: 'കർഷക സെഷൻ കണ്ടെത്തിയില്ല. ദയവായി വീണ്ടും ലോഗിൻ ചെയ്യുക.',
+    failedToCreate: 'സൃഷ്ടിക്കുന്നതിൽ പരാജയപ്പെട്ടു', failedToFetch: 'നേടുന്നതിൽ പരാജയപ്പെട്ടു', loadingText: 'ലോഡ് ചെയ്യുന്നു...',
+    errorOccurred: 'ഒരു പിശക് സംഭവിച്ചു', tryAgainLater: 'ദയവായി വീണ്ടും ശ്രമിക്കുക',
+    
+    // AI Plant Doctor
+    aiPlantDoctor: 'AI സസ്യ ഡോക്ടർ', yourAgriculturalHealthExpert: 'നിങ്ങളുടെ കാർഷിക ആരോഗ്യ വിദഗ്ധൻ',
+    consultations: 'കൺസൾട്ടേഷനുകൾ', imagesAnalyzed: 'ചിത്രങ്ങൾ വിശകലനം ചെയ്തു', 
+    loadingAiPlantDoctor: 'AI സസ്യ ഡോക്ടർ ലോഡ് ചെയ്യുന്നു...', 
+    askAboutPlantDiseases: 'സസ്യ രോഗങ്ങൾ, വിള പരിചരണം എന്നിവയെക്കുറിച്ച് ചോദിക്കുക അല്ലെങ്കിൽ ഒരു ചിത്രം അപ്‌ലോഡ് ചെയ്യുക...',
+    sorryEncounteredError: 'ക്ഷമിക്കണം, എനിക്ക് ഒരു പിശക് നേരിട്ടു. ദയവായി വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ കാർഷിക ആവശ്യങ്ങളെക്കുറിച്ച് എന്നോട് ചോദിക്കുക.',
+    
+    // Dashboard Transport Section
+    popularRoute: 'ജനപ്രിയ റൂട്ട്', rating: 'റേറ്റിംഗ്', vehicles: 'വാഹനങ്ങൾ', 
+    hours: 'മണിക്കൂറുകൾ', km: 'കിമീ', retry: 'വീണ്ടും ശ്രമിക്കുക', chat: 'ചാറ്റ്', addCrop: 'വിള ചേർക്കുക',
+    
+    // Additional UI Text
+    hello: 'ഹലോ', welcomeBack: 'നിങ്ങളുടെ ഡാഷ്‌ബോർഡിലേക്ക് തിരികെ സ്വാഗതം', account: 'അക്കൗണ്ട്', customers: 'ഉപഭോക്താക്കൾ',
+    failedToLoadDashboard: 'ഡാഷ്‌ബോർഡ് ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു', aiDoctorAnalyzing: 'AI ഡോക്ടർ വിശകലനം ചെയ്യുന്നു...',
+    readyToHelp: 'സഹായിക്കാൻ തയ്യാർ!', askAboutPlantDiseasesAndCare: 'സസ്യ രോഗങ്ങൾ, കീടങ്ങൾ & പരിചരണം എന്നിവയെക്കുറിച്ച് ചോദിക്കുക',
+    available247: '24/7 ലഭ്യം', consults: 'കൺസൾട്ടേഷനുകൾ', images: 'ചിത്രങ്ങൾ', powered: 'പവർഡ്',
+    scan: 'സ്കാൻ', totalListings: 'മൊത്തം ലിസ്റ്റിംഗുകൾ', avgPriceKg: 'ശരാശരി വില/കിലോ', totalValue: 'മൊത്തം മൂല്യം',
+    cropsSold: 'വിളകൾ വിറ്റു', activeBidsCount: 'സജീവ ലേലങ്ങൾ', available: 'ലഭ്യം',
+    manageAccountInfo: 'നിങ്ങളുടെ അക്കൗണ്ട് വിവരങ്ങൾ കൈകാര്യം ചെയ്യുക', accountCenter: 'അക്കൗണ്ട് സെന്റർ',
+    farmerProfile: 'കർഷക പ്രൊഫൈൽ', accountManagementComingSoon: 'അക്കൗണ്ട് മാനേജ്മെന്റ് ഫീച്ചറുകൾ ഉടൻ വരുന്നു...',
+    manageHarvestSchedules: 'നിങ്ങളുടെ വിള വിളവെടുപ്പ് ഷെഡ്യൂളുകൾ കൈകാര്യം ചെയ്യുക', pleaseAddCropsFirst: 'ദയവായി ആദ്യം നിങ്ങളുടെ അക്കൗണ്ട് സെന്ററിൽ വിളകൾ ചേർക്കുക.',
+    goToAccountCentre: 'അക്കൗണ്ട് സെന്ററിലേക്ക് പോകുക', failedToLoadBidHistory: 'ലേല ചരിത്രം ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു',
+    failedToLoadCrops: 'വിളകൾ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു', failedToLoadBids: 'ലേലങ്ങൾ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു',
+    pleaseAnalyzeImage: 'ദയവായി ഈ സസ്യ ചിത്രം വിശകലനം ചെയ്യുക', failedToLoadChatSession: 'ചാറ്റ് സെഷൻ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു',
+    failedToClearChat: 'ചാറ്റ് ക്ലിയർ ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു',
+    
+    // Additional missing keys
+    bidEndedSuccessfully: 'ലേലം വിജയകരമായി അവസാനിച്ചു!',
+    
+    // Missing UI text that appears in farmer pages
+    listed: 'ലിസ്റ്റ് ചെയ്തു',
+    premiumGrade: 'പ്രീമിയം ഗ്രേഡ്',
+    goodGrade: 'നല്ല ഗ്രേഡ്',
+    daysLeft: 'ബാക്കി ദിവസങ്ങൾ',
+    planted: 'നട്ടു',
+    newCountdown: 'പുതിയ കൗണ്ട്ഡൗൺ',
+    partlyCloudy: 'ഭാഗികമായി മേഘാവൃതം',
+    liveWeatherData: 'തത്സമയ കാലാവസ്ഥാ ഡാറ്റ',
+    updated: 'അപ്ഡേറ്റ് ചെയ്തു',
+    hourly: 'മണിക്കൂർ തോറും',
+    fiveDay: '5-ദിവസം',
+    now: 'ഇപ്പോൾ',
+    
+    // New keys for farmer pages
+    bidMustEndBeforeHarvest: 'കുറിപ്പ്: ലേലം വിളവെടുപ്പ് തീയതിക്ക് മുമ്പ് അവസാനിക്കണം',
+    copyFromPickup: 'പിക്കപ്പിൽ നിന്ന് കോപ്പി ചെയ്യുക',
+    pickupSchedule: 'പിക്കപ്പ് ഷെഡ്യൂൾ',
+    date: 'തീയതി',
+    time: 'സമയം',
+    myBidHistory: 'എന്റെ ലേല ചരിത്രം',
+    trackYourCreatedBids: 'നിങ്ങൾ സൃഷ്ടിച്ച ലേലങ്ങളും അവയുടെ ഫലങ്ങളും ട്രാക്ക് ചെയ്യുക',
+    allBids: 'എല്ലാ ലേലങ്ങളും',
+    withWinners: 'വിജയികളോടൊപ്പം',
+    trackById: 'ID വഴി ട്രാക്ക് ചെയ്യുക',
+    trackYourTransportOrders: 'നിങ്ങളുടെ ഗതാഗത ഓർഡറുകൾ ട്രാക്ക് ചെയ്യുക',
+    viewAllTransportBookings: 'നിങ്ങളുടെ എല്ലാ ഗതാഗത ബുക്കിംഗുകളും കാണുക',
+    totalOrders: 'മൊത്തം ഓർഡറുകൾ',
+    aiPoweredPredictions: 'AI-പവർഡ് പ്രവചനങ്ങൾ',
+    editCountdown: 'കൗണ്ട്ഡൗൺ എഡിറ്റ് ചെയ്യുക',
+    newHarvestCountdown: 'പുതിയ വിളവെടുപ്പ് കൗണ്ട്ഡൗൺ',
+    newSupportTicket: 'പുതിയ സപ്പോർട്ട് ടിക്കറ്റ്',
+    findBuyers: 'വാങ്ങുന്നവരെ കണ്ടെത്തുക',
+    connectWithBuyersAndGrow: 'വാങ്ങുന്നവരുമായി ബന്ധപ്പെടുകയും നിങ്ങളുടെ ബിസിനസ്സ് വളർത്തുകയും ചെയ്യുക',
+    requestDate: 'അഭ്യർത്ഥന തീയതി',
+    
+    // Weather page specific translations
+    yourLocation: 'നിങ്ങളുടെ സ്ഥലം',
+    liveWeatherData: 'തത്സമയ കാലാവസ്ഥാ ഡാറ്റ',
+    simulatedData: 'സിമുലേറ്റഡ് ഡാറ്റ',
+    hourly: 'മണിക്കൂർ തോറും',
+    weekly: 'പ്രതിവാര',
+    fiveDay: '5-ദിവസം',
+    now: 'ഇപ്പോൾ',
+    today: 'ഇന്ന്',
+    sun: 'ഞായർ',
+    mon: 'തിങ്കൾ',
+    tue: 'ചൊവ്വ',
+    wed: 'ബുധൻ',
+    thu: 'വ്യാഴം',
+    fri: 'വെള്ളി',
+    sat: 'ശനി',
+    
+    // Weather conditions and advice
+    highHeatIrrigateEarlyMorning: 'അധിക ചൂട് - രാവിലെയോ വൈകുന്നേരമോ വിളകൾക്ക് വെള്ളം നൽകുക',
+    coolWeatherProtectFromFrost: 'തണുത്ത കാലാവസ്ഥ - സെൻസിറ്റീവ് വിളകളെ മഞ്ഞിൽ നിന്ന് സംരക്ഷിക്കുക',
+    goodTemperatureForFarming: 'മിക്ക കാർഷിക പ്രവർത്തനങ്ങൾക്കും നല്ല താപനില',
+    rainExpectedAvoidSpraying: 'മഴ പ്രതീക്ഷിക്കുന്നു - ഇന്ന് കീടനാശിനി തളിക്കരുത്',
+    goodTimeForTransplanting: 'തൈകൾ നടാൻ നല്ല സമയം',
+    highHumidityWatchFungal: 'ഉയർന്ന ആർദ്രത - ഫംഗൽ രോഗങ്ങൾക്കായി നിരീക്ഷിക്കുക',
+    clearSkiesIdealForHarvesting: 'തെളിഞ്ഞ ആകാശം - വിളവെടുപ്പിനും ഉണക്കാനും അനുയോജ്യം',
+    
+    // Weather details
+    wind: 'കാറ്റ്',
+    humidity: 'ആർദ്രത',
+    visibility: 'ദൃശ്യത',
+    pressure: 'മർദ്ദം',
+    sunrise: 'സൂര്യോദയം',
+    sunset: 'സൂര്യാസ്തമയം',
+    feelsLike: 'അനുഭവപ്പെടുന്നത്',
+    uvIndex: 'UV സൂചിക',
+    rainChance: 'മഴയുടെ സാധ്യത',
+    
+    // Weather quality descriptions
+    lightBreeze: 'നേരിയ കാറ്റ്',
+    comfortable: 'സുഖകരമായ',
+    clear: 'തെളിഞ്ഞ',
+    hazy: 'മൂടൽമഞ്ഞുള്ള',
+    normal: 'സാധാരണ',
+    high: 'ഉയർന്ന',
+    veryHot: 'വളരെ ചൂട്',
+    warm: 'ചൂടുള്ള',
+    lowProbability: 'കുറഞ്ഞ സാധ്യത',
+    rainExpected: 'മഴ പ്രതീക്ഷിക്കുന്നു',
+    none: 'ഒന്നുമില്ല',
+    useProtection: 'സംരക്ഷണം ഉപയോഗിക്കുക',
+    moderate: 'മിതമായ',
+    
+    // Form placeholders and labels
+    state: 'സംസ്ഥാനം',
+    district: 'ജില്ല',
+    city: 'നഗരം',
+    pinCode: 'പിൻ കോഡ്',
+    detailedAddress: 'വിശദമായ വിലാസം',
+    orEnterExactDistance: 'അല്ലെങ്കിൽ കൃത്യമായ ദൂരം നൽകുക',
+    enterBuyerPhoneNumber: 'ക്രോസ്-പ്ലാറ്റ്ഫോം ട്രാക്കിംഗിനായി വാങ്ങുന്നവരുടെ ഫോൺ നമ്പർ നൽകുക',
+    plantAnalysis: 'സസ്യ വിശകലനം',
+    plantToAnalyze: 'വിശകലനത്തിനുള്ള സസ്യം',
+    
+    // Additional form placeholders
+    enterTrackingId: 'ട്രാക്കിംഗ് ID നൽകുക (ഉദാ., TRK123456)',
+    selectCrop: 'വിള തിരഞ്ഞെടുക്കുക',
+    
+    // Buyer Dashboard specific
+    morgen: 'മോർഗൻ',
+    publicBuyerDashboard: 'പൊതു വാങ്ങുന്നവരുടെ ഡാഷ്‌ബോർഡ്',
+    commercialBuyerDashboard: 'വാണിജ്യ വാങ്ങുന്നവരുടെ ഡാഷ്‌ബോർഡ്',
+    loadingBuyerDashboard: 'വാങ്ങുന്നവരുടെ ഡാഷ്‌ബോർഡ് ലോഡ് ചെയ്യുന്നു...',
+    failedToLoadDashboardData: 'ഡാഷ്‌ബോർഡ് ഡാറ്റ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു',
+    retry: 'വീണ്ടും ശ്രമിക്കുക',
+    myFarmers: 'എന്റെ കർഷകർ',
+    updates: 'അപ്ഡേറ്റുകൾ',
+    noUpdatesAvailable: 'അപ്ഡേറ്റുകൾ ലഭ്യമല്ല',
+    liveBidding: 'തത്സമയ ലേലം',
+    activeBids: 'സജീവ ലേലങ്ങൾ',
+    biddingStats: 'ലേല സ്ഥിതിവിവരക്കണക്കുകൾ',
+    joinLiveAuctions: 'തത്സമയ ലേലത്തിൽ ചേരുക',
+    buyCrops: 'വിളകൾ വാങ്ങുക',
+    localDistrictCropsOnly: 'പ്രാദേശിക ജില്ലാ വിളകൾ മാത്രം',
+    availableCrops: 'ലഭ്യമായ വിളകൾ',
+    avgPrice: 'ശരാശരി വില',
+    browseLocalCrops: 'പ്രാദേശിക വിളകൾ ബ്രൗസ് ചെയ്യുക',
+    orderTracking: 'ഓർഡർ ട്രാക്കിംഗ്',
+    activeOrders: 'സജീവ ഓർഡറുകൾ',
+    recentOrders: 'സമീപകാല ഓർഡറുകൾ',
+    lastSevenDays: 'കഴിഞ്ഞ 7 ദിവസം',
+    transport: 'ഗതാഗതം',
+    bookCargoTransport: 'കാർഗോ ഗതാഗതം ബുക്ക് ചെയ്യുക',
+    transportOptions: 'ഗതാഗത ഓപ്ഷനുകൾ',
+    availableNow: 'ഇപ്പോൾ ലഭ്യം',
+    vehicles: 'വാഹനങ്ങൾ',
+    rate: 'നിരക്ക്',
+    bookTransport: 'ഗതാഗതം ബുക്ക് ചെയ്യുക',
+    
+    // Common UI elements
+    morgenLogo: 'മോർഗൻ ലോഗോ',
+    signIn: 'സൈൻ ഇൻ',
+    loading: 'ലോഡ് ചെയ്യുന്നു...',
+    
+    // Driver specific
+    driverDashboard: 'ഡ്രൈവർ ഡാഷ്‌ബോർഡ്',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'അഡ്മിൻ വാങ്ങുന്നവരുടെ ഫീച്ചർ - ഉടൻ വരുന്നു',
+    recentActivity: 'സമീപകാല പ്രവർത്തനം',
+    activityTrackingComingSoon: 'പ്രവർത്തന ട്രാക്കിംഗ് ഉടൻ വരുന്നു...',
+    
+    // Session management
+    farmerSessionExtended: 'കർഷക സെഷൻ നീട്ടി',
+    buyerSessionExtended: 'വാങ്ങുന്നവരുടെ സെഷൻ നീട്ടി',
+    adminSessionExtended: 'അഡ്മിൻ സെഷൻ നീട്ടി',
+    driverSessionExtended: 'ഡ്രൈവർ സെഷൻ നീട്ടി',
+    
+    // Transport tracking
+    vehicle: 'വാഹനം',
+    distance: 'ദൂരം',
+    amount: 'തുക',
+    pickupDate: 'പിക്കപ്പ് തീയതി',
+    bookingId: 'ബുക്കിംഗ് ID',
+    trackingId: 'ട്രാക്കിംഗ് ID',
+    routeInformation: 'റൂട്ട് വിവരങ്ങൾ',
+    deliveryInformation: 'ഡെലിവറി വിവരങ്ങൾ',
+    expectedDelivery: 'പ്രതീക്ഷിക്കുന്ന ഡെലിവറി',
+    vehicleType: 'വാഹന തരം',
+    totalAmount: 'മൊത്തം തുക',
+    
+    // Customer support
+    you: 'നിങ്ങൾ',
+    supportTeam: 'സപ്പോർട്ട് ടീം',
+    justNow: 'ഇപ്പോൾ തന്നെ',
+    sending: 'അയയ്ക്കുന്നു...',
+    send: 'അയയ്ക്കുക',
+    
+    // Live bidding
+    ended: 'അവസാനിച്ചു',
+    unknownFarmer: 'അജ്ഞാത കർഷകൻ',
+    customAmount: 'കസ്റ്റം തുക',
+    
+    // General
+    info: 'വിവരം',
+    noData: 'ഡാറ്റ ലഭ്യമല്ല',
+    
+    // Additional weather and farming terms for Weather.jsx
+    todaysAgricultureSummary: 'ഇന്നത്തെ കാർഷിക സംഗ്രഹം',
+    farmingAdvice: 'കാർഷിക ഉപദേശം',
+    avgTemperature: 'ശരാശരി താപനില',
+    maxWind: 'പരമാവധി കാറ്റ്',
+    totalPrecipitation: 'മൊത്തം മഴ',
+    avgHumidity: 'ശരാശരി ആർദ്രത',
+    fungalDiseaseRisk: 'ഫംഗൽ രോഗ അപകടസാധ്യത',
+    applyFungicide: 'ഫംഗിസൈഡ് പ്രതിരോധമായി പ്രയോഗിക്കുക. നല്ല വായു സഞ്ചാരം ഉറപ്പാക്കുക.',
+    monitorCrops: 'രോഗത്തിന്റെ ആദ്യ ലക്ഷണങ്ങൾക്കായി വിളകൾ സൂക്ഷ്മമായി നിരീക്ഷിക്കുക.',
+    conditionsUnfavorable: 'ഫംഗൽ വളർച്ചയ്ക്ക് അനുകൂലമല്ലാത്ത സാഹചര്യങ്ങൾ.',
+    pestActivityLevel: 'കീട പ്രവർത്തന നില',
+    warmHumidConditions: 'ചൂടുള്ള ആർദ്ര സാഹചര്യങ്ങൾ കീട പ്രജനനത്തിന് അനുകൂലമാണ്. പതിവായി വയലുകൾ പരിശോധിക്കുക.',
+    normalPestActivity: 'സാധാരണ കീട പ്രവർത്തനം പ്രതീക്ഷിക്കുന്നു. തുടർച്ചയായ നിരീക്ഷണം തുടരുക.',
+    coolConditions: 'തണുത്ത സാഹചര്യങ്ങൾ കീട പ്രവർത്തനം കുറയ്ക്കുന്നു.',
+    moonPhase: 'ചന്ദ്ര ഘട്ടം',
+    moonrise: 'ചന്ദ്രോദയം',
+    moonset: 'ചന്ദ്രാസ്തമയം',
+    dewPoint: 'മഞ്ഞു ബിന്ദു',
+    notRecommended: 'ശുപാർശ ചെയ്യുന്നില്ല',
+    idealConditions: 'അനുയോജ്യമായ സാഹചര്യങ്ങൾ',
+    eveningPreferred: 'വൈകുന്നേരം മുൻഗണന',
+    good: 'നല്ലത്',
+    unhealthy: 'അനാരോഗ്യകരം',
+    veryUnhealthy: 'വളരെ അനാരോഗ്യകരം',
+    noRainExpected: 'മഴ പ്രതീക്ഷിക്കുന്നില്ല',
+    newMoon: 'അമാവാസി',
+    
+    // Additional missing keys for farmer pages
+    unknownCrop: 'അജ്ഞാത വിള',
+    noTimesAvailableToday: 'ഇന്ന് സമയം ലഭ്യമല്ല',
+    selectTime: 'സമയം തിരഞ്ഞെടുക്കുക',
+    orderPlaced: 'ഓർഡർ നൽകി',
+    orderAccepted: 'ഓർഡർ സ്വീകരിച്ചു',
+    pickupStarted: 'പിക്കപ്പ് ആരംഭിച്ചു',
+    orderPickedUp: 'ഓർഡർ പിക്കപ്പ് ചെയ്തു',
+    inTransit: 'യാത്രയിൽ',
+    delivered: 'ഡെലിവർ ചെയ്തു',
+    cancelled: 'റദ്ദാക്കി',
+    updateCountdown: 'കൗണ്ട്ഡൗൺ അപ്ഡേറ്റ് ചെയ്യുക',
+    createCountdown: 'കൗണ്ട്ഡൗൺ സൃഷ്ടിക്കുക',
+    transportLogistics: 'ഗതാഗതവും ലോജിസ്റ്റിക്സും',
+    weatherServices: 'കാലാവസ്ഥാ സേവനങ്ങൾ',
+    cropManagement: 'വിള മാനേജ്മെന്റ്',
+    auctionMarketplace: 'ലേലവും മാർക്കറ്റ്പ്ലേസും',
+    technicalIssues: 'സാങ്കേതിക പ്രശ്നങ്ങൾ',
+    billingPayments: 'ബില്ലിംഗും പേയ്മെന്റുകളും',
+    generalInquiry: 'പൊതു അന്വേഷണം',
+  },
+  kn: {
+    // Dashboard
+    dashboard: 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್', welcome: 'ಸ್ವಾಗತ', totalCrops: 'ಒಟ್ಟು ಬೆಳೆಗಳು', activeBids: 'ಸಕ್ರಿಯ ಬಿಡ್‌ಗಳು', totalSales: 'ಒಟ್ಟು ಮಾರಾಟ', revenue: 'ಆದಾಯ',
+    
+    // Navigation
+    sellCrops: 'ಬೆಳೆಗಳನ್ನು ಮಾರಿ', myBids: 'ನನ್ನ ಬಿಡ್‌ಗಳು', createBid: 'ಬಿಡ್ ರಚಿಸಿ', orders: 'ಆರ್ಡರ್‌ಗಳು', transport: 'ಸಾರಿಗೆ', localTransport: 'ಸ್ಥಳೀಯ ಸಾರಿಗೆ',
+    weather: 'ಹವಾಮಾನ', priceForecast: 'ಬೆಲೆ ಮುನ್ಸೂಚನೆ', aiDoctor: 'AI ಸಸ್ಯ ವೈದ್ಯ', harvestCountdown: 'ಸುಗ್ಗಿ ಕೌಂಟ್‌ಡೌನ್', myCustomers: 'ನನ್ನ ಗ್ರಾಹಕರು',
+    customerSupport: 'ಗ್ರಾಹಕ ಬೆಂಬಲ', accountCentre: 'ಖಾತೆ ಕೇಂದ್ರ', logout: 'ಲಾಗ್‌ಔಟ್', orderTracking: 'ಆರ್ಡರ್ ಟ್ರ್ಯಾಕಿಂಗ್', orderHistory: 'ಆರ್ಡರ್ ಇತಿಹಾಸ',
+    bidHistory: 'ಬಿಡ್ ಇತಿಹಾಸ', transportBooking: 'ಸಾರಿಗೆ ಬುಕಿಂಗ್', vehicleDetails: 'ವಾಹನ ವಿವರಗಳು', back: 'ಹಿಂದೆ', home: 'ಮುಖಪುಟ',
+    
+    // Common Actions
+    save: 'ಉಳಿಸಿ', cancel: 'ರದ್ದುಗೊಳಿಸಿ', submit: 'ಸಲ್ಲಿಸಿ', delete: 'ಅಳಿಸಿ', edit: 'ಸಂಪಾದಿಸಿ', view: 'ವೀಕ್ಷಿಸಿ', search: 'ಹುಡುಕಿ', filter: 'ಫಿಲ್ಟರ್',
+    loading: 'ಲೋಡ್ ಆಗುತ್ತಿದೆ...', noData: 'ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ', add: 'ಸೇರಿಸಿ', manage: 'ನಿರ್ವಹಿಸಿ', create: 'ರಚಿಸಿ', update: 'ನವೀಕರಿಸಿ', refresh: 'ರಿಫ್ರೆಶ್ ಮಾಡಿ',
+    close: 'ಮುಚ್ಚಿ', confirm: 'ದೃಢೀಕರಿಸಿ', tryAgain: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+    
+    // Crop Details
+    cropName: 'ಬೆಳೆ ಹೆಸರು', quantity: 'ಪ್ರಮಾಣ', quality: 'ಗುಣಮಟ್ಟ', price: 'ಬೆಲೆ', pricePerUnit: 'ಯೂನಿಟ್ ಬೆಲೆ', harvestDate: 'ಸುಗ್ಗಿ ದಿನಾಂಕ',
+    expiryDate: 'ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ', category: 'ವರ್ಗ', unit: 'ಯೂನಿಟ್', description: 'ವಿವರಣೆ',
+    
+    // Bidding
+    startingPrice: 'ಆರಂಭಿಕ ಬೆಲೆ', currentPrice: 'ಪ್ರಸ್ತುತ ಬೆಲೆ', bidEndDate: 'ಬಿಡ್ ಅಂತ್ಯ ದಿನಾಂಕ', placeBid: 'ಬಿಡ್ ಇಡಿ', bidAmount: 'ಬಿಡ್ ಮೊತ್ತ',
+    totalBids: 'ಒಟ್ಟು ಬಿಡ್‌ಗಳು', highestBid: 'ಅತ್ಯಧಿಕ ಬಿಡ್', createNewBid: 'ಹೊಸ ಬಿಡ್ ರಚಿಸಿ', endBid: 'ಬಿಡ್ ಮುಗಿಸಿ', bidDetails: 'ಬಿಡ್ ವಿವರಗಳು',
+    noBidsYet: 'ಇನ್ನೂ ಬಿಡ್‌ಗಳಿಲ್ಲ', createFirstBid: 'ನಿಮ್ಮ ಮೊದಲ ಬಿಡ್ ರಚಿಸಿ', manageBidListings: 'ನಿಮ್ಮ ಬೆಳೆ ಬಿಡ್ಡಿಂಗ್ ಪಟ್ಟಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ',
+    listCropForBidding: 'ಬಿಡ್ಡಿಂಗ್‌ಗಾಗಿ ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಪಟ್ಟಿ ಮಾಡಿ', bidCreatedSuccessfully: 'ಬಿಡ್ ಯಶಸ್ವಿಯಾಗಿ ರಚಿಸಲಾಗಿದೆ!',
+    buyersWillBeNotified: 'ಸಂಪರ್ಕಿತ ಖರೀದಿದಾರರಿಗೆ ನಿಮ್ಮ ಬಿಡ್ ಬಗ್ಗೆ ತಿಳಿಸಲಾಗುವುದು.', endBidEarly: 'ಬಿಡ್ ಅನ್ನು ಮುಂಚಿತವಾಗಿ ಮುಗಿಸುವುದೇ?',
+    areYouSureEndBid: 'ನೀವು ನಿಜವಾಗಿಯೂ ಈ ಬಿಡ್ ಅನ್ನು ಮುಗಿಸಲು ಬಯಸುತ್ತೀರಾ', highestBidderWins: 'ಅತ್ಯಧಿಕ ಬಿಡ್ಡರ್ ಅನ್ನು ವಿಜೇತ ಎಂದು ಘೋಷಿಸಲಾಗುವುದು.',
+    noBidsNoWinner: 'ಇನ್ನೂ ಬಿಡ್‌ಗಳಿಲ್ಲ, ಆದ್ದರಿಂದ ವಿಜೇತ ಇರುವುದಿಲ್ಲ.',
+    
+    // Status
+    active: 'ಸಕ್ರಿಯ', pending: 'ಬಾಕಿ', completed: 'ಪೂರ್ಣಗೊಂಡಿದೆ', cancelled: 'ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ', delivered: 'ವಿತರಿಸಲಾಗಿದೆ', approved: 'ಅನುಮೋದಿಸಲಾಗಿದೆ',
+    rejected: 'ತಿರಸ್ಕರಿಸಲಾಗಿದೆ', inProgress: 'ಪ್ರಗತಿಯಲ್ಲಿದೆ',
+    
+    // Messages
+    success: 'ಯಶಸ್ಸು', error: 'ದೋಷ', warning: 'ಎಚ್ಚರಿಕೆ', info: 'ಮಾಹಿತಿ',
+    
+    // Sell Crops Page
+    addListing: 'ಪಟ್ಟಿ ಸೇರಿಸಿ', noListingsYet: 'ಇನ್ನೂ ಪಟ್ಟಿಗಳಿಲ್ಲ',
+    createFirstListing: 'ಸಾರ್ವಜನಿಕ ಖರೀದಿದಾರರಿಗೆ ಬೆಳೆಗಳನ್ನು ನೇರವಾಗಿ ಮಾರಾಟ ಮಾಡಲು ನಿಮ್ಮ ಮೊದಲ ಪಟ್ಟಿಯನ್ನು ರಚಿಸಿ',
+    listCropsForSale: 'ಸಾರ್ವಜನಿಕ ಖರೀದಿದಾರರಿಗೆ ನೇರ ಮಾರಾಟಕ್ಕಾಗಿ ನಿಮ್ಮ ಬೆಳೆಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡಿ', addNewListing: 'ಹೊಸ ಪಟ್ಟಿ ಸೇರಿಸಿ', createListing: 'ಪಟ್ಟಿ ರಚಿಸಿ',
+    cropListedSuccessfully: 'ಬೆಳೆ ಯಶಸ್ವಿಯಾಗಿ ಪಟ್ಟಿ ಮಾಡಲಾಗಿದೆ!', listingDeletedSuccessfully: 'ಪಟ್ಟಿ ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ!',
+    areYouSureDelete: 'ನೀವು ನಿಜವಾಗಿಯೂ ಈ ಪಟ್ಟಿಯನ್ನು ಅಳಿಸಲು ಬಯಸುತ್ತೀರಾ?', unableToLoadCrops: 'ಬೆಳೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ',
+    loadingYourCrops: 'ನಿಮ್ಮ ಬೆಳೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...', lastUpdated: 'ಕೊನೆಯದಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ',
+    
+    // Form Labels
+    required: 'ಅಗತ್ಯವಿದೆ', optional: 'ಐಚ್ಛಿಕ', vegetables: 'ತರಕಾರಿಗಳು', fruits: 'ಹಣ್ಣುಗಳು', grains: 'ಧಾನ್ಯಗಳು', spices: 'ಮಸಾಲೆಗಳು', other: 'ಇತರೆ',
+    premium: 'ಪ್ರೀಮಿಯಂ', gradeA: 'ಗ್ರೇಡ್ A', gradeB: 'ಗ್ರೇಡ್ B', gradeC: 'ಗ್ರೇಡ್ C', standard: 'ಮಾನದಂಡ', kilograms: 'ಕಿಲೋಗ್ರಾಂಗಳು',
+    quintal: 'ಕ್ವಿಂಟಲ್', ton: 'ಟನ್',
+    
+    // Transport
+    vehicle: 'ವಾಹನ', driver: 'ಚಾಲಕ', booking: 'ಬುಕಿಂಗ್', route: 'ಮಾರ್ಗ', distance: 'ದೂರ', duration: 'ಅವಧಿ',
+    bookTransport: 'ಸಾರಿಗೆ ಬುಕ್ ಮಾಡಿ', viewVehicles: 'ವಾಹನಗಳನ್ನು ವೀಕ್ಷಿಸಿ', bookingHistory: 'ಬುಕಿಂಗ್ ಇತಿಹಾಸ', trackBooking: 'ಬುಕಿಂಗ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    vehicleType: 'ವಾಹನ ಪ್ರಕಾರ', capacity: 'ಸಾಮರ್ಥ್ಯ', availability: 'ಲಭ್ಯತೆ', bookNow: 'ಈಗ ಬುಕ್ ಮಾಡಿ',
+    fromLocation: 'ಇಂದ ಸ್ಥಳ', toLocation: 'ವರೆಗೆ ಸ್ಥಳ', pickupLocation: 'ಪಿಕಪ್ ಸ್ಥಳ', destination: 'ಗಮ್ಯಸ್ಥಾನ',
+    
+    // Orders
+    orderDetails: 'ಆರ್ಡರ್ ವಿವರಗಳು', trackOrder: 'ಆರ್ಡರ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ', orderStatus: 'ಆರ್ಡರ್ ಸ್ಥಿತಿ', orderId: 'ಆರ್ಡರ್ ID', orderDate: 'ಆರ್ಡರ್ ದಿನಾಂಕ',
+    deliveryDate: 'ವಿತರಣಾ ದಿನಾಂಕ', buyer: 'ಖರೀದಿದಾರ', seller: 'ಮಾರಾಟಗಾರ', totalAmount: 'ಒಟ್ಟು ಮೊತ್ತ', paymentStatus: 'ಪಾವತಿ ಸ್ಥಿತಿ',
+    noOrdersYet: 'ಇನ್ನೂ ಆರ್ಡರ್‌ಗಳಿಲ್ಲ', viewAllOrders: 'ಎಲ್ಲಾ ಆರ್ಡರ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+    
+    // Customer Support
+    supportTickets: 'ಬೆಂಬಲ ಟಿಕೆಟ್‌ಗಳು', createTicket: 'ಟಿಕೆಟ್ ರಚಿಸಿ', ticketId: 'ಟಿಕೆಟ್ ID', subject: 'ವಿಷಯ', message: 'ಸಂದೇಶ',
+    sendMessage: 'ಸಂದೇಶ ಕಳುಹಿಸಿ', chatWithSupport: 'ಬೆಂಬಲದೊಂದಿಗೆ ಚಾಟ್ ಮಾಡಿ',
+    
+    // AI Plant Doctor
+    askDoctor: 'ವೈದ್ಯರನ್ನು ಕೇಳಿ', plantHealth: 'ಸಸ್ಯ ಆರೋಗ್ಯ', diagnosis: 'ರೋಗನಿರ್ಣಯ', treatment: 'ಚಿಕಿತ್ಸೆ', uploadImage: 'ಚಿತ್ರ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
+    analyzeImage: 'ಚಿತ್ರ ವಿಶ್ಲೇಷಣೆ ಮಾಡಿ',
+    
+    // Harvest Countdown
+    daysUntilHarvest: 'ಸುಗ್ಗಿಗೆ ದಿನಗಳು', readyToHarvest: 'ಸುಗ್ಗಿಗೆ ಸಿದ್ಧ', upcomingHarvests: 'ಮುಂಬರುವ ಸುಗ್ಗಿಗಳು',
+    
+    // Price Forecast
+    forecastedPrice: 'ಮುನ್ಸೂಚಿತ ಬೆಲೆ', marketTrends: 'ಮಾರುಕಟ್ಟೆ ಪ್ರವೃತ್ತಿಗಳು', priceAnalysis: 'ಬೆಲೆ ವಿಶ್ಲೇಷಣೆ',
+    
+    // Validation Messages
+    fieldRequired: 'ಈ ಕ್ಷೇತ್ರ ಅಗತ್ಯವಿದೆ', invalidEmail: 'ಅಮಾನ್ಯ ಇಮೇಲ್ ವಿಳಾಸ', invalidPhone: 'ಅಮಾನ್ಯ ಫೋನ್ ಸಂಖ್ಯೆ',
+    invalidDate: 'ಅಮಾನ್ಯ ದಿನಾಂಕ', dateMustBeFuture: 'ದಿನಾಂಕ ಭವಿಷ್ಯದಲ್ಲಿ ಇರಬೇಕು', quantityMustBePositive: 'ಪ್ರಮಾಣ ಧನಾತ್ಮಕವಾಗಿರಬೇಕು',
+    priceMustBePositive: 'ಬೆಲೆ ಧನಾತ್ಮಕವಾಗಿರಬೇಕು',
+    
+    // Vehicle Details
+    vehicleNotFound: 'ವಾಹನ ಸಿಗಲಿಲ್ಲ', vehicleNotFoundMessage: 'ಅಭ್ಯರ್ಥಿಸಿದ ವಾಹನ ಸಿಗಲಿಲ್ಲ.',
+    verifiedVehicle: 'ಪರಿಶೀಲಿಸಿದ ವಾಹನ', available24x7: '24/7 ಲಭ್ಯ', professionalDriver: 'ವೃತ್ತಿಪರ ಚಾಲಕ',
+    experiencedLicensed: 'ಅನುಭವಿ ಮತ್ತು ಪರವಾನಗಿ ಪಡೆದ', secureLoading: 'ಸುರಕ್ಷಿತ ಲೋಡಿಂಗ್', safeCropTransport: 'ಸುರಕ್ಷಿತ ಬೆಳೆ ಸಾರಿಗೆ',
+    chooseYourOption: 'ನಿಮ್ಮ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಿ',
+    
+    // Common UI Text
+    startingFrom: 'ನಿಂದ ಪ್ರಾರಂಭ', farmerSessionNotFound: 'ರೈತ ಸೆಷನ್ ಸಿಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಲಾಗಿನ್ ಮಾಡಿ.',
+    failedToCreate: 'ರಚಿಸುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ', failedToFetch: 'ಪಡೆಯುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ', loadingText: 'ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+    errorOccurred: 'ದೋಷ ಸಂಭವಿಸಿದೆ', tryAgainLater: 'ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+    
+    // AI Plant Doctor
+    aiPlantDoctor: 'AI ಸಸ್ಯ ವೈದ್ಯ', yourAgriculturalHealthExpert: 'ನಿಮ್ಮ ಕೃಷಿ ಆರೋಗ್ಯ ತಜ್ಞ',
+    consultations: 'ಸಮಾಲೋಚನೆಗಳು', imagesAnalyzed: 'ಚಿತ್ರಗಳನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗಿದೆ', 
+    loadingAiPlantDoctor: 'AI ಸಸ್ಯ ವೈದ್ಯ ಲೋಡ್ ಆಗುತ್ತಿದೆ...', 
+    askAboutPlantDiseases: 'ಸಸ್ಯ ರೋಗಗಳು, ಬೆಳೆ ಆರೈಕೆ ಬಗ್ಗೆ ಕೇಳಿ ಅಥವಾ ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ...',
+    sorryEncounteredError: 'ಕ್ಷಮಿಸಿ, ನಾನು ದೋಷವನ್ನು ಎದುರಿಸಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಕೃಷಿ ಅಗತ್ಯಗಳ ಬಗ್ಗೆ ನನ್ನನ್ನು ಕೇಳಿ.',
+    
+    // Dashboard Transport Section
+    popularRoute: 'ಜನಪ್ರಿಯ ಮಾರ್ಗ', rating: 'ರೇಟಿಂಗ್', vehicles: 'ವಾಹನಗಳು', 
+    hours: 'ಗಂಟೆಗಳು', km: 'ಕಿಮೀ', retry: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ', chat: 'ಚಾಟ್', addCrop: 'ಬೆಳೆ ಸೇರಿಸಿ',
+    
+    // Additional UI Text
+    hello: 'ಹಲೋ', welcomeBack: 'ನಿಮ್ಮ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಮತ್ತೆ ಸ್ವಾಗತ', account: 'ಖಾತೆ', customers: 'ಗ್ರಾಹಕರು',
+    failedToLoadDashboard: 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ', aiDoctorAnalyzing: 'AI ಡಾಕ್ಟರ್ ವಿಶ್ಲೇಷಿಸುತ್ತಿದ್ದಾರೆ...',
+    readyToHelp: 'ಸಹಾಯ ಮಾಡಲು ಸಿದ್ಧ!', askAboutPlantDiseasesAndCare: 'ಸಸ್ಯ ರೋಗಗಳು, ಕೀಟಗಳು ಮತ್ತು ಆರೈಕೆ ಬಗ್ಗೆ ಕೇಳಿ',
+    available247: '24/7 ಲಭ್ಯ', consults: 'ಸಲಹೆಗಳು', images: 'ಚಿತ್ರಗಳು', powered: 'ಚಾಲಿತ',
+    scan: 'ಸ್ಕ್ಯಾನ್', totalListings: 'ಒಟ್ಟು ಪಟ್ಟಿಗಳು', avgPriceKg: 'ಸರಾಸರಿ ಬೆಲೆ/ಕಿಲೋ', totalValue: 'ಒಟ್ಟು ಮೌಲ್ಯ',
+    cropsSold: 'ಬೆಳೆಗಳು ಮಾರಾಟವಾದವು', activeBidsCount: 'ಸಕ್ರಿಯ ಬಿಡ್‌ಗಳು', available: 'ಲಭ್ಯ',
+    manageAccountInfo: 'ನಿಮ್ಮ ಖಾತೆ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ', accountCenter: 'ಖಾತೆ ಕೇಂದ್ರ',
+    farmerProfile: 'ರೈತ ಪ್ರೊಫೈಲ್', accountManagementComingSoon: 'ಖಾತೆ ನಿರ್ವಹಣೆ ವೈಶಿಷ್ಟ್ಯಗಳು ಶೀಘ್ರದಲ್ಲೇ ಬರುತ್ತಿವೆ...',
+    manageHarvestSchedules: 'ನಿಮ್ಮ ಬೆಳೆ ಸುಗ್ಗಿ ವೇಳಾಪಟ್ಟಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ', pleaseAddCropsFirst: 'ದಯವಿಟ್ಟು ಮೊದಲು ನಿಮ್ಮ ಖಾತೆ ಕೇಂದ್ರದಲ್ಲಿ ಬೆಳೆಗಳನ್ನು ಸೇರಿಸಿ.',
+    goToAccountCentre: 'ಖಾತೆ ಕೇಂದ್ರಕ್ಕೆ ಹೋಗಿ', failedToLoadBidHistory: 'ಬಿಡ್ ಇತಿಹಾಸ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ',
+    failedToLoadCrops: 'ಬೆಳೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ', failedToLoadBids: 'ಬಿಡ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ',
+    pleaseAnalyzeImage: 'ದಯವಿಟ್ಟು ಈ ಸಸ್ಯ ಚಿತ್ರವನ್ನು ವಿಶ್ಲೇಷಿಸಿ', failedToLoadChatSession: 'ಚಾಟ್ ಸೆಷನ್ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ',
+    failedToClearChat: 'ಚಾಟ್ ಅನ್ನು ಕ್ಲಿಯರ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ',
+    
+    // Additional missing keys
+    bidEndedSuccessfully: 'ಬಿಡ್ ಯಶಸ್ವಿಯಾಗಿ ಮುಗಿದಿದೆ!',
+    
+    // Buyer Dashboard specific
+    morgen: 'ಮೋರ್ಗೆನ್',
+    publicBuyerDashboard: 'ಸಾರ್ವಜನಿಕ ಖರೀದಿದಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    commercialBuyerDashboard: 'ವಾಣಿಜ್ಯ ಖರೀದಿದಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    loadingBuyerDashboard: 'ಖರೀದಿದಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+    failedToLoadDashboardData: 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ',
+    retry: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+    myFarmers: 'ನನ್ನ ರೈತರು',
+    updates: 'ಅಪ್‌ಡೇಟ್‌ಗಳು',
+    noUpdatesAvailable: 'ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ',
+    liveBidding: 'ಲೈವ್ ಬಿಡ್ಡಿಂಗ್',
+    activeBids: 'ಸಕ್ರಿಯ ಬಿಡ್‌ಗಳು',
+    biddingStats: 'ಬಿಡ್ಡಿಂಗ್ ಅಂಕಿಅಂಶಗಳು',
+    joinLiveAuctions: 'ಲೈವ್ ಹರಾಜಿನಲ್ಲಿ ಸೇರಿ',
+    buyCrops: 'ಬೆಳೆಗಳನ್ನು ಖರೀದಿಸಿ',
+    localDistrictCropsOnly: 'ಸ್ಥಳೀಯ ಜಿಲ್ಲೆಯ ಬೆಳೆಗಳು ಮಾತ್ರ',
+    availableCrops: 'ಲಭ್ಯವಿರುವ ಬೆಳೆಗಳು',
+    avgPrice: 'ಸರಾಸರಿ ಬೆಲೆ',
+    browseLocalCrops: 'ಸ್ಥಳೀಯ ಬೆಳೆಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ',
+    orderTracking: 'ಆರ್ಡರ್ ಟ್ರ್ಯಾಕಿಂಗ್',
+    activeOrders: 'ಸಕ್ರಿಯ ಆರ್ಡರ್‌ಗಳು',
+    recentOrders: 'ಇತ್ತೀಚಿನ ಆರ್ಡರ್‌ಗಳು',
+    lastSevenDays: 'ಕಳೆದ 7 ದಿನಗಳು',
+    transport: 'ಸಾರಿಗೆ',
+    bookCargoTransport: 'ಕಾರ್ಗೋ ಸಾರಿಗೆ ಬುಕ್ ಮಾಡಿ',
+    transportOptions: 'ಸಾರಿಗೆ ಆಯ್ಕೆಗಳು',
+    availableNow: 'ಈಗ ಲಭ್ಯ',
+    vehicles: 'ವಾಹನಗಳು',
+    rate: 'ದರ',
+    bookTransport: 'ಸಾರಿಗೆ ಬುಕ್ ಮಾಡಿ',
+    
+    // Common UI elements
+    morgenLogo: 'ಮೋರ್ಗೆನ್ ಲೋಗೋ',
+    signIn: 'ಸೈನ್ ಇನ್',
+    loading: 'ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+    
+    // Driver specific
+    driverDashboard: 'ಚಾಲಕ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'ಅಡ್ಮಿನ್ ಖರೀದಿದಾರ ಫೀಚರ್ - ಶೀಘ್ರದಲ್ಲೇ ಬರುತ್ತಿದೆ',
+    recentActivity: 'ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ',
+    activityTrackingComingSoon: 'ಚಟುವಟಿಕೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಶೀಘ್ರದಲ್ಲೇ ಬರುತ್ತಿದೆ...',
+    
+    // Session management
+    farmerSessionExtended: 'ರೈತ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    buyerSessionExtended: 'ಖರೀದಿದಾರ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    adminSessionExtended: 'ಅಡ್ಮಿನ್ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    driverSessionExtended: 'ಚಾಲಕ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    
+    // Transport tracking
+    vehicle: 'ವಾಹನ',
+    distance: 'ದೂರ',
+    amount: 'ಮೊತ್ತ',
+    pickupDate: 'ಪಿಕಪ್ ದಿನಾಂಕ',
+    bookingId: 'ಬುಕಿಂಗ್ ID',
+    trackingId: 'ಟ್ರ್ಯಾಕಿಂಗ್ ID',
+    routeInformation: 'ಮಾರ್ಗ ಮಾಹಿತಿ',
+    deliveryInformation: 'ವಿತರಣಾ ಮಾಹಿತಿ',
+    expectedDelivery: 'ನಿರೀಕ್ಷಿತ ವಿತರಣೆ',
+    vehicleType: 'ವಾಹನ ಪ್ರಕಾರ',
+    totalAmount: 'ಒಟ್ಟು ಮೊತ್ತ',
+    
+    // Customer support
+    you: 'ನೀವು',
+    supportTeam: 'ಬೆಂಬಲ ತಂಡ',
+    justNow: 'ಈಗಷ್ಟೇ',
+    sending: 'ಕಳುಹಿಸುತ್ತಿದೆ...',
+    send: 'ಕಳುಹಿಸಿ',
+    
+    // Live bidding
+    ended: 'ಮುಗಿದಿದೆ',
+    unknownFarmer: 'ಅಜ್ಞಾತ ರೈತ',
+    customAmount: 'ಕಸ್ಟಮ್ ಮೊತ್ತ',
+    
+    // Additional missing keys
+    bidEndedSuccessfully: 'ಬಿಡ್ ಯಶಸ್ವಿಯಾಗಿ ಮುಗಿದಿದೆ!',
+    
+    // Missing UI text that appears in farmer pages
+    listed: 'ಪಟ್ಟಿ ಮಾಡಲಾಗಿದೆ',
+    premiumGrade: 'ಪ್ರೀಮಿಯಂ ಗ್ರೇಡ್',
+    goodGrade: 'ಉತ್ತಮ ಗ್ರೇಡ್',
+    daysLeft: 'ಉಳಿದ ದಿನಗಳು',
+    planted: 'ನೆಟ್ಟಿದೆ',
+    newCountdown: 'ಹೊಸ ಕೌಂಟ್‌ಡೌನ್',
+    partlyCloudy: 'ಭಾಗಶಃ ಮೇಘಾವೃತ',
+    liveWeatherData: 'ಲೈವ್ ಹವಾಮಾನ ಡೇಟಾ',
+    updated: 'ನವೀಕರಿಸಲಾಗಿದೆ',
+    hourly: 'ಗಂಟೆಗೆ',
+    fiveDay: '5-ದಿನ',
+    now: 'ಈಗ',
+    
+    // New keys for farmer pages
+    bidMustEndBeforeHarvest: 'ಸೂಚನೆ: ಬಿಡ್ ಸುಗ್ಗಿ ದಿನಾಂಕದ ಮೊದಲು ಮುಗಿಯಬೇಕು',
+    copyFromPickup: 'ಪಿಕಪ್‌ನಿಂದ ಕಾಪಿ ಮಾಡಿ',
+    pickupSchedule: 'ಪಿಕಪ್ ವೇಳಾಪಟ್ಟಿ',
+    date: 'ದಿನಾಂಕ',
+    time: 'ಸಮಯ',
+    myBidHistory: 'ನನ್ನ ಬಿಡ್ ಇತಿಹಾಸ',
+    trackYourCreatedBids: 'ನೀವು ರಚಿಸಿದ ಬಿಡ್‌ಗಳು ಮತ್ತು ಅವುಗಳ ಫಲಿತಾಂಶಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    allBids: 'ಎಲ್ಲಾ ಬಿಡ್‌ಗಳು',
+    withWinners: 'ವಿಜೇತರೊಂದಿಗೆ',
+    trackById: 'ID ಮೂಲಕ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    trackYourTransportOrders: 'ನಿಮ್ಮ ಸಾರಿಗೆ ಆರ್ಡರ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    viewAllTransportBookings: 'ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾರಿಗೆ ಬುಕಿಂಗ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+    totalOrders: 'ಒಟ್ಟು ಆರ್ಡರ್‌ಗಳು',
+    aiPoweredPredictions: 'AI-ಚಾಲಿತ ಮುನ್ಸೂಚನೆಗಳು',
+    editCountdown: 'ಕೌಂಟ್‌ಡೌನ್ ಸಂಪಾದಿಸಿ',
+    newHarvestCountdown: 'ಹೊಸ ಸುಗ್ಗಿ ಕೌಂಟ್‌ಡೌನ್',
+    newSupportTicket: 'ಹೊಸ ಬೆಂಬಲ ಟಿಕೆಟ್',
+    findBuyers: 'ಖರೀದಿದಾರರನ್ನು ಹುಡುಕಿ',
+    connectWithBuyersAndGrow: 'ಖರೀದಿದಾರರೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ ಮತ್ತು ನಿಮ್ಮ ವ್ಯಾಪಾರವನ್ನು ಬೆಳೆಸಿ',
+    requestDate: 'ಅಭ್ಯರ್ಥನೆ ದಿನಾಂಕ',
+    
+    // Form placeholders and labels
+    state: 'ರಾಜ್ಯ',
+    district: 'ಜಿಲ್ಲೆ',
+    city: 'ನಗರ',
+    pinCode: 'ಪಿನ್ ಕೋಡ್',
+    detailedAddress: 'ವಿವರವಾದ ವಿಳಾಸ',
+    orEnterExactDistance: 'ಅಥವಾ ನಿಖರವಾದ ದೂರವನ್ನು ನಮೂದಿಸಿ',
+    enterBuyerPhoneNumber: 'ಕ್ರಾಸ್-ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಟ್ರ್ಯಾಕಿಂಗ್‌ಗಾಗಿ ಖರೀದಿದಾರರ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ',
+    plantAnalysis: 'ಸಸ್ಯ ವಿಶ್ಲೇಷಣೆ',
+    plantToAnalyze: 'ವಿಶ್ಲೇಷಣೆಗಾಗಿ ಸಸ್ಯ',
+    
+    // Additional form placeholders
+    enterTrackingId: 'ಟ್ರ್ಯಾಕಿಂಗ್ ID ನಮೂದಿಸಿ (ಉದಾ., TRK123456)',
+    selectCrop: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ',
+    
+    // General
+    info: 'ಮಾಹಿತಿ',
+    noData: 'ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ',
+    
+    // Missing UI text that appears in farmer pages
+    listed: 'ಪಟ್ಟಿ ಮಾಡಲಾಗಿದೆ',
+    premiumGrade: 'ಪ್ರೀಮಿಯಂ ಗ್ರೇಡ್',
+    goodGrade: 'ಉತ್ತಮ ಗ್ರೇಡ್',
+    daysLeft: 'ಬಾಕಿ ದಿನಗಳು',
+    planted: 'ನಾಟಲಾಗಿದೆ',
+    newCountdown: 'ಹೊಸ ಕೌಂಟ್‌ಡೌನ್',
+    partlyCloudy: 'ಭಾಗಶಃ ಮೇಘಾವೃತ',
+    liveWeatherData: 'ಲೈವ್ ಹವಾಮಾನ ಡೇಟಾ',
+    updated: 'ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ',
+    hourly: 'ಗಂಟೆಗೊಮ್ಮೆ',
+    fiveDay: '5-ದಿನ',
+    now: 'ಈಗ',
+    
+    // New keys for farmer pages
+    bidMustEndBeforeHarvest: 'ಗಮನಿಸಿ: ಬಿಡ್ ಸುಗ್ಗಿ ದಿನಾಂಕದ ಮೊದಲು ಮುಗಿಯಬೇಕು',
+    copyFromPickup: 'ಪಿಕಪ್‌ನಿಂದ ಕಾಪಿ ಮಾಡಿ',
+    pickupSchedule: 'ಪಿಕಪ್ ವೇಳಾಪಟ್ಟಿ',
+    date: 'ದಿನಾಂಕ',
+    time: 'ಸಮಯ',
+    myBidHistory: 'ನನ್ನ ಬಿಡ್ ಇತಿಹಾಸ',
+    trackYourCreatedBids: 'ನಿಮ್ಮ ರಚಿಸಿದ ಬಿಡ್‌ಗಳು ಮತ್ತು ಅವುಗಳ ಫಲಿತಾಂಶಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    allBids: 'ಎಲ್ಲಾ ಬಿಡ್‌ಗಳು',
+    withWinners: 'ವಿಜೇತರೊಂದಿಗೆ',
+    trackById: 'ID ಮೂಲಕ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    trackYourTransportOrders: 'ನಿಮ್ಮ ಸಾರಿಗೆ ಆರ್ಡರ್‌ಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ',
+    viewAllTransportBookings: 'ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾರಿಗೆ ಬುಕಿಂಗ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ',
+    totalOrders: 'ಒಟ್ಟು ಆರ್ಡರ್‌ಗಳು',
+    aiPoweredPredictions: 'AI-ಚಾಲಿತ ಮುನ್ಸೂಚನೆಗಳು',
+    editCountdown: 'ಕೌಂಟ್‌ಡೌನ್ ಸಂಪಾದಿಸಿ',
+    newHarvestCountdown: 'ಹೊಸ ಸುಗ್ಗಿ ಕೌಂಟ್‌ಡೌನ್',
+    newSupportTicket: 'ಹೊಸ ಬೆಂಬಲ ಟಿಕೆಟ್',
+    findBuyers: 'ಖರೀದಿದಾರರನ್ನು ಹುಡುಕಿ',
+    connectWithBuyersAndGrow: 'ಖರೀದಿದಾರರೊಂದಿಗೆ ಸಂಪರ್ಕ ಸಾಧಿಸಿ ಮತ್ತು ನಿಮ್ಮ ವ್ಯಾಪಾರವನ್ನು ಬೆಳೆಸಿ',
+    requestDate: 'ಅಭ್ಯರ್ಥನೆ ದಿನಾಂಕ',
+    
+    // Weather page specific translations
+    yourLocation: 'ನಿಮ್ಮ ಸ್ಥಳ',
+    liveWeatherData: 'ಲೈವ್ ಹವಾಮಾನ ಡೇಟಾ',
+    simulatedData: 'ಸಿಮ್ಯುಲೇಟೆಡ್ ಡೇಟಾ',
+    hourly: 'ಗಂಟೆಗೊಮ್ಮೆ',
+    weekly: 'ವಾರಕ್ಕೊಮ್ಮೆ',
+    fiveDay: '5-ದಿನ',
+    now: 'ಈಗ',
+    today: 'ಇಂದು',
+    sun: 'ಭಾನು',
+    mon: 'ಸೋಮ',
+    tue: 'ಮಂಗಳ',
+    wed: 'ಬುಧ',
+    thu: 'ಗುರು',
+    fri: 'ಶುಕ್ರ',
+    sat: 'ಶನಿ',
+    
+    // Weather conditions and advice
+    highHeatIrrigateEarlyMorning: 'ಅಧಿಕ ಶಾಖ - ಬೆಳಿಗ್ಗೆ ಅಥವಾ ಸಂಜೆ ಬೆಳೆಗಳಿಗೆ ನೀರು ಹಾಕಿ',
+    coolWeatherProtectFromFrost: 'ತಂಪಾದ ಹವಾಮಾನ - ಸೂಕ್ಷ್ಮ ಬೆಳೆಗಳನ್ನು ಹಿಮದಿಂದ ರಕ್ಷಿಸಿ',
+    goodTemperatureForFarming: 'ಹೆಚ್ಚಿನ ಕೃಷಿ ಚಟುವಟಿಕೆಗಳಿಗೆ ಉತ್ತಮ ತಾಪಮಾನ',
+    rainExpectedAvoidSpraying: 'ಮಳೆ ನಿರೀಕ್ಷೆ - ಇಂದು ಕೀಟನಾಶಕ ಸಿಂಪಡಿಸಬೇಡಿ',
+    goodTimeForTransplanting: 'ಸಸಿಗಳನ್ನು ನಾಟುವ ಉತ್ತಮ ಸಮಯ',
+    highHumidityWatchFungal: 'ಅಧಿಕ ಆರ್ದ್ರತೆ - ಶಿಲೀಂಧ್ರ ರೋಗಗಳಿಗಾಗಿ ಗಮನಿಸಿ',
+    clearSkiesIdealForHarvesting: 'ಸ್ಪಷ್ಟ ಆಕಾಶ - ಸುಗ್ಗಿ ಮತ್ತು ಒಣಗಿಸಲು ಆದರ್ಶ',
+    
+    // Weather details
+    wind: 'ಗಾಳಿ',
+    humidity: 'ಆರ್ದ್ರತೆ',
+    visibility: 'ದೃಶ್ಯತೆ',
+    pressure: 'ಒತ್ತಡ',
+    sunrise: 'ಸೂರ್ಯೋದಯ',
+    sunset: 'ಸೂರ್ಯಾಸ್ತ',
+    feelsLike: 'ಅನುಭವ',
+    uvIndex: 'UV ಸೂಚ್ಯಂಕ',
+    rainChance: 'ಮಳೆ ಸಾಧ್ಯತೆ',
+    
+    // Weather quality descriptions
+    lightBreeze: 'ಲಘು ಗಾಳಿ',
+    comfortable: 'ಆರಾಮದಾಯಕ',
+    clear: 'ಸ್ಪಷ್ಟ',
+    hazy: 'ಮಂಜುಗಡ್ಡೆ',
+    normal: 'ಸಾಮಾನ್ಯ',
+    high: 'ಅಧಿಕ',
+    veryHot: 'ಬಹಳ ಬಿಸಿ',
+    warm: 'ಬೆಚ್ಚಗಿನ',
+    lowProbability: 'ಕಡಿಮೆ ಸಾಧ್ಯತೆ',
+    rainExpected: 'ಮಳೆ ನಿರೀಕ್ಷೆ',
+    none: 'ಯಾವುದೂ ಇಲ್ಲ',
+    useProtection: 'ರಕ್ಷಣೆ ಬಳಸಿ',
+    moderate: 'ಮಧ್ಯಮ',
+    
+    // Form placeholders and labels
+    state: 'ರಾಜ್ಯ',
+    district: 'ಜಿಲ್ಲೆ',
+    city: 'ನಗರ',
+    pinCode: 'ಪಿನ್ ಕೋಡ್',
+    detailedAddress: 'ವಿವರವಾದ ವಿಳಾಸ',
+    orEnterExactDistance: 'ಅಥವಾ ನಿಖರವಾದ ದೂರವನ್ನು ನಮೂದಿಸಿ',
+    enterBuyerPhoneNumber: 'ಕ್ರಾಸ್-ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಟ್ರ್ಯಾಕಿಂಗ್‌ಗಾಗಿ ಖರೀದಿದಾರರ ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ',
+    plantAnalysis: 'ಸಸ್ಯ ವಿಶ್ಲೇಷಣೆ',
+    plantToAnalyze: 'ವಿಶ್ಲೇಷಣೆಗಾಗಿ ಸಸ್ಯ',
+    
+    // Additional form placeholders
+    enterTrackingId: 'ಟ್ರ್ಯಾಕಿಂಗ್ ID ನಮೂದಿಸಿ (ಉದಾ., TRK123456)',
+    selectCrop: 'ಬೆಳೆ ಆಯ್ಕೆಮಾಡಿ',
+    
+    // Buyer Dashboard specific
+    morgen: 'ಮೋರ್ಗೆನ್',
+    publicBuyerDashboard: 'ಸಾರ್ವಜನಿಕ ಖರೀದಿದಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    commercialBuyerDashboard: 'ವಾಣಿಜ್ಯ ಖರೀದಿದಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    loadingBuyerDashboard: 'ಖರೀದಿದಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+    failedToLoadDashboardData: 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ',
+    retry: 'ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ',
+    myFarmers: 'ನನ್ನ ರೈತರು',
+    updates: 'ಅಪ್‌ಡೇಟ್‌ಗಳು',
+    noUpdatesAvailable: 'ಅಪ್‌ಡೇಟ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ',
+    liveBidding: 'ಲೈವ್ ಬಿಡ್ಡಿಂಗ್',
+    activeBids: 'ಸಕ್ರಿಯ ಬಿಡ್‌ಗಳು',
+    biddingStats: 'ಬಿಡ್ಡಿಂಗ್ ಅಂಕಿಅಂಶಗಳು',
+    joinLiveAuctions: 'ಲೈವ್ ಹರಾಜಿನಲ್ಲಿ ಸೇರಿ',
+    buyCrops: 'ಬೆಳೆಗಳನ್ನು ಖರೀದಿಸಿ',
+    localDistrictCropsOnly: 'ಸ್ಥಳೀಯ ಜಿಲ್ಲೆ ಬೆಳೆಗಳು ಮಾತ್ರ',
+    availableCrops: 'ಲಭ್ಯವಿರುವ ಬೆಳೆಗಳು',
+    avgPrice: 'ಸರಾಸರಿ ಬೆಲೆ',
+    browseLocalCrops: 'ಸ್ಥಳೀಯ ಬೆಳೆಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ',
+    orderTracking: 'ಆರ್ಡರ್ ಟ್ರ್ಯಾಕಿಂಗ್',
+    activeOrders: 'ಸಕ್ರಿಯ ಆರ್ಡರ್‌ಗಳು',
+    recentOrders: 'ಇತ್ತೀಚಿನ ಆರ್ಡರ್‌ಗಳು',
+    lastSevenDays: 'ಕಳೆದ 7 ದಿನಗಳು',
+    transport: 'ಸಾರಿಗೆ',
+    bookCargoTransport: 'ಕಾರ್ಗೋ ಸಾರಿಗೆ ಬುಕ್ ಮಾಡಿ',
+    transportOptions: 'ಸಾರಿಗೆ ಆಯ್ಕೆಗಳು',
+    availableNow: 'ಈಗ ಲಭ್ಯ',
+    vehicles: 'ವಾಹನಗಳು',
+    rate: 'ದರ',
+    bookTransport: 'ಸಾರಿಗೆ ಬುಕ್ ಮಾಡಿ',
+    
+    // Common UI elements
+    morgenLogo: 'ಮೋರ್ಗೆನ್ ಲೋಗೋ',
+    signIn: 'ಸೈನ್ ಇನ್',
+    loading: 'ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+    
+    // Driver specific
+    driverDashboard: 'ಚಾಲಕ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+    
+    // Admin specific
+    adminBuyerFeatureComingSoon: 'ಅಡ್ಮಿನ್ ಖರೀದಿದಾರ ವೈಶಿಷ್ಟ್ಯ - ಶೀಘ್ರದಲ್ಲೇ ಬರುತ್ತಿದೆ',
+    recentActivity: 'ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ',
+    activityTrackingComingSoon: 'ಚಟುವಟಿಕೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಶೀಘ್ರದಲ್ಲೇ ಬರುತ್ತಿದೆ...',
+    
+    // Session management
+    farmerSessionExtended: 'ರೈತ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    buyerSessionExtended: 'ಖರೀದಿದಾರ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    adminSessionExtended: 'ಅಡ್ಮಿನ್ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    driverSessionExtended: 'ಚಾಲಕ ಸೆಷನ್ ವಿಸ್ತರಿಸಲಾಗಿದೆ',
+    
+    // Transport tracking
+    vehicle: 'ವಾಹನ',
+    distance: 'ದೂರ',
+    amount: 'ಮೊತ್ತ',
+    pickupDate: 'ಪಿಕಪ್ ದಿನಾಂಕ',
+    bookingId: 'ಬುಕಿಂಗ್ ID',
+    trackingId: 'ಟ್ರ್ಯಾಕಿಂಗ್ ID',
+    routeInformation: 'ಮಾರ್ಗ ಮಾಹಿತಿ',
+    deliveryInformation: 'ವಿತರಣಾ ಮಾಹಿತಿ',
+    expectedDelivery: 'ನಿರೀಕ್ಷಿತ ವಿತರಣೆ',
+    vehicleType: 'ವಾಹನ ಪ್ರಕಾರ',
+    totalAmount: 'ಒಟ್ಟು ಮೊತ್ತ',
+    
+    // Customer support
+    you: 'ನೀವು',
+    supportTeam: 'ಬೆಂಬಲ ತಂಡ',
+    justNow: 'ಈಗಷ್ಟೇ',
+    sending: 'ಕಳುಹಿಸುತ್ತಿದೆ...',
+    send: 'ಕಳುಹಿಸಿ',
+    
+    // Live bidding
+    ended: 'ಮುಗಿದಿದೆ',
+    unknownFarmer: 'ಅಜ್ಞಾತ ರೈತ',
+    customAmount: 'ಕಸ್ಟಮ್ ಮೊತ್ತ',
+    
+    // General
+    info: 'ಮಾಹಿತಿ',
+    noData: 'ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ',
+    
+    // Additional weather and farming terms for Weather.jsx
+    todaysAgricultureSummary: 'ಇಂದಿನ ಕೃಷಿ ಸಾರಾಂಶ',
+    farmingAdvice: 'ಕೃಷಿ ಸಲಹೆ',
+    avgTemperature: 'ಸರಾಸರಿ ತಾಪಮಾನ',
+    maxWind: 'ಗರಿಷ್ಠ ಗಾಳಿ',
+    totalPrecipitation: 'ಒಟ್ಟು ಮಳೆ',
+    avgHumidity: 'ಸರಾಸರಿ ಆರ್ದ್ರತೆ',
+    fungalDiseaseRisk: 'ಶಿಲೀಂಧ್ರ ರೋಗ ಅಪಾಯ',
+    applyFungicide: 'ಶಿಲೀಂಧ್ರನಾಶಕವನ್ನು ತಡೆಗಟ್ಟುವಿಕೆಯಾಗಿ ಅನ್ವಯಿಸಿ. ಉತ್ತಮ ಗಾಳಿ ಪರಿಚಲನೆಯನ್ನು ಖಚಿತಪಡಿಸಿ.',
+    monitorCrops: 'ರೋಗದ ಆರಂಭಿಕ ಚಿಹ್ನೆಗಳಿಗಾಗಿ ಬೆಳೆಗಳನ್ನು ನಿಕಟವಾಗಿ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ.',
+    conditionsUnfavorable: 'ಶಿಲೀಂಧ್ರ ಬೆಳವಣಿಗೆಗೆ ಪರಿಸ್ಥಿತಿಗಳು ಪ್ರತಿಕೂಲ.',
+    pestActivityLevel: 'ಕೀಟ ಚಟುವಟಿಕೆ ಮಟ್ಟ',
+    warmHumidConditions: 'ಬೆಚ್ಚಗಿನ ಆರ್ದ್ರ ಪರಿಸ್ಥಿತಿಗಳು ಕೀಟ ಸಂತಾನೋತ್ಪತ್ತಿಗೆ ಅನುಕೂಲಕರ. ನಿಯಮಿತವಾಗಿ ಹೊಲಗಳನ್ನು ಪರಿಶೀಲಿಸಿ.',
+    normalPestActivity: 'ಸಾಮಾನ್ಯ ಕೀಟ ಚಟುವಟಿಕೆ ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ. ನಿಯಮಿತ ಮೇಲ್ವಿಚಾರಣೆಯನ್ನು ಮುಂದುವರಿಸಿ.',
+    coolConditions: 'ತಂಪಾದ ಪರಿಸ್ಥಿತಿಗಳು ಕೀಟ ಚಟುವಟಿಕೆಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತವೆ.',
+    moonPhase: 'ಚಂದ್ರ ಹಂತ',
+    moonrise: 'ಚಂದ್ರೋದಯ',
+    moonset: 'ಚಂದ್ರಾಸ್ತ',
+    dewPoint: 'ಇಬ್ಬನಿ ಬಿಂದು',
+    notRecommended: 'ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ',
+    idealConditions: 'ಆದರ್ಶ ಪರಿಸ್ಥಿತಿಗಳು',
+    eveningPreferred: 'ಸಂಜೆ ಆದ್ಯತೆ',
+    good: 'ಒಳ್ಳೆಯದು',
+    unhealthy: 'ಅನಾರೋಗ್ಯಕರ',
+    veryUnhealthy: 'ಬಹಳ ಅನಾರೋಗ್ಯಕರ',
+    noRainExpected: 'ಮಳೆ ನಿರೀಕ್ಷಿಸಲಾಗಿಲ್ಲ',
+    newMoon: 'ಅಮಾವಾಸ್ಯೆ',
+    
+    // Additional missing keys for farmer pages
+    unknownCrop: 'ಅಜ್ಞಾತ ಬೆಳೆ',
+    noTimesAvailableToday: 'ಇಂದು ಸಮಯ ಲಭ್ಯವಿಲ್ಲ',
+    selectTime: 'ಸಮಯ ಆಯ್ಕೆಮಾಡಿ',
+    orderPlaced: 'ಆರ್ಡರ್ ಇಡಲಾಗಿದೆ',
+    orderAccepted: 'ಆರ್ಡರ್ ಸ್ವೀಕರಿಸಲಾಗಿದೆ',
+    pickupStarted: 'ಪಿಕಪ್ ಪ್ರಾರಂಭಿಸಲಾಗಿದೆ',
+    orderPickedUp: 'ಆರ್ಡರ್ ಪಿಕಪ್ ಮಾಡಲಾಗಿದೆ',
+    inTransit: 'ಸಾರಿಗೆಯಲ್ಲಿ',
+    delivered: 'ವಿತರಿಸಲಾಗಿದೆ',
+    cancelled: 'ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ',
+    updateCountdown: 'ಕೌಂಟ್‌ಡೌನ್ ನವೀಕರಿಸಿ',
+    createCountdown: 'ಕೌಂಟ್‌ಡೌನ್ ರಚಿಸಿ',
+    transportLogistics: 'ಸಾರಿಗೆ ಮತ್ತು ಲಾಜಿಸ್ಟಿಕ್ಸ್',
+    weatherServices: 'ಹವಾಮಾನ ಸೇವೆಗಳು',
+    cropManagement: 'ಬೆಳೆ ನಿರ್ವಹಣೆ',
+    auctionMarketplace: 'ಹರಾಜು ಮತ್ತು ಮಾರುಕಟ್ಟೆ',
+    technicalIssues: 'ತಾಂತ್ರಿಕ ಸಮಸ್ಯೆಗಳು',
+    billingPayments: 'ಬಿಲ್ಲಿಂಗ್ ಮತ್ತು ಪಾವತಿಗಳು',
+    generalInquiry: 'ಸಾಮಾನ್ಯ ವಿಚಾರಣೆ',
+  }
+};
+
+// Helper function to get translation by language and key
+export const getTranslation = (language, key) => {
+  if (!translations[language]) {
+    console.warn(`Language '${language}' not found, falling back to English`);
+    return translations.en[key] || key;
+  }
+  
+  return translations[language][key] || translations.en[key] || key;
+};

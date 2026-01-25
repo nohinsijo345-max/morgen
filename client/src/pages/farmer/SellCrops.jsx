@@ -11,8 +11,10 @@ import { useTheme } from '../../context/ThemeContext';
 import GlassCard from '../../components/GlassCard';
 import EnhancedCropCard from '../../components/EnhancedCropCard';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const SellCrops = () => {
+  const { t } = useTranslation();
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     cropName: '',
@@ -63,7 +65,7 @@ const SellCrops = () => {
       setError(null);
       
       if (!farmerUser?.farmerId) {
-        setError('Farmer ID not found. Please login again.');
+        setError(t('farmerSessionNotFound'));
         setLoading(false);
         return;
       }
@@ -144,7 +146,7 @@ const SellCrops = () => {
       setError(null);
     } catch (err) {
       console.error('❌ Crops fetch failed:', err);
-      setError(`Failed to load crops: ${err.response?.data?.error || err.message}`);
+      setError(`${t('failedToLoadCrops')}: ${err.response?.data?.error || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -227,26 +229,26 @@ const SellCrops = () => {
         description: ''
       });
       refresh(); // Refresh the live data
-      alert('Crop listed successfully!');
+      alert(t('cropListedSuccessfully'));
     } catch (error) {
       console.error('❌ Failed to create listing:', error);
       console.error('Error details:', error.response?.data);
-      const errorMessage = error.response?.data?.error || 'Failed to create listing. Please try again.';
+      const errorMessage = error.response?.data?.error || t('failedToCreate') + '. ' + t('tryAgainLater');
       alert(errorMessage);
     }
   };
 
   const handleDelete = async (cropId) => {
-    if (!confirm('Are you sure you want to delete this listing?')) return;
+    if (!confirm(t('areYouSureDelete'))) return;
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       await axios.delete(`${API_URL}/api/crops/${cropId}`);
       refresh(); // Refresh the live data
-      alert('Listing deleted successfully!');
+      alert(t('listingDeletedSuccessfully'));
     } catch (error) {
       console.error('Failed to delete listing:', error);
-      alert('Failed to delete listing. Please try again.');
+      alert(t('failedToCreate') + '. ' + t('tryAgainLater'));
     }
   };
 
@@ -274,7 +276,7 @@ const SellCrops = () => {
           className="w-16 h-16 border-4 rounded-full"
           style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
-        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading your crops...</p>
+        <p className="mt-4" style={{ color: colors.textSecondary }}>{t('loadingYourCrops')}</p>
       </div>
     );
   }
@@ -283,7 +285,7 @@ const SellCrops = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
         <Package className="w-16 h-16 mb-4" style={{ color: colors.textMuted }} />
-        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>Unable to Load Crops</p>
+        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>{t('unableToLoadCrops')}</p>
         <p className="mb-4" style={{ color: colors.textSecondary }}>{error}</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -292,7 +294,7 @@ const SellCrops = () => {
           className="px-6 py-2 rounded-xl font-semibold"
           style={{ backgroundColor: colors.primary, color: '#ffffff' }}
         >
-          Try Again
+          {t('tryAgain')}
         </motion.button>
       </div>
     );
@@ -322,13 +324,13 @@ const SellCrops = () => {
               
               <div>
                 <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
-                  Sell Crops
+                  {t('sellCrops')}
                 </h1>
                 <div className="flex items-center gap-4 text-sm" style={{ color: colors.textSecondary }}>
-                  <span>List your crops for direct sale to public buyers</span>
+                  <span>{t('listCropsForSale')}</span>
                   {lastUpdated && (
                     <span className="text-xs">
-                      Last updated: {lastUpdated.toLocaleTimeString()}
+                      {t('lastUpdated')}: {lastUpdated.toLocaleTimeString()}
                     </span>
                   )}
                 </div>
@@ -344,7 +346,7 @@ const SellCrops = () => {
                 style={{ backgroundColor: colors.primary, color: '#ffffff' }}
               >
                 <Plus className="w-5 h-5" />
-                Add Listing
+                {t('addListing')}
               </motion.button>
 
               <motion.button
@@ -359,7 +361,7 @@ const SellCrops = () => {
                 }}
               >
                 <Package className="w-5 h-5" />
-                Orders
+                {t('orders')}
               </motion.button>
             </div>
           </div>
@@ -372,10 +374,10 @@ const SellCrops = () => {
           <GlassCard className="text-center py-12">
             <Package className="w-16 h-16 mx-auto mb-4" style={{ color: colors.textMuted }} />
             <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>
-              No listings yet
+              {t('noListingsYet')}
             </h3>
             <p className="mb-6" style={{ color: colors.textSecondary }}>
-              Create your first listing to sell crops directly to public buyers
+              {t('createFirstListing')}
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -385,7 +387,7 @@ const SellCrops = () => {
               style={{ backgroundColor: colors.primary, color: '#ffffff' }}
             >
               <Plus className="w-5 h-5" />
-              Create Your First Listing
+              {t('createFirstListing')}
             </motion.button>
           </GlassCard>
         ) : (
@@ -418,14 +420,14 @@ const SellCrops = () => {
             style={{ backgroundColor: colors.backgroundCard }}
           >
             <h3 className="text-2xl font-bold mb-6" style={{ color: colors.textPrimary }}>
-              Add New Listing
+              {t('addNewListing')}
             </h3>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Crop Name *
+                    {t('cropName')} *
                   </label>
                   <input
                     type="text"
@@ -444,7 +446,7 @@ const SellCrops = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Category *
+                    {t('category')} *
                   </label>
                   <select
                     name="category"
@@ -457,17 +459,17 @@ const SellCrops = () => {
                       color: colors.textPrimary
                     }}
                   >
-                    <option value="vegetables">Vegetables</option>
-                    <option value="fruits">Fruits</option>
-                    <option value="grains">Grains</option>
-                    <option value="spices">Spices</option>
-                    <option value="other">Other</option>
+                    <option value="vegetables">{t('vegetables')}</option>
+                    <option value="fruits">{t('fruits')}</option>
+                    <option value="grains">{t('grains')}</option>
+                    <option value="spices">{t('spices')}</option>
+                    <option value="other">{t('other')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Quality *
+                    {t('quality')} *
                   </label>
                   <select
                     name="quality"
@@ -480,15 +482,15 @@ const SellCrops = () => {
                       color: colors.textPrimary
                     }}
                   >
-                    <option value="A">Grade A (Premium)</option>
-                    <option value="B">Grade B (Good)</option>
-                    <option value="C">Grade C (Standard)</option>
+                    <option value="A">{t('gradeA')} ({t('premium')})</option>
+                    <option value="B">{t('gradeB')} ({t('goodGrade')})</option>
+                    <option value="C">{t('gradeC')} ({t('standard')})</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Quantity *
+                    {t('quantity')} *
                   </label>
                   <input
                     type="number"
@@ -522,15 +524,15 @@ const SellCrops = () => {
                       color: colors.textPrimary
                     }}
                   >
-                    <option value="kg">Kilograms (kg)</option>
-                    <option value="quintal">Quintal</option>
-                    <option value="ton">Ton</option>
+                    <option value="kg">{t('kilograms')} (kg)</option>
+                    <option value="quintal">{t('quintal')}</option>
+                    <option value="ton">{t('ton')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Price per {formData.unit} (₹) *
+                    {t('pricePerUnit')} {formData.unit} (₹) *
                   </label>
                   <input
                     type="number"
@@ -551,7 +553,7 @@ const SellCrops = () => {
 
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                    Harvest Date *
+                    {t('harvestDate')} *
                   </label>
                   <input
                     type="date"
@@ -571,7 +573,7 @@ const SellCrops = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: colors.textSecondary }}>
-                  Description
+                  {t('description')}
                 </label>
                 <textarea
                   name="description"
@@ -600,7 +602,7 @@ const SellCrops = () => {
                     color: colors.textSecondary
                   }}
                 >
-                  Cancel
+                  {t('cancel')}
                 </motion.button>
 
                 <motion.button
@@ -611,7 +613,7 @@ const SellCrops = () => {
                   style={{ backgroundColor: colors.primary, color: '#ffffff' }}
                 >
                   <CheckCircle className="w-5 h-5" />
-                  Create Listing
+                  {t('createListing')}
                 </motion.button>
               </div>
             </form>

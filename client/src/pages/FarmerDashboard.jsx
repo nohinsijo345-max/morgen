@@ -24,8 +24,11 @@ import PriceForecastCard from '../components/PriceForecastCard';
 import GlassCard from '../components/GlassCard';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
 import { UserSession } from '../utils/userSession';
+import LanguageSelector from '../components/LanguageSelector';
+import { useTranslation } from '../hooks/useTranslation';
 
 const FarmerDashboard = ({ user, onLogout }) => {
+  const { t } = useTranslation();
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [aiDoctorStats, setAiDoctorStats] = useState(null);
@@ -264,7 +267,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
           className="w-16 h-16 border-4 rounded-full"
           style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
-        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading dashboard...</p>
+        <p className="mt-4" style={{ color: colors.textSecondary }}>{t('loading')}...</p>
       </div>
     );
   }
@@ -272,13 +275,13 @@ const FarmerDashboard = ({ user, onLogout }) => {
   if (!dashboardData) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
-        <p className="text-xl" style={{ color: colors.textPrimary }}>Failed to load dashboard data</p>
+        <p className="text-xl" style={{ color: colors.textPrimary }}>{t('failedToLoadDashboard')}</p>
         <button 
           onClick={fetchDashboardData}
           className="mt-4 px-6 py-2 rounded-lg"
           style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
         >
-          Retry
+          {t('retry')}
         </button>
       </div>
     );
@@ -323,13 +326,16 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 className="h-10 w-auto object-contain rounded-xl"
               />
               <div>
-                <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Morgen</h1>
-                <p className="text-xs" style={{ color: colors.textSecondary }}>Farmer Dashboard</p>
+                <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('dashboard')}</h1>
+                <p className="text-xs" style={{ color: colors.textSecondary }}>{t('welcome')}</p>
               </div>
             </motion.div>
 
             {/* Right Section */}
             <div className="flex items-center gap-4">
+              {/* Language Selector */}
+              <LanguageSelector />
+              
               {/* Dark Mode Toggle */}
               <NeumorphicThemeToggle size="sm" />
 
@@ -352,7 +358,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
                 <LogOut className="w-4 h-4" />
-                <span className="font-semibold text-sm">Logout</span>
+                <span className="font-semibold text-sm">{t('logout')}</span>
               </motion.button>
             </div>
           </div>
@@ -419,9 +425,9 @@ const FarmerDashboard = ({ user, onLogout }) => {
                   className="text-2xl font-bold"
                   style={{ color: colors.textPrimary }}
                 >
-                  Hello, {dashboardData?.farmer?.name || user?.name || 'Farmer'}
+                  {t('hello')}, {dashboardData?.farmer?.name || user?.name || 'Farmer'}
                 </motion.h2>
-                <p style={{ color: colors.textSecondary }} className="text-sm">Welcome back to your dashboard</p>
+                <p style={{ color: colors.textSecondary }} className="text-sm">{t('welcomeBack')}</p>
               </div>
             </div>
             
@@ -434,7 +440,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
                 <User className="w-4 h-4" />
-                <span className="font-medium text-sm">Account</span>
+                <span className="font-medium text-sm">{t('account')}</span>
               </motion.button>
               
               <motion.button 
@@ -445,7 +451,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary, border: `1px solid ${colors.border}` }}
               >
                 <Users className="w-4 h-4" />
-                <span className="font-medium text-sm">Customers</span>
+                <span className="font-medium text-sm">{t('customers')}</span>
               </motion.button>
             </div>
           </GlassCard>
@@ -468,7 +474,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 <Bell className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
               </div>
-              <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Updates</h2>
+              <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('info')}</h2>
             </div>
             
             {dashboardData?.updates && dashboardData.updates.length > 0 ? (
@@ -499,7 +505,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
             ) : (
               <div className="flex flex-col items-center justify-center text-center pt-28 pb-12">
                 <Bell className="w-16 h-16 mb-3" style={{ color: colors.textMuted }} />
-                <p className="font-medium" style={{ color: colors.textSecondary }}>No updates available</p>
+                <p className="font-medium" style={{ color: colors.textSecondary }}>{t('noData')}</p>
               </div>
             )}
           </GlassCard>
@@ -519,10 +525,10 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 <Truck className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Local Transport</h2>
+                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('localTransport')}</h2>
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-xs font-medium" style={{ color: colors.primary }}>8 drivers online</span>
+                  <span className="text-xs font-medium" style={{ color: colors.primary }}>{t('availability')}</span>
                 </div>
               </div>
             </div>
@@ -536,7 +542,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                        style={{ backgroundColor: colors.primary }}>
                     <Route className="w-5 h-5" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
                   </div>
-                  <span className="text-base font-semibold" style={{ color: colors.textPrimary }}>Popular Route</span>
+                  <span className="text-base font-semibold" style={{ color: colors.textPrimary }}>{t('popularRoute')}</span>
                 </div>
                 
                 <div className="flex items-center justify-between mb-4">
@@ -550,31 +556,31 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="flex items-center gap-2 text-base" style={{ color: colors.textSecondary }}>
                     <Navigation className="w-4 h-4" />
-                    <span className="font-medium">75 km</span>
+                    <span className="font-medium">75 {t('km')}</span>
                   </div>
                   <div className="flex items-center gap-2 text-base" style={{ color: colors.textSecondary }}>
                     <Clock className="w-4 h-4" />
-                    <span className="font-medium">2.5 hours</span>
+                    <span className="font-medium">2.5 {t('hours')}</span>
                   </div>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="flex items-center gap-2 text-sm" style={{ color: colors.textMuted }}>
                     <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    <span>4.8 Rating</span>
+                    <span>4.8 {t('rating')}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm" style={{ color: colors.textMuted }}>
                     <Truck className="w-3 h-3" />
-                    <span>12 Vehicles</span>
+                    <span>12 {t('vehicles')}</span>
                   </div>
                 </div>
                 
                 <div className="rounded-lg p-3 border" style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
                   <div className="flex items-center justify-between">
-                    <span className="text-base font-medium" style={{ color: colors.textSecondary }}>Starting from</span>
+                    <span className="text-base font-medium" style={{ color: colors.textSecondary }}>{t('startingFrom')}</span>
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-bold" style={{ color: colors.primary }}>₹50</span>
-                      <span className="text-base" style={{ color: colors.textMuted }}>/km</span>
+                      <span className="text-base" style={{ color: colors.textMuted }}>/{t('km')}</span>
                     </div>
                   </div>
                 </div>
@@ -582,9 +588,9 @@ const FarmerDashboard = ({ user, onLogout }) => {
               
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: '47', label: 'Trips' },
-                  { value: '₹3.2K', label: 'Saved' },
-                  { value: '4.9', label: 'Rating', showStar: true }
+                  { value: '47', label: t('booking') },
+                  { value: '₹3.2K', label: t('totalAmount') },
+                  { value: '4.9', label: t('active'), showStar: true }
                 ].map((stat, i) => (
                   <div key={i} className="text-center rounded-lg p-3 border"
                        style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
@@ -608,7 +614,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
               className="w-full mt-4 py-3 rounded-xl font-semibold shadow-lg transition-all"
               style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
             >
-              🚚 Book Transport
+              🚚 {t('bookTransport')}
             </motion.button>
           </GlassCard>
 
@@ -623,11 +629,11 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 <Gavel className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Live Bidding</h2>
+                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('myBids')}</h2>
                 <div className="flex items-center gap-1">
                   <div className={`w-2 h-2 rounded-full ${biddingStats?.activeBids > 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
                   <span className="text-xs font-medium" style={{ color: biddingStats?.activeBids > 0 ? colors.primary : colors.textMuted }}>
-                    {biddingStats?.activeBids || 0} active bids
+                    {biddingStats?.activeBids || 0} {t('activeBidsCount')}
                   </span>
                 </div>
               </div>
@@ -640,22 +646,22 @@ const FarmerDashboard = ({ user, onLogout }) => {
                   <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>
                     {biddingStats?.totalBids || 0}
                   </div>
-                  <div className="text-xs" style={{ color: colors.textSecondary }}>Total Bids</div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>{t('totalBids')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-lg font-bold" style={{ color: colors.primary }}>
                     ₹{biddingStats?.averageBidValue || 0}
                   </div>
-                  <div className="text-xs" style={{ color: colors.textSecondary }}>Avg Value</div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>{t('price')}</div>
                 </div>
               </div>
               
               <div className="text-center">
                 <div className="text-sm font-semibold mb-1" style={{ color: colors.textPrimary }}>
-                  Total Earnings: ₹{biddingStats?.totalEarnings || 0}
+                  {t('totalAmount')}: ₹{biddingStats?.totalEarnings || 0}
                 </div>
                 <div className="text-xs" style={{ color: colors.textSecondary }}>
-                  {biddingStats?.completedBids || 0} completed auctions
+                  {biddingStats?.completedBids || 0} {t('completed')}
                 </div>
               </div>
             </div>
@@ -668,7 +674,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all"
                 style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
-                🔨 Create Bid
+                🔨 {t('createBid')}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -677,7 +683,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all border"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }}
               >
-                📊 View All
+                📊 {t('view')}
               </motion.button>
             </div>
           </GlassCard>
@@ -690,10 +696,10 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 <Stethoscope className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>AI Plant Doctor</h2>
+                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('aiPlantDoctor')}</h2>
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-xs font-medium" style={{ color: colors.primary }}>24/7 Available</span>
+                  <span className="text-xs font-medium" style={{ color: colors.primary }}>{t('available247')}</span>
                 </div>
               </div>
             </div>
@@ -705,16 +711,16 @@ const FarmerDashboard = ({ user, onLogout }) => {
                      style={{ backgroundColor: colors.primaryLight }}>
                   <Stethoscope className="w-6 h-6" style={{ color: colors.primary }} />
                 </div>
-                <div className="text-sm font-semibold mb-1" style={{ color: colors.textPrimary }}>Ready to Help!</div>
-                <div className="text-xs" style={{ color: colors.textSecondary }}>Ask about plant diseases, pests & care</div>
+                <div className="text-sm font-semibold mb-1" style={{ color: colors.textPrimary }}>{t('readyToHelp')}</div>
+                <div className="text-xs" style={{ color: colors.textSecondary }}>{t('askAboutPlantDiseasesAndCare')}</div>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-4">
               {[
-                { value: aiDoctorStats?.totalConsultations || 0, label: 'Consults' },
-                { value: aiDoctorStats?.imagesAnalyzed || 0, label: 'Images' },
-                { value: 'AI', label: 'Powered' }
+                { value: aiDoctorStats?.totalConsultations || 0, label: t('consults') },
+                { value: aiDoctorStats?.imagesAnalyzed || 0, label: t('images') },
+                { value: 'AI', label: t('powered') }
               ].map((stat, i) => (
                 <div key={i} className="text-center">
                   <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>{stat.value}</div>
@@ -731,7 +737,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all"
                 style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
-                💬 Chat
+                💬 {t('chat')}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -740,7 +746,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all border"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }}
               >
-                📸 Scan
+                📸 {t('scan')}
               </motion.button>
             </div>
           </GlassCard>
@@ -753,11 +759,11 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 <ShoppingBag className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Sell Crops</h2>
+                <h2 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('sellCrops')}</h2>
                 <div className="flex items-center gap-1">
                   <div className={`w-2 h-2 rounded-full ${cropStats?.availableCrops > 0 ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
                   <span className="text-xs font-medium" style={{ color: cropStats?.availableCrops > 0 ? colors.primary : colors.textMuted }}>
-                    {cropStats?.availableCrops || 0} available
+                    {cropStats?.availableCrops || 0} {t('available')}
                   </span>
                 </div>
               </div>
@@ -770,22 +776,22 @@ const FarmerDashboard = ({ user, onLogout }) => {
                   <div className="text-lg font-bold" style={{ color: colors.textPrimary }}>
                     {cropStats?.totalCrops || 0}
                   </div>
-                  <div className="text-xs" style={{ color: colors.textSecondary }}>Total Listings</div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>{t('totalListings')}</div>
                 </div>
                 <div className="text-center">
                   <div className="text-lg font-bold" style={{ color: colors.primary }}>
                     ₹{cropStats?.averagePrice || 0}
                   </div>
-                  <div className="text-xs" style={{ color: colors.textSecondary }}>Avg Price/kg</div>
+                  <div className="text-xs" style={{ color: colors.textSecondary }}>{t('avgPriceKg')}</div>
                 </div>
               </div>
               
               <div className="text-center">
                 <div className="text-sm font-semibold mb-1" style={{ color: colors.textPrimary }}>
-                  Total Value: ₹{cropStats?.totalValue || 0}
+                  {t('totalValue')}: ₹{cropStats?.totalValue || 0}
                 </div>
                 <div className="text-xs" style={{ color: colors.textSecondary }}>
-                  {cropStats?.soldCrops || 0} crops sold
+                  {cropStats?.soldCrops || 0} {t('cropsSold')}
                 </div>
               </div>
             </div>
@@ -798,7 +804,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all"
                 style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
               >
-                🌾 Add Crop
+                🌾 {t('addCrop')}
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -807,7 +813,7 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 className="py-2 px-3 rounded-xl font-semibold text-sm shadow-lg transition-all border"
                 style={{ backgroundColor: colors.surface, color: colors.textPrimary, borderColor: colors.border }}
               >
-                📋 Manage
+                📋 {t('manage')}
               </motion.button>
             </div>
           </GlassCard>

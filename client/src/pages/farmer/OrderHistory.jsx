@@ -13,8 +13,10 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const OrderHistory = () => {
+  const { t } = useTranslation();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,13 +75,13 @@ const OrderHistory = () => {
 
   const getStatusText = (status) => {
     const statusMap = {
-      'order_placed': 'Order Placed',
-      'order_accepted': 'Order Accepted',
-      'pickup_started': 'Pickup Started',
-      'order_picked_up': 'Order Picked Up',
-      'in_transit': 'In Transit',
-      'delivered': 'Delivered',
-      'cancelled': 'Cancelled'
+      'order_placed': t('orderPlaced'),
+      'order_accepted': t('orderAccepted'),
+      'pickup_started': t('pickupStarted'),
+      'order_picked_up': t('orderPickedUp'),
+      'in_transit': t('inTransit'),
+      'delivered': t('delivered'),
+      'cancelled': t('cancelled')
     };
     return statusMap[status] || status;
   };
@@ -135,14 +137,14 @@ const OrderHistory = () => {
               </motion.button>
               
               <div>
-                <h1 className="text-2xl font-bold text-amber-900">Order History</h1>
-                <p className="text-sm text-amber-700">View all your transport bookings</p>
+                <h1 className="text-2xl font-bold text-amber-900">{t('orderHistory')}</h1>
+                <p className="text-sm text-amber-700">{t('viewAllTransportBookings')}</p>
               </div>
             </div>
 
             <div className="text-right">
               <div className="text-lg font-bold text-amber-900">{filteredBookings.length}</div>
-              <div className="text-sm text-amber-700">Total Orders</div>
+              <div className="text-sm text-amber-700">{t('totalOrders')}</div>
             </div>
           </div>
         </div>

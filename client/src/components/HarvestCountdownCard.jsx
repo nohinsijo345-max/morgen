@@ -4,8 +4,10 @@ import { Timer, Calendar, Plus } from 'lucide-react';
 import axios from 'axios';
 import { UserSession } from '../utils/userSession';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const HarvestCountdownCard = ({ onClick }) => {
+  const { t } = useTranslation();
   const [countdowns, setCountdowns] = useState([]);
   const [loading, setLoading] = useState(true);
   const { isDarkMode } = useTheme();
@@ -48,9 +50,9 @@ const HarvestCountdownCard = ({ onClick }) => {
   };
 
   const formatDays = (days) => {
-    if (days === 0) return 'Today!';
-    if (days === 1) return '1 Day';
-    return `${days} Days`;
+    if (days === 0) return t('today') + '!';
+    if (days === 1) return '1 ' + t('daysLeft').slice(0, -1); // Remove 's' for singular
+    return `${days} ${t('daysLeft')}`;
   };
 
   const mostRecentCountdown = countdowns.length > 0 ? countdowns[0] : null;
@@ -103,7 +105,7 @@ const HarvestCountdownCard = ({ onClick }) => {
             <Timer className={`w-4 h-4 ${mostRecentCountdown ? 'text-white' : (isDarkMode ? 'text-[#e1e2d0]' : 'text-[#e1e2d0]')}`} />
           </div>
           <div>
-            <h2 className={`text-sm font-bold ${mostRecentCountdown ? 'text-white' : (isDarkMode ? 'text-gray-300' : 'text-[#082829]')}`}>Harvest Countdown</h2>
+            <h2 className={`text-sm font-bold ${mostRecentCountdown ? 'text-white' : (isDarkMode ? 'text-gray-300' : 'text-[#082829]')}`}>{t('harvestCountdown')}</h2>
             <p className={`${mostRecentCountdown ? 'text-white/80' : (isDarkMode ? 'text-gray-400' : 'text-[#082829]/60')} text-[10px]`}>Track your crops</p>
           </div>
         </div>
@@ -124,7 +126,7 @@ const HarvestCountdownCard = ({ onClick }) => {
         <div className="flex-1 flex flex-col items-center justify-center relative z-10">
           <div className="text-center">
             <div className="text-6xl font-bold text-white mb-1">{mostRecentCountdown.daysLeft}</div>
-            <div className="text-white/90 text-base font-semibold mb-1">Days to Harvest</div>
+            <div className="text-white/90 text-base font-semibold mb-1">{t('daysUntilHarvest')}</div>
             <div className="text-white/80 text-sm font-medium">{mostRecentCountdown.cropName}</div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import {
 import axios from 'axios';
 import { WeatherIcon, SmallWeatherIcon } from '../components/PremiumWeatherElements';
 import { UserSession } from '../utils/userSession';
+import { useTranslation } from '../hooks/useTranslation';
 
 // Determine correct dashboard URL based on user type
 const getDashboardUrl = () => {
@@ -103,6 +104,7 @@ const getThemeColors = (isNight, condition) => {
 };
 
 const Weather = () => {
+  const { t } = useTranslation();
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -164,7 +166,7 @@ const Weather = () => {
       
       // Enhanced location display with PIN code if available
       const farmer = response.data.farmer;
-      let locationDisplay = farmer?.district || 'Your Location';
+      let locationDisplay = farmer?.district || t('yourLocation');
       if (farmer?.city && farmer?.pinCode) {
         locationDisplay = `${farmer.city} (${farmer.pinCode})`;
       } else if (farmer?.city) {
@@ -205,24 +207,24 @@ const Weather = () => {
     
     // Temperature-based advice
     if (temp > 35) {
-      advice.push({ icon: Thermometer, text: 'High heat - irrigate crops early morning or evening', type: 'warning' });
+      advice.push({ icon: Thermometer, text: t('highHeatIrrigateEarlyMorning'), type: 'warning' });
     } else if (temp < 15) {
-      advice.push({ icon: Thermometer, text: 'Cool weather - protect sensitive crops from frost', type: 'info' });
+      advice.push({ icon: Thermometer, text: t('coolWeatherProtectFromFrost'), type: 'info' });
     } else {
-      advice.push({ icon: Thermometer, text: 'Good temperature for most farming activities', type: 'success' });
+      advice.push({ icon: Thermometer, text: t('goodTemperatureForFarming'), type: 'success' });
     }
     
     // Rain-based advice
     if (cond.includes('rain') || cond.includes('drizzle')) {
-      advice.push({ icon: CloudRain, text: 'Rain expected - avoid spraying pesticides today', type: 'warning' });
-      advice.push({ icon: Leaf, text: 'Good time for transplanting seedlings', type: 'success' });
+      advice.push({ icon: CloudRain, text: t('rainExpectedAvoidSpraying'), type: 'warning' });
+      advice.push({ icon: Leaf, text: t('goodTimeForTransplanting'), type: 'success' });
     } else if (humidity > 80) {
-      advice.push({ icon: Droplets, text: 'High humidity - watch for fungal diseases', type: 'warning' });
+      advice.push({ icon: Droplets, text: t('highHumidityWatchFungal'), type: 'warning' });
     }
     
     // Sunny day advice
     if (cond.includes('sunny') || cond.includes('clear')) {
-      advice.push({ icon: Sun, text: 'Clear skies - ideal for harvesting and drying crops', type: 'success' });
+      advice.push({ icon: Sun, text: t('clearSkiesIdealForHarvesting'), type: 'success' });
     }
     
     return advice;
@@ -239,7 +241,7 @@ const Weather = () => {
       const hour = (currentHour + i) % 24;
       const hourIsNight = hour < 6 || hour >= 19;
       return {
-        time: i === 0 ? 'Now' : `${String(hour).padStart(2, '0')}:00`,
+        time: i === 0 ? t('now') : `${String(hour).padStart(2, '0')}:00`,
         temp: Math.round(weather.temperature + (i === 0 ? 0 : Math.sin(i) * 2)),
         condition: weather.condition,
         isNow: i === 0,
@@ -250,7 +252,7 @@ const Weather = () => {
 
   const generateWeeklyForecast = () => {
     if (!weather) return [];
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const days = [t('sun'), t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat')];
     const today = new Date();
     const conditions = ['sunny', 'cloudy', 'rainy', 'sunny', 'cloudy', 'sunny', 'rainy'];
     
@@ -258,7 +260,7 @@ const Weather = () => {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       return {
-        day: i === 0 ? 'Today' : days[date.getDay()],
+        day: i === 0 ? t('today') : days[date.getDay()],
         temp: weather.temperature + Math.round(Math.sin(i) * 3),
         condition: conditions[i]
       };
@@ -350,7 +352,7 @@ const Weather = () => {
             <div className="flex items-center gap-2">
               <div className={`w-1.5 h-1.5 rounded-full ${weather?.isLiveData ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`} />
               <span className={`text-xs ${theme.textMuted} font-medium`}>
-                {weather?.isLiveData ? 'Live Weather Data' : 'Simulated Data'}
+                {weather?.isLiveData ? t('liveWeatherData') : t('simulatedData')}
               </span>
             </div>
             {lastUpdated && (
@@ -378,7 +380,7 @@ const Weather = () => {
                   : `${theme.textMuted} hover:${theme.textSecondary}`
               }`}
             >
-              {tab === 'hourly' ? 'Hourly' : '5-Day'}
+              {tab === 'hourly' ? t('hourly') : t('fiveDay')}
             </button>
           ))}
         </motion.div>
@@ -451,10 +453,10 @@ const Weather = () => {
         >
           <div className="grid grid-cols-2 gap-4">
             {[
-              { icon: Wind, label: 'Wind', value: `${weather?.windSpeed || 12} km/h`, sub: weather?.windDirection || 'Light breeze' },
-              { icon: Droplets, label: 'Humidity', value: `${weather?.humidity || 65}%`, sub: weather?.humidity > 70 ? 'High' : 'Comfortable' },
-              { icon: Eye, label: 'Visibility', value: `${weather?.visibility || 10} km`, sub: weather?.visibility > 8 ? 'Clear' : 'Hazy' },
-              { icon: Gauge, label: 'Pressure', value: `${weather?.pressure || 1013} hPa`, sub: 'Normal' },
+              { icon: Wind, label: t('wind'), value: `${weather?.windSpeed || 12} km/h`, sub: weather?.windDirection || t('lightBreeze') },
+              { icon: Droplets, label: t('humidity'), value: `${weather?.humidity || 65}%`, sub: weather?.humidity > 70 ? t('high') : t('comfortable') },
+              { icon: Eye, label: t('visibility'), value: `${weather?.visibility || 10} km`, sub: weather?.visibility > 8 ? t('clear') : t('hazy') },
+              { icon: Gauge, label: t('pressure'), value: `${weather?.pressure || 1013} hPa`, sub: t('normal') },
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -489,7 +491,7 @@ const Weather = () => {
                 <Sunrise className="w-5 h-5 text-orange-400" />
               </div>
               <div>
-                <div className={`text-xs ${theme.textMuted} font-medium mb-0.5`}>Sunrise</div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-0.5`}>{t('sunrise')}</div>
                 <div className={`${theme.textPrimary} font-semibold`}>{weather?.sunrise || '6:30 AM'}</div>
               </div>
             </div>
@@ -499,7 +501,7 @@ const Weather = () => {
                 <Sunset className="w-5 h-5 text-purple-400" />
               </div>
               <div>
-                <div className={`text-xs ${theme.textMuted} font-medium mb-0.5`}>Sunset</div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-0.5`}>{t('sunset')}</div>
                 <div className={`${theme.textPrimary} font-semibold`}>{weather?.sunset || '6:45 PM'}</div>
               </div>
             </div>
@@ -516,7 +518,7 @@ const Weather = () => {
           >
             <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
               <Leaf className="w-5 h-5 text-green-400" />
-              Farming Advice
+              {t('farmingAdvice')}
             </h3>
             <div className="space-y-3">
               {farmingAdvice.map((advice, index) => (
@@ -558,7 +560,7 @@ const Weather = () => {
             <div className="p-3 rounded-2xl bg-white/5">
               <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Soil Moisture</div>
               <div className={`${theme.textPrimary} font-semibold`}>
-                {weather?.humidity > 70 ? 'High' : weather?.humidity > 40 ? 'Moderate' : 'Low'}
+                {weather?.humidity > 70 ? t('high') : weather?.humidity > 40 ? t('moderate') : 'Low'}
               </div>
               <div className="mt-2 h-2 bg-white/10 rounded-full overflow-hidden">
                 <div 
@@ -569,33 +571,33 @@ const Weather = () => {
             </div>
             
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>UV Index</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('uvIndex')}</div>
               <div className={`${theme.textPrimary} font-semibold`}>
                 {weather?.uvIndex || (isNight ? 0 : Math.round(weather?.temperature / 5) || 5)}
               </div>
               <div className={`text-xs ${theme.textMuted} mt-1`}>
-                {isNight ? 'None' : (weather?.temperature > 30 ? 'High - Use protection' : 'Moderate')}
+                {isNight ? t('none') : (weather?.temperature > 30 ? t('useProtection') : t('moderate'))}
               </div>
             </div>
             
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Feels Like</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('feelsLike')}</div>
               <div className={`${theme.textPrimary} font-semibold`}>
                 {weather?.feelsLike || weather?.temperature || 28}°C
               </div>
               <div className={`text-xs ${theme.textMuted} mt-1`}>
-                {(weather?.feelsLike || weather?.temperature) > 35 ? 'Very Hot' : 
-                 (weather?.feelsLike || weather?.temperature) > 28 ? 'Warm' : 'Comfortable'}
+                {(weather?.feelsLike || weather?.temperature) > 35 ? t('veryHot') : 
+                 (weather?.feelsLike || weather?.temperature) > 28 ? t('warm') : t('comfortable')}
               </div>
             </div>
             
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Rain Chance</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('rainChance')}</div>
               <div className={`${theme.textPrimary} font-semibold`}>
                 {weather?.rainChance || (weather?.condition?.toLowerCase().includes('rain') ? '80%' : '10%')}
               </div>
               <div className={`text-xs ${theme.textMuted} mt-1`}>
-                {weather?.condition?.toLowerCase().includes('rain') ? 'Rain expected' : 'Low probability'}
+                {weather?.condition?.toLowerCase().includes('rain') ? t('rainExpected') : t('lowProbability')}
               </div>
             </div>
           </div>
@@ -633,7 +635,7 @@ const Weather = () => {
                 <span className={`${theme.textSecondary} text-sm`}>Harvesting</span>
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
-                {weather?.condition?.toLowerCase().includes('rain') ? 'Not recommended' : '9:00 AM - 4:00 PM'}
+                {weather?.condition?.toLowerCase().includes('rain') ? t('notRecommended') : '9:00 AM - 4:00 PM'}
               </span>
             </div>
             
@@ -646,7 +648,7 @@ const Weather = () => {
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
                 {weather?.windSpeed > 15 || weather?.condition?.toLowerCase().includes('rain') 
-                  ? 'Not recommended' 
+                  ? t('notRecommended') 
                   : '6:00 AM - 9:00 AM'}
               </span>
             </div>
@@ -671,8 +673,8 @@ const Weather = () => {
                 <span className={`${theme.textSecondary} text-sm`}>Transplanting</span>
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
-                {weather?.condition?.toLowerCase().includes('rain') ? 'Ideal conditions' : 
-                 weather?.humidity > 70 ? '4:00 PM - 6:00 PM' : 'Evening preferred'}
+                {weather?.condition?.toLowerCase().includes('rain') ? t('idealConditions') : 
+                 weather?.humidity > 70 ? '4:00 PM - 6:00 PM' : t('eveningPreferred')}
               </span>
             </div>
           </div>
@@ -698,9 +700,9 @@ const Weather = () => {
                   weather.aqi.usEpaIndex <= 3 ? 'text-yellow-400' :
                   weather.aqi.usEpaIndex <= 4 ? 'text-orange-400' : 'text-red-400'
                 }`}>
-                  {weather.aqi.usEpaIndex <= 2 ? 'Good' :
-                   weather.aqi.usEpaIndex <= 3 ? 'Moderate' :
-                   weather.aqi.usEpaIndex <= 4 ? 'Unhealthy' : 'Very Unhealthy'}
+                  {weather.aqi.usEpaIndex <= 2 ? t('good') :
+                   weather.aqi.usEpaIndex <= 3 ? t('moderate') :
+                   weather.aqi.usEpaIndex <= 4 ? t('unhealthy') : t('veryUnhealthy')}
                 </span>
               </div>
               <div className="h-3 bg-white/10 rounded-full overflow-hidden">
@@ -747,23 +749,23 @@ const Weather = () => {
           >
             <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
               <Sprout className="w-5 h-5 text-green-400" />
-              Today's Agriculture Summary
+              {t('todaysAgricultureSummary')}
             </h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 rounded-2xl bg-white/5">
-                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Avg Temperature</div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('avgTemperature')}</div>
                 <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.avgTemp}°C</div>
               </div>
               <div className="p-3 rounded-2xl bg-white/5">
-                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Max Wind</div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('maxWind')}</div>
                 <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.maxWind} km/h</div>
               </div>
               <div className="p-3 rounded-2xl bg-white/5">
-                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Total Precipitation</div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('totalPrecipitation')}</div>
                 <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.totalPrecipitation} mm</div>
               </div>
               <div className="p-3 rounded-2xl bg-white/5">
-                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Avg Humidity</div>
+                <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('avgHumidity')}</div>
                 <div className={`${theme.textPrimary} font-semibold text-lg`}>{weather.agriculture.avgHumidity}%</div>
               </div>
             </div>
@@ -774,7 +776,7 @@ const Weather = () => {
                 <div className="flex items-center gap-2">
                   <CloudRain className={`w-5 h-5 ${weather.agriculture.willItRain ? 'text-blue-400' : theme.textMuted}`} />
                   <span className={`text-sm font-medium ${weather.agriculture.willItRain ? 'text-blue-400' : theme.textMuted}`}>
-                    {weather.agriculture.willItRain ? 'Rain Expected' : 'No Rain Expected'}
+                    {weather.agriculture.willItRain ? t('rainExpected') : t('noRainExpected')}
                   </span>
                 </div>
               </div>
@@ -875,12 +877,12 @@ const Weather = () => {
             {/* Fungal Disease Risk */}
             <div className="p-3 rounded-2xl bg-white/5">
               <div className="flex items-center justify-between mb-2">
-                <span className={`${theme.textSecondary} text-sm`}>Fungal Disease Risk</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('fungalDiseaseRisk')}</span>
                 <span className={`font-semibold text-sm ${
                   weather?.humidity > 80 ? 'text-red-400' :
                   weather?.humidity > 65 ? 'text-yellow-400' : 'text-green-400'
                 }`}>
-                  {weather?.humidity > 80 ? 'High' : weather?.humidity > 65 ? 'Moderate' : 'Low'}
+                  {weather?.humidity > 80 ? t('high') : weather?.humidity > 65 ? t('moderate') : t('low')}
                 </span>
               </div>
               <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -893,30 +895,30 @@ const Weather = () => {
                 />
               </div>
               <p className={`text-xs ${theme.textMuted} mt-2`}>
-                {weather?.humidity > 80 ? 'Apply fungicide preventively. Ensure good air circulation.' :
-                 weather?.humidity > 65 ? 'Monitor crops closely for early signs of disease.' :
-                 'Conditions unfavorable for fungal growth.'}
+                {weather?.humidity > 80 ? t('applyFungicide') :
+                 weather?.humidity > 65 ? t('monitorCrops') :
+                 t('conditionsUnfavorable')}
               </p>
             </div>
             
             {/* Pest Activity */}
             <div className="p-3 rounded-2xl bg-white/5">
               <div className="flex items-center justify-between mb-2">
-                <span className={`${theme.textSecondary} text-sm`}>Pest Activity Level</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('pestActivityLevel')}</span>
                 <span className={`font-semibold text-sm ${
                   weather?.temperature > 30 && weather?.humidity > 60 ? 'text-red-400' :
                   weather?.temperature > 25 ? 'text-yellow-400' : 'text-green-400'
                 }`}>
-                  {weather?.temperature > 30 && weather?.humidity > 60 ? 'High' :
-                   weather?.temperature > 25 ? 'Moderate' : 'Low'}
+                  {weather?.temperature > 30 && weather?.humidity > 60 ? t('high') :
+                   weather?.temperature > 25 ? t('moderate') : t('low')}
                 </span>
               </div>
               <p className={`text-xs ${theme.textMuted}`}>
                 {weather?.temperature > 30 && weather?.humidity > 60 
-                  ? 'Warm humid conditions favor pest breeding. Scout fields regularly.'
+                  ? t('warmHumidConditions')
                   : weather?.temperature > 25 
-                  ? 'Normal pest activity expected. Continue regular monitoring.'
-                  : 'Cool conditions reduce pest activity.'}
+                  ? t('normalPestActivity')
+                  : t('coolConditions')}
               </p>
             </div>
           </div>
@@ -935,19 +937,19 @@ const Weather = () => {
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moon Phase</div>
-              <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonPhase || 'New Moon'}</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('moonPhase')}</div>
+              <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonPhase || t('newMoon')}</div>
             </div>
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moonrise</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('moonrise')}</div>
               <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonrise || '7:30 PM'}</div>
             </div>
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moonset</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('moonset')}</div>
               <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonset || '6:00 AM'}</div>
             </div>
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Dew Point</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('dewPoint')}</div>
               <div className={`${theme.textPrimary} font-semibold`}>{weather?.dewPoint || 20}°C</div>
             </div>
           </div>

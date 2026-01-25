@@ -21,8 +21,10 @@ import { useTheme } from '../../context/ThemeContext';
 import FarmerHeader from '../../components/FarmerHeader';
 import GlassCard from '../../components/GlassCard';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const CustomerSupport = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const [tickets, setTickets] = useState([]);
@@ -276,13 +278,13 @@ const CustomerSupport = () => {
   };
 
   const categories = [
-    { value: 'transport', label: 'Transport & Logistics' },
-    { value: 'weather', label: 'Weather Services' },
-    { value: 'crops', label: 'Crop Management' },
-    { value: 'auction', label: 'Auction & Marketplace' },
-    { value: 'technical', label: 'Technical Issues' },
-    { value: 'billing', label: 'Billing & Payments' },
-    { value: 'general', label: 'General Inquiry' }
+    { value: 'transport', label: t('transportLogistics') },
+    { value: 'weather', label: t('weatherServices') },
+    { value: 'crops', label: t('cropManagement') },
+    { value: 'auction', label: t('auctionMarketplace') },
+    { value: 'technical', label: t('technicalIssues') },
+    { value: 'billing', label: t('billingPayments') },
+    { value: 'general', label: t('generalInquiry') }
   ];
 
   if (loading) {
@@ -311,8 +313,8 @@ const CustomerSupport = () => {
     >
       {/* Header */}
       <FarmerHeader 
-        title="Customer Support"
-        subtitle="Get help from our support team"
+        title={t('customerSupport')}
+        subtitle={t('chatWithSupport')}
         icon={Headphones}
         onBack={() => navigate('/account')}
         rightContent={
@@ -339,7 +341,7 @@ const CustomerSupport = () => {
               style={{ backgroundColor: colors.primary }}
             >
               <Plus className="w-4 h-4" />
-              New Ticket
+              {t('createTicket')}
             </motion.button>
             
             {/* Real-time connection indicator */}
@@ -354,12 +356,12 @@ const CustomerSupport = () => {
         <div className="w-1/3 overflow-y-auto">
           <GlassCard className="h-full rounded-none border-r">
             <div className="p-4">
-              <h2 className="text-lg font-semibold mb-4" style={{ color: colors.textPrimary }}>Support Tickets</h2>
+              <h2 className="text-lg font-semibold mb-4" style={{ color: colors.textPrimary }}>{t('supportTickets')}</h2>
               
               {tickets.length === 0 ? (
                 <div className="text-center py-8">
                   <MessageCircle className="w-12 h-12 mx-auto mb-3" style={{ color: colors.primary }} />
-                  <p className="mb-4" style={{ color: colors.textSecondary }}>No support tickets yet</p>
+                  <p className="mb-4" style={{ color: colors.textSecondary }}>{t('noData')}</p>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -367,7 +369,7 @@ const CustomerSupport = () => {
                     className="text-white px-4 py-2 rounded-lg text-sm transition-colors"
                     style={{ backgroundColor: colors.primary }}
                   >
-                    Create First Ticket
+                    {t('createFirstBid')}
                   </motion.button>
                 </div>
               ) : (
@@ -555,7 +557,7 @@ const CustomerSupport = () => {
               style={{ backgroundColor: colors.cardBackground }}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold" style={{ color: colors.textPrimary }}>New Support Ticket</h3>
+                <h3 className="text-xl font-bold" style={{ color: colors.textPrimary }}>{t('newSupportTicket')}</h3>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

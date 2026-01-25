@@ -18,8 +18,10 @@ import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 import FarmerHeader from '../../components/FarmerHeader';
 import GlassCard from '../../components/GlassCard';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const LocalTransport = () => {
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ const LocalTransport = () => {
       const response = await axios.get(`${API_URL}/api/transport/vehicles`);
       setVehicles(response.data);
     } catch (error) {
-      console.error('Failed to fetch vehicles:', error);
+      console.error(t('failedToFetch'), error);
     } finally {
       setLoading(false);
     }
@@ -82,8 +84,8 @@ const LocalTransport = () => {
 
       {/* Header */}
       <FarmerHeader 
-        title="Local Transport"
-        subtitle="Choose your transport"
+        title={t('localTransport')}
+        subtitle={t('bookTransport')}
         showBack={true}
         backPath="/dashboard"
       />
@@ -95,15 +97,15 @@ const LocalTransport = () => {
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold" style={{ color: colors.primary }}>{vehicles.length}</div>
-              <div className="text-sm" style={{ color: colors.textSecondary }}>Available Vehicles</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>{t('availability')}</div>
             </div>
             <div>
               <div className="text-2xl font-bold" style={{ color: colors.primary }}>₹50+</div>
-              <div className="text-sm" style={{ color: colors.textSecondary }}>Starting Price</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>{t('price')}</div>
             </div>
             <div>
               <div className="text-2xl font-bold" style={{ color: colors.primary }}>24/7</div>
-              <div className="text-sm" style={{ color: colors.textSecondary }}>Service</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>{t('duration')}</div>
             </div>
           </div>
         </GlassCard>
@@ -126,11 +128,11 @@ const LocalTransport = () => {
               <MapPin className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
             </div>
             <div className="text-left flex-1">
-              <div className="font-semibold text-base" style={{ color: colors.textPrimary }}>Track Orders</div>
-              <div className="text-sm" style={{ color: colors.textSecondary }}>Live tracking of your transport bookings</div>
+              <div className="font-semibold text-base" style={{ color: colors.textPrimary }}>{t('trackOrder')}</div>
+              <div className="text-sm" style={{ color: colors.textSecondary }}>{t('orderTracking')}</div>
             </div>
             <div className="text-right">
-              <div className="text-sm font-medium" style={{ color: colors.primary }}>View All →</div>
+              <div className="text-sm font-medium" style={{ color: colors.primary }}>{t('viewAllOrders')} →</div>
             </div>
           </motion.button>
         </div>
@@ -165,7 +167,7 @@ const LocalTransport = () => {
                     <div className="text-lg font-bold" style={{ color: colors.primary }}>
                       ₹{vehicle.lowestPrice}
                     </div>
-                    <div className="text-xs" style={{ color: colors.textMuted }}>Starting from</div>
+                    <div className="text-xs" style={{ color: colors.textMuted }}>{t('startingFrom')}</div>
                   </div>
                 </div>
 
@@ -190,15 +192,15 @@ const LocalTransport = () => {
                 <div className="flex items-center gap-4 text-xs" style={{ color: colors.textSecondary }}>
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    <span>Quick Booking</span>
+                    <span>{t('booking')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
-                    <span>GPS Tracking</span>
+                    <span>{t('trackBooking')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="w-3 h-3" />
-                    <span>Verified Driver</span>
+                    <span>{t('driver')}</span>
                   </div>
                 </div>
 
@@ -206,7 +208,7 @@ const LocalTransport = () => {
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: colors.primary }} />
-                    <span className="text-xs" style={{ color: colors.textSecondary }}>Available Now</span>
+                    <span className="text-xs" style={{ color: colors.textSecondary }}>{t('availability')}</span>
                   </div>
                   <motion.div
                     style={{ color: colors.primary }}
@@ -225,10 +227,10 @@ const LocalTransport = () => {
           <GlassCard className="text-center py-16">
             <Truck className="w-16 h-16 mx-auto mb-4" style={{ color: colors.textMuted }} />
             <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>
-              No Vehicles Available
+              {t('noData')}
             </h3>
             <p style={{ color: colors.textSecondary }}>
-              Please check back later or contact support.
+              {t('tryAgain')}
             </p>
           </GlassCard>
         )}

@@ -14,8 +14,10 @@ import GlassCard from '../../components/GlassCard';
 import EnhancedBidCard from '../../components/EnhancedBidCard';
 // import useLiveUpdates from '../../hooks/useLiveUpdates';
 import { UserSession } from '../../utils/userSession';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const MyBids = () => {
+  const { t } = useTranslation();
   const [selectedBid, setSelectedBid] = useState(null);
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [bidsData, setBidsData] = useState(null);
@@ -57,7 +59,7 @@ const MyBids = () => {
       setError(null);
       
       if (!farmerUser?.farmerId) {
-        setError('Farmer ID not found. Please login again.');
+        setError(t('farmerSessionNotFound'));
         setLoading(false);
         return;
       }
@@ -75,7 +77,7 @@ const MyBids = () => {
       setError(null);
     } catch (err) {
       console.error('❌ Bids fetch failed:', err);
-      setError(`Failed to load bids: ${err.response?.data?.error || err.message}`);
+      setError(`${t('failedToLoadBids')}: ${err.response?.data?.error || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -107,10 +109,10 @@ const MyBids = () => {
       setShowEndConfirm(false);
       setSelectedBid(null);
       fetchBids(); // Refresh the data
-      alert('Bid ended successfully!');
+      alert(t('bidEndedSuccessfully'));
     } catch (error) {
-      console.error('Failed to end bid:', error);
-      alert('Failed to end bid. Please try again.');
+      console.error(t('failedToCreate'), error);
+      alert(t('errorOccurred') + ' ' + t('tryAgainLater'));
     }
   };
 
@@ -133,7 +135,7 @@ const MyBids = () => {
           className="w-16 h-16 border-4 rounded-full"
           style={{ borderColor: `${colors.primary}30`, borderTopColor: colors.primary }}
         />
-        <p className="mt-4" style={{ color: colors.textSecondary }}>Loading your bids...</p>
+        <p className="mt-4" style={{ color: colors.textSecondary }}>{t('loading')}</p>
       </div>
     );
   }
@@ -142,7 +144,7 @@ const MyBids = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: colors.background }}>
         <Gavel className="w-16 h-16 mb-4" style={{ color: colors.textMuted }} />
-        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>Unable to Load Bids</p>
+        <p className="text-xl font-bold mb-2" style={{ color: colors.textPrimary }}>{t('error')}</p>
         <p className="mb-4" style={{ color: colors.textSecondary }}>{error}</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -151,7 +153,7 @@ const MyBids = () => {
           className="px-6 py-2 rounded-xl font-semibold"
           style={{ backgroundColor: colors.primary, color: '#ffffff' }}
         >
-          Try Again
+          {t('tryAgain')}
         </motion.button>
       </div>
     );
@@ -181,13 +183,13 @@ const MyBids = () => {
               
               <div>
                 <h1 className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
-                  My Bids
+                  {t('myBids')}
                 </h1>
                 <div className="flex items-center gap-4 text-sm" style={{ color: colors.textSecondary }}>
-                  <span>Manage your crop bidding listings</span>
+                  <span>{t('manageBidListings')}</span>
                   {lastUpdated && (
                     <span className="text-xs">
-                      Last updated: {lastUpdated.toLocaleTimeString()}
+                      {t('lastUpdated')}: {lastUpdated.toLocaleTimeString()}
                     </span>
                   )}
                 </div>
@@ -207,7 +209,7 @@ const MyBids = () => {
                 }}
               >
                 <Clock className="w-5 h-5" />
-                Bid History
+                {t('bidHistory')}
               </motion.button>
 
               <motion.button
@@ -218,7 +220,7 @@ const MyBids = () => {
                 style={{ backgroundColor: colors.primary, color: '#ffffff' }}
               >
                 <Plus className="w-5 h-5" />
-                Create New Bid
+                {t('createNewBid')}
               </motion.button>
             </div>
           </div>
@@ -231,10 +233,10 @@ const MyBids = () => {
           <GlassCard className="text-center py-12">
             <Gavel className="w-16 h-16 mx-auto mb-4" style={{ color: colors.textMuted }} />
             <h3 className="text-xl font-semibold mb-2" style={{ color: colors.textPrimary }}>
-              No bids yet
+              {t('noBidsYet')}
             </h3>
             <p className="mb-6" style={{ color: colors.textSecondary }}>
-              Create your first bid to start selling your crops through auctions
+              {t('createFirstBid')}
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -244,7 +246,7 @@ const MyBids = () => {
               style={{ backgroundColor: colors.primary, color: '#ffffff' }}
             >
               <Plus className="w-5 h-5" />
-              Create Your First Bid
+              {t('createFirstBid')}
             </motion.button>
           </GlassCard>
         ) : (
@@ -275,13 +277,13 @@ const MyBids = () => {
             style={{ backgroundColor: colors.backgroundCard }}
           >
             <h3 className="text-xl font-bold mb-4" style={{ color: colors.textPrimary }}>
-              End Bid Early?
+              {t('endBidEarly')}
             </h3>
             <p className="mb-6" style={{ color: colors.textSecondary }}>
-              Are you sure you want to end this bid for <strong>{selectedBid.cropName}</strong>? 
+              {t('areYouSureEndBid')} <strong>{selectedBid.cropName}</strong>? 
               {selectedBid.totalBids > 0 
-                ? ' The highest bidder will be declared the winner.'
-                : ' There are no bids yet, so there will be no winner.'}
+                ? ` ${t('highestBidderWins')}`
+                : ` ${t('noBidsNoWinner')}`}
             </p>
 
             <div className="flex gap-3">
@@ -299,7 +301,7 @@ const MyBids = () => {
                   color: colors.textSecondary
                 }}
               >
-                Cancel
+                {t('cancel')}
               </motion.button>
 
               <motion.button
@@ -309,7 +311,7 @@ const MyBids = () => {
                 className="flex-1 py-3 rounded-xl font-semibold"
                 style={{ backgroundColor: colors.primary, color: '#ffffff' }}
               >
-                End Bid
+                {t('endBid')}
               </motion.button>
             </div>
           </motion.div>

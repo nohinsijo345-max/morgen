@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { User, Edit, Save, ArrowLeft } from 'lucide-react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 const AccountCenter = () => {
+  const { t } = useTranslation();
   const [farmer, setFarmer] = useState(null);
   const [editing, setEditing] = useState(false);
 
@@ -15,7 +17,7 @@ const AccountCenter = () => {
           >
             <ArrowLeft className="w-5 h-5 text-[#082829]" />
           </button>
-          <h1 className="text-3xl font-bold text-[#082829]">Account Center</h1>
+          <h1 className="text-3xl font-bold text-[#082829]">{t('accountCenter')}</h1>
         </div>
 
         <div className="bg-white/20 backdrop-blur-lg rounded-2xl p-8 border border-white/30 shadow-lg">
@@ -24,14 +26,14 @@ const AccountCenter = () => {
               <User className="w-10 h-10 text-[#082829]" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-[#082829]">Farmer Profile</h2>
-              <p className="text-[#082829]/70">Manage your account information</p>
+              <h2 className="text-2xl font-bold text-[#082829]">{t('farmerProfile')}</h2>
+              <p className="text-[#082829]/70">{t('manageAccountInfo')}</p>
             </div>
           </div>
 
           {/* Profile form will be implemented later */}
           <div className="text-center py-12 text-[#082829]/70">
-            Account management features coming soon...
+            {t('accountManagementComingSoon')}
           </div>
         </div>
       </div>

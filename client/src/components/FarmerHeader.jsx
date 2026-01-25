@@ -3,6 +3,7 @@ import { LogOut, ArrowLeft, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import NeumorphicThemeToggle from './NeumorphicThemeToggle';
+import LanguageSelector from './LanguageSelector';
 
 const FarmerHeader = ({ 
   user, 
@@ -86,8 +87,11 @@ const FarmerHeader = ({
             </motion.div>
           </div>
 
-          {/* Right Section - Theme Toggle, User Info & Logout */}
+          {/* Right Section - Language, Theme Toggle, User Info & Logout */}
           <div className="flex items-center gap-4">
+            {/* Language Selector */}
+            <LanguageSelector />
+            
             {/* Modern Theme Toggle */}
             <NeumorphicThemeToggle size="sm" />
 
