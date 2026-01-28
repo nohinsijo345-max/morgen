@@ -339,8 +339,8 @@ const PriceForecast = () => {
             className="text-center py-20"
           >
             <TrendingUp className="w-20 h-20 mx-auto mb-4" style={{ color: colors.textMuted }} />
-            <h2 className="text-2xl font-bold mb-2" style={{ color: colors.textPrimary }}>No Crops to Forecast</h2>
-            <p style={{ color: colors.textSecondary }}>Add crops in Account Centre to see price predictions</p>
+            <h2 className="text-2xl font-bold mb-2" style={{ color: colors.textPrimary }}>{t('noCropsToForecast')}</h2>
+            <p style={{ color: colors.textSecondary }}>{t('addCropsInAccountCentre')}</p>
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -393,7 +393,7 @@ const PriceForecast = () => {
                 <GlassCard delay={0.2} hoverScale={1.01}>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold capitalize" style={{ color: colors.textPrimary }}>
-                      {selectedCrop.crop} Price Trend
+                      {selectedCrop.crop} {t('priceTrend')}
                     </h3>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -403,7 +403,7 @@ const PriceForecast = () => {
                       style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}
                     >
                       <Filter className="w-4 h-4" />
-                      Filters
+                      {t('filters')}
                     </motion.button>
                   </div>
 
@@ -420,7 +420,7 @@ const PriceForecast = () => {
                         {/* Time Range Filter */}
                         <div>
                           <label className="text-xs uppercase font-semibold mb-2 block" style={{ color: colors.textSecondary }}>
-                            Time Range
+                            {t('timeRange')}
                           </label>
                           <select
                             value={timeRange}
@@ -428,18 +428,18 @@ const PriceForecast = () => {
                             className="w-full px-3 py-2 rounded-lg font-medium border-none outline-none cursor-pointer transition-colors"
                             style={{ backgroundColor: colors.backgroundCard, color: colors.textPrimary }}
                           >
-                            <option value="7days">7 Days</option>
-                            <option value="15days">15 Days</option>
-                            <option value="30days">30 Days</option>
-                            <option value="60days">60 Days</option>
-                            <option value="90days">90 Days</option>
+                            <option value="7days">{t('sevenDays')}</option>
+                            <option value="15days">{t('fifteenDays')}</option>
+                            <option value="30days">{t('thirtyDays')}</option>
+                            <option value="60days">{t('sixtyDays')}</option>
+                            <option value="90days">{t('ninetyDays')}</option>
                           </select>
                         </div>
 
                         {/* Year Filter */}
                         <div>
                           <label className="text-xs uppercase font-semibold mb-2 block" style={{ color: colors.textSecondary }}>
-                            Year
+                            {t('year')}
                           </label>
                           <select
                             value={selectedYear}
@@ -459,7 +459,7 @@ const PriceForecast = () => {
                       {/* Quick Filters */}
                       <div>
                         <label className="text-xs uppercase font-semibold mb-2 block" style={{ color: colors.textSecondary }}>
-                          Quick Filters
+                          {t('quickFilters')}
                         </label>
                         <div className="flex gap-2 flex-wrap">
                           <button
@@ -470,7 +470,7 @@ const PriceForecast = () => {
                               color: timeRange === '7days' ? (isDarkMode ? '#0d1117' : '#ffffff') : colors.textPrimary
                             }}
                           >
-                            This Week
+                            {t('thisWeek')}
                           </button>
                           <button
                             onClick={() => setTimeRange('30days')}
@@ -480,7 +480,7 @@ const PriceForecast = () => {
                               color: timeRange === '30days' ? (isDarkMode ? '#0d1117' : '#ffffff') : colors.textPrimary
                             }}
                           >
-                            This Month
+                            {t('thisMonth')}
                           </button>
                           <button
                             onClick={() => setTimeRange('90days')}
@@ -490,7 +490,7 @@ const PriceForecast = () => {
                               color: timeRange === '90days' ? (isDarkMode ? '#0d1117' : '#ffffff') : colors.textPrimary
                             }}
                           >
-                            This Quarter
+                            {t('thisQuarter')}
                           </button>
                         </div>
                       </div>
@@ -504,36 +504,36 @@ const PriceForecast = () => {
 
                 {/* Summary Card */}
                 <GlassCard delay={0.3} hoverScale={1.01}>
-                  <h3 className="text-lg font-bold mb-4" style={{ color: colors.textPrimary }}>Market Analysis</h3>
+                  <h3 className="text-lg font-bold mb-4" style={{ color: colors.textPrimary }}>{t('marketAnalysis')}</h3>
                   <p className="mb-4" style={{ color: colors.textSecondary }}>{selectedCrop.summary}</p>
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="rounded-xl p-4" style={{ backgroundColor: colors.surface }}>
                       <div className="flex items-center gap-2 mb-2">
                         <IndianRupee className="w-4 h-4" style={{ color: colors.textMuted }} />
-                        <span className="text-xs uppercase" style={{ color: colors.textMuted }}>Current Price</span>
+                        <span className="text-xs uppercase" style={{ color: colors.textMuted }}>{t('currentPrice')}</span>
                       </div>
                       <div className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
                         ₹{selectedCrop.currentPrice}
                       </div>
-                      <div className="text-xs mt-1" style={{ color: colors.textMuted }}>per kg</div>
+                      <div className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('perKg')}</div>
                     </div>
                     
                     <div className="rounded-xl p-4" style={{ backgroundColor: colors.surface }}>
                       <div className="flex items-center gap-2 mb-2">
                         <Calendar className="w-4 h-4" style={{ color: colors.textMuted }} />
-                        <span className="text-xs uppercase" style={{ color: colors.textMuted }}>30-Day Forecast</span>
+                        <span className="text-xs uppercase" style={{ color: colors.textMuted }}>{t('thirtyDayForecast')}</span>
                       </div>
                       <div className={`text-2xl font-bold ${getTrendColor(selectedCrop.trend)}`}>
                         ₹{selectedCrop.forecast[selectedCrop.forecast.length - 1]?.price}
                       </div>
-                      <div className="text-xs mt-1" style={{ color: colors.textMuted }}>per kg</div>
+                      <div className="text-xs mt-1" style={{ color: colors.textMuted }}>{t('perKg')}</div>
                     </div>
                   </div>
 
                   <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: colors.surface }}>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm" style={{ color: colors.textSecondary }}>Confidence Level</span>
+                      <span className="text-sm" style={{ color: colors.textSecondary }}>{t('confidenceLevel')}</span>
                       <span className="text-sm font-bold uppercase" style={{ color: colors.textPrimary }}>
                         {selectedCrop.confidence}
                       </span>

@@ -38,7 +38,7 @@ const AdminModuleSelector = ({ onModuleSelect }) => {
       color: 'from-purple-500 to-violet-600',
       bgColor: 'bg-purple-50',
       iconColor: 'text-purple-600',
-      available: false
+      available: true
     },
     {
       id: 'buyer',
@@ -185,8 +185,8 @@ const AdminModuleSelector = ({ onModuleSelect }) => {
         >
           <div className="bg-white/40 backdrop-blur-xl rounded-2xl p-6 border border-white/20 inline-block">
             <p className="text-[#4A7C99] text-sm">
-              <span className="font-semibold text-[#2C5F7C]">3 modules</span> are currently available. 
-              More modules will be added in future updates.
+              <span className="font-semibold text-[#2C5F7C]">4 modules</span> are currently available. 
+              All modules are now ready for use.
             </p>
           </div>
         </motion.div>

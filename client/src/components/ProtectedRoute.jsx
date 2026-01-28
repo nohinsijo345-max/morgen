@@ -24,7 +24,8 @@ const ProtectedRoute = ({
       farmer: '/dashboard',
       buyer: '/buyer/dashboard',
       driver: '/driver/dashboard',
-      admin: '/admin'
+      admin: '/admin',
+      government: '/government/dashboard'
     };
     
     return <Navigate to={dashboardRoutes[userType] || '/dashboard'} replace />;

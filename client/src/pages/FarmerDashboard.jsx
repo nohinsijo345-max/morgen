@@ -25,6 +25,7 @@ import GlassCard from '../components/GlassCard';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
 import { UserSession } from '../utils/userSession';
 import LanguageSelector from '../components/LanguageSelector';
+import GoogleTranslateButton from '../components/GoogleTranslateButton';
 import { useTranslation } from '../hooks/useTranslation';
 
 const FarmerDashboard = ({ user, onLogout }) => {
@@ -336,6 +337,9 @@ const FarmerDashboard = ({ user, onLogout }) => {
               {/* Language Selector */}
               <LanguageSelector />
               
+              {/* Google Translate Button */}
+              <GoogleTranslateButton size="sm" />
+              
               {/* Dark Mode Toggle */}
               <NeumorphicThemeToggle size="sm" />
 
@@ -467,8 +471,8 @@ const FarmerDashboard = ({ user, onLogout }) => {
           </div>
 
           {/* Updates Card */}
-          <GlassCard delay={0.3} onClick={() => window.location.href = '/updates'}>
-            <div className="flex items-center gap-3 mb-6">
+          <GlassCard delay={0.3} onClick={() => window.location.href = '/updates'} className="h-fit">
+            <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg relative"
                    style={{ backgroundColor: colors.primary }}>
                 <Bell className="w-6 h-6" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }} />
@@ -478,15 +482,15 @@ const FarmerDashboard = ({ user, onLogout }) => {
             </div>
             
             {dashboardData?.updates && dashboardData.updates.length > 0 ? (
-              <div className="space-y-3 overflow-y-auto max-h-[10rem]">
-                {dashboardData.updates.slice(0, 3).map((update, index) => (
+              <div className="space-y-2 overflow-y-auto max-h-[12rem]">
+                {dashboardData.updates.slice(0, 5).map((update, index) => (
                   <motion.div 
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 + index * 0.1 }}
                     whileHover={{ x: 5, scale: 1.02 }}
-                    className="border-l-4 pl-4 py-3 rounded-xl transition-all shadow-md"
+                    className="border-l-4 pl-3 py-2 rounded-lg transition-all shadow-sm"
                     style={{ 
                       backgroundColor: colors.surface, 
                       borderLeftColor: colors.primary 
@@ -503,15 +507,34 @@ const FarmerDashboard = ({ user, onLogout }) => {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center pt-28 pb-12">
-                <Bell className="w-16 h-16 mb-3" style={{ color: colors.textMuted }} />
-                <p className="font-medium" style={{ color: colors.textSecondary }}>{t('noData')}</p>
+              <div className="flex flex-col items-center justify-center text-center py-6">
+                <Bell className="w-10 h-10 mb-3 opacity-30" style={{ color: colors.textMuted }} />
+                <p className="text-sm font-medium" style={{ color: colors.textSecondary }}>{t('noData')}</p>
+                <p className="text-xs mt-1" style={{ color: colors.textMuted }}>Check back later for updates</p>
+                
+                {/* Sample updates preview */}
+                <div className="mt-4 space-y-2 w-full">
+                  <div className="border-l-4 pl-3 py-2 rounded-lg opacity-50" 
+                       style={{ backgroundColor: colors.surface, borderLeftColor: colors.primary }}>
+                    <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>
+                      Sample: Weather alerts
+                    </div>
+                  </div>
+                  <div className="border-l-4 pl-3 py-2 rounded-lg opacity-50" 
+                       style={{ backgroundColor: colors.surface, borderLeftColor: colors.primary }}>
+                    <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>
+                      Sample: Market updates
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </GlassCard>
 
           {/* Leaderboard Card */}
-          <LeaderboardCard onClick={() => window.location.href = '/leaderboard'} />
+          <div className="h-fit">
+            <LeaderboardCard onClick={() => window.location.href = '/leaderboard'} />
+          </div>
 
           {/* Local Transport Card */}
           <GlassCard 

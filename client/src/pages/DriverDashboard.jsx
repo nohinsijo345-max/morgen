@@ -17,6 +17,7 @@ import {
   Package
 } from 'lucide-react';
 import axios from 'axios';
+import LeaderboardCard from '../components/LeaderboardCard';
 
 const DriverDashboard = ({ user, onLogout }) => {
   const navigate = useNavigate();
@@ -424,8 +425,8 @@ const DriverDashboard = ({ user, onLogout }) => {
           </div>
         </motion.div>
 
-        {/* Recent Bookings */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recent Bookings and Vehicles Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -525,13 +526,24 @@ const DriverDashboard = ({ user, onLogout }) => {
               )}
             </div>
           </motion.div>
+
+          {/* Leaderboard */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <LeaderboardCard 
+              onClick={() => window.open('/driver/leaderboard', '_blank')}
+            />
+          </motion.div>
         </div>
 
         {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.9 }}
           className="mt-8 bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-amber-200/50 shadow-lg"
         >
           <h3 className="text-xl font-bold text-amber-900 mb-4">Quick Actions</h3>

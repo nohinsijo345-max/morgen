@@ -7,6 +7,8 @@ import { useTheme } from '../context/ThemeContext';
 import { useBuyerTheme } from '../context/BuyerThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
 import BuyerNeumorphicThemeToggle from '../components/BuyerNeumorphicThemeToggle';
+import LanguageSelector from '../components/LanguageSelector';
+import GoogleTranslateButton from '../components/GoogleTranslateButton';
 import { UserSession } from '../utils/userSession';
 
 const Updates = () => {
@@ -156,6 +158,12 @@ const Updates = () => {
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Language Selector */}
+              <LanguageSelector />
+              
+              {/* Google Translate Button */}
+              <GoogleTranslateButton size="sm" />
+              
               {isBuyerRoute ? (
                 <BuyerNeumorphicThemeToggle size="sm" />
               ) : (

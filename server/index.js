@@ -48,6 +48,8 @@ app.use('/api/price-forecast', require('./routes/priceForecast'));
 app.use('/api/transport', require('./routes/transport'));
 app.use('/api/driver', require('./routes/driver'));
 app.use('/api/support', require('./routes/customerSupport'));
+app.use('/api/government', require('./routes/government'));
+app.use('/api/translate', require('./routes/translate'));
 app.use('/api/bidding', require('./routes/bidding'));
 app.use('/api/buyer', require('./routes/buyer'));
 app.use('/api/modules', require('./routes/modules'));

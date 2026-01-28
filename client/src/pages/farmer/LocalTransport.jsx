@@ -58,6 +58,25 @@ const LocalTransport = () => {
     return iconMap[type] || Truck;
   };
 
+  const getVehicleTypeName = (type) => {
+    const typeMap = {
+      'bicycle': t('bicycle'),
+      'motorcycle': t('motorcycle'),
+      'autorickshaw': t('autoRickshaw'),
+      'mini-truck': t('miniTruck'),
+      'jeep': t('jeepSuv'),
+      'pickup-truck': t('pickupTruck'),
+      'premium-truck': t('premiumTruck'),
+      'tractor-with-trailer': t('tractorWithTrailer'),
+      'truck': t('premiumTruck'),
+      'car': t('jeepSuv'),
+      'bike': t('motorcycle'),
+      'bus': t('premiumTruck'),
+      'cycle': t('bicycle')
+    };
+    return typeMap[type] || type.replace('-', ' ');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center transition-colors duration-300"
@@ -160,7 +179,7 @@ const LocalTransport = () => {
                       {vehicle.name}
                     </h3>
                     <p className="text-sm capitalize" style={{ color: colors.textSecondary }}>
-                      {vehicle.type.replace('-', ' ')}
+                      {getVehicleTypeName(vehicle.type)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -183,7 +202,7 @@ const LocalTransport = () => {
                   ))}
                   {vehicle.priceOptions.length > 2 && (
                     <div className="text-xs text-center" style={{ color: colors.textMuted }}>
-                      +{vehicle.priceOptions.length - 2} more options
+                      +{vehicle.priceOptions.length - 2} {t('moreOptions')}
                     </div>
                   )}
                 </div>

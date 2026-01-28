@@ -59,6 +59,8 @@ import FarmerBidHistory from "./pages/farmer/BidHistory";
 import DriverLogin from "./pages/DriverLogin";
 import DriverDashboard from "./pages/DriverDashboard";
 import DriverOrderDetails from "./pages/DriverOrderDetails";
+import GovernmentLogin from "./pages/GovernmentLogin";
+import GovernmentDashboard from "./pages/GovernmentDashboard";
 import PublicTransportTracking from "./pages/PublicTransportTracking";
 
 export default function App() {
@@ -66,6 +68,7 @@ export default function App() {
   const [buyerUser, setBuyerUser] = useState(null);
   const [adminUser, setAdminUser] = useState(null);
   const [driverUser, setDriverUser] = useState(null);
+  const [governmentUser, setGovernmentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,8 +81,9 @@ export default function App() {
     const buyer = SessionManager.getUserSession('buyer');
     const admin = SessionManager.getUserSession('admin');
     const driver = SessionManager.getUserSession('driver');
+    const government = SessionManager.getUserSession('government');
     
-    console.log('🔧 Loaded sessions:', { farmer: !!farmer, buyer: !!buyer, admin: !!admin, driver: !!driver });
+    console.log('🔧 Loaded sessions:', { farmer: !!farmer, buyer: !!buyer, admin: !!admin, driver: !!driver, government: !!government });
     if (farmer) console.log('🔧 Farmer session data:', farmer);
     if (buyer) console.log('🔧 Buyer session data:', buyer);
     
@@ -87,6 +91,7 @@ export default function App() {
     setBuyerUser(buyer);
     setAdminUser(admin);
     setDriverUser(driver);
+    setGovernmentUser(government);
     setLoading(false);
 
     // Start session monitoring for auto-logout
@@ -96,6 +101,7 @@ export default function App() {
       if (userType === 'buyer') setBuyerUser(null);
       if (userType === 'admin') setAdminUser(null);
       if (userType === 'driver') setDriverUser(null);
+      if (userType === 'government') setGovernmentUser(null);
     });
 
     return stopMonitoring;
@@ -124,6 +130,11 @@ export default function App() {
     SessionManager.setUserSession('driver', userData);
   };
 
+  const handleGovernmentLogin = (userData) => {
+    setGovernmentUser(userData);
+    SessionManager.setUserSession('government', userData);
+  };
+
   const handleFarmerLogout = () => {
     setFarmerUser(null);
     SessionManager.clearUserSession('farmer');
@@ -146,6 +157,11 @@ export default function App() {
   const handleDriverLogout = () => {
     setDriverUser(null);
     SessionManager.clearUserSession('driver');
+  };
+
+  const handleGovernmentLogout = () => {
+    setGovernmentUser(null);
+    SessionManager.clearUserSession('government');
   };
 
   if (loading) {
@@ -184,6 +200,13 @@ export default function App() {
               userType="driver" 
               onLogout={handleDriverLogout}
               onExtend={() => console.log('Driver session extended')}
+            />
+          )}
+          {governmentUser && (
+            <SessionExpiryWarning 
+              userType="government" 
+              onLogout={handleGovernmentLogout}
+              onExtend={() => console.log('Government session extended')}
             />
           )}
 
@@ -246,6 +269,14 @@ export default function App() {
           element={
             <ProtectedRoute userType="driver" requireAuth={false}>
               <DriverLogin onLogin={handleDriverLogin} />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/government/login" 
+          element={
+            <ProtectedRoute userType="government" requireAuth={false}>
+              <GovernmentLogin onLogin={handleGovernmentLogin} />
             </ProtectedRoute>
           } 
         />
@@ -547,6 +578,16 @@ export default function App() {
           } 
         />
         <Route 
+          path="/admin/leaderboard" 
+          element={
+            <ProtectedRoute userType="admin">
+              <AdminThemeProvider>
+                <Leaderboard />
+              </AdminThemeProvider>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
           path="/admin/buyer/dashboard" 
           element={
             <ProtectedRoute userType="admin">
@@ -639,10 +680,28 @@ export default function App() {
           } 
         />
         <Route 
+          path="/driver/leaderboard" 
+          element={
+            <ProtectedRoute userType="driver">
+              <Leaderboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
           path="/driver/orders" 
           element={
             <ProtectedRoute userType="driver">
               <DriverOrderDetails user={driverUser} onBack={() => window.history.back()} />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Protected Government Routes */}
+        <Route 
+          path="/government/dashboard" 
+          element={
+            <ProtectedRoute userType="government">
+              <GovernmentDashboard user={governmentUser} onLogout={handleGovernmentLogout} />
             </ProtectedRoute>
           } 
         />

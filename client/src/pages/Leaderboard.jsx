@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Trophy, ArrowLeft, Award, TrendingUp, Star, 
-  Crown, Medal, Sparkles, Home
+  Crown, Medal, Sparkles, Home, Zap, Activity,
+  RefreshCw, Filter, Calendar, MapPin
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -10,7 +11,6 @@ import { useTheme } from '../context/ThemeContext';
 import { useBuyerTheme } from '../context/BuyerThemeContext';
 import NeumorphicThemeToggle from '../components/NeumorphicThemeToggle';
 import BuyerNeumorphicThemeToggle from '../components/BuyerNeumorphicThemeToggle';
-import { UserSession } from '../utils/userSession';
 
 const Leaderboard = () => {
   const location = useLocation();
@@ -23,7 +23,11 @@ const Leaderboard = () => {
   
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const [selectedFarmer, setSelectedFarmer] = useState(null);
+  const [filter, setFilter] = useState('all'); // all, active, top10
   const navigate = useNavigate();
 
   // Determine correct dashboard URL based on user type
@@ -36,18 +40,61 @@ const Leaderboard = () => {
 
   useEffect(() => {
     fetchLeaderboard();
-  }, []);
+    fetchStats();
+    
+    // Set up auto-refresh every 5 minutes
+    const interval = setInterval(fetchLeaderboard, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, [filter]);
 
-  const fetchLeaderboard = async () => {
+  const fetchLeaderboard = async (forceRefresh = false) => {
     try {
+      if (forceRefresh) setRefreshing(true);
+      
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
-      const response = await axios.get(`${API_URL}/api/leaderboard/top?limit=20`);
-      setLeaderboard(response.data);
+      const response = await axios.get(`${API_URL}/api/leaderboard/top?limit=50${forceRefresh ? '&refresh=true' : ''}`);
+      
+      if (response.data.success) {
+        let farmers = response.data.data || [];
+        
+        // Apply filters
+        if (filter === 'active') {
+          farmers = farmers.filter(f => f.isActive);
+        } else if (filter === 'top10') {
+          farmers = farmers.slice(0, 10);
+        }
+        
+        setLeaderboard(farmers);
+        setLastUpdated(new Date(response.data.meta?.lastUpdated));
+      } else {
+        // Fallback for old API format
+        setLeaderboard(response.data || []);
+      }
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+      const response = await axios.get(`${API_URL}/api/leaderboard/stats`);
+      
+      if (response.data.success) {
+        setStats(response.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchLeaderboard(true);
+    fetchStats();
   };
 
   const getMedalGradient = (rank) => {
@@ -62,6 +109,18 @@ const Leaderboard = () => {
     if (rank === 2) return <Medal className="w-6 h-6 text-white" />;
     if (rank === 3) return <Award className="w-6 h-6 text-white" />;
     return <span className="text-white font-bold text-lg">{rank}</span>;
+  };
+
+  const getPerformanceIcon = (score) => {
+    if (score >= 500) return <Zap className="w-5 h-5 text-yellow-500" />;
+    if (score >= 200) return <Star className="w-5 h-5 text-blue-500" />;
+    return <Activity className="w-5 h-5 text-green-500" />;
+  };
+
+  const formatNumber = (num) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
   };
 
   if (loading) {
@@ -117,12 +176,49 @@ const Leaderboard = () => {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold" style={{ color: colors.textPrimary }}>Leaderboard</h1>
-                  <p className="text-xs" style={{ color: colors.textSecondary }}>Top performing farmers</p>
+                  <p className="text-xs" style={{ color: colors.textSecondary }}>
+                    {stats ? `${stats.activeFarmers} active farmers` : 'Top performing farmers'}
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Filter Buttons */}
+              <div className="flex items-center gap-2">
+                {['all', 'active', 'top10'].map((filterType) => (
+                  <motion.button
+                    key={filterType}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setFilter(filterType)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      filter === filterType ? 'shadow-lg' : ''
+                    }`}
+                    style={{
+                      backgroundColor: filter === filterType ? colors.primary : colors.surface,
+                      color: filter === filterType 
+                        ? (isDarkMode ? '#0d1117' : '#ffffff')
+                        : colors.textSecondary
+                    }}
+                  >
+                    {filterType === 'all' ? 'All' : filterType === 'active' ? 'Active' : 'Top 10'}
+                  </motion.button>
+                ))}
+              </div>
+
+              {/* Refresh Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="p-2.5 rounded-xl transition-all"
+                style={{ backgroundColor: colors.surface, color: colors.textPrimary }}
+              >
+                <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
+              </motion.button>
+
               {isBuyerRoute ? (
                 <BuyerNeumorphicThemeToggle size="sm" />
               ) : (
@@ -139,13 +235,24 @@ const Leaderboard = () => {
                 <Home className="w-5 h-5" />
               </motion.button>
 
-              <div className="rounded-xl px-4 py-2 shadow-lg"
-                   style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}>
-                <div className="text-xs opacity-80">Total Farmers</div>
-                <div className="text-lg font-bold">{leaderboard.length}</div>
-              </div>
+              {/* Stats Summary */}
+              {stats && (
+                <div className="rounded-xl px-4 py-2 shadow-lg"
+                     style={{ backgroundColor: colors.primary, color: isDarkMode ? '#0d1117' : '#ffffff' }}>
+                  <div className="text-xs opacity-80">Total Revenue</div>
+                  <div className="text-lg font-bold">₹{formatNumber(stats.totalRevenue)}</div>
+                </div>
+              )}
             </div>
           </div>
+          
+          {/* Last Updated Info */}
+          {lastUpdated && (
+            <div className="mt-2 flex items-center gap-2 text-xs" style={{ color: colors.textMuted }}>
+              <Calendar className="w-3 h-3" />
+              <span>Last updated: {lastUpdated.toLocaleString()}</span>
+            </div>
+          )}
         </div>
       </motion.header>
 
@@ -178,9 +285,17 @@ const Leaderboard = () => {
                      style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
                   <h3 className="font-bold text-lg truncate" style={{ color: colors.textPrimary }}>{leaderboard[1].name}</h3>
                   <p className="text-sm" style={{ color: colors.textSecondary }}>{leaderboard[1]._id}</p>
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    {getPerformanceIcon(leaderboard[1].performanceScore)}
+                    <span className="text-xs" style={{ color: colors.textMuted }}>Performance</span>
+                  </div>
                   <div className="mt-3 pt-3 border-t" style={{ borderColor: colors.border }}>
-                    <div className="text-2xl font-bold" style={{ color: colors.primary }}>{leaderboard[1].totalSales}</div>
-                    <div className="text-xs" style={{ color: colors.textMuted }}>Sales</div>
+                    <div className="text-2xl font-bold" style={{ color: colors.primary }}>
+                      {leaderboard[1].performanceScore || leaderboard[1].totalSales}
+                    </div>
+                    <div className="text-xs" style={{ color: colors.textMuted }}>
+                      {leaderboard[1].performanceScore ? 'Score' : 'Sales'}
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -218,9 +333,17 @@ const Leaderboard = () => {
                   </div>
                   <h3 className="font-bold text-xl truncate" style={{ color: colors.textPrimary }}>{leaderboard[0].name}</h3>
                   <p className="text-sm" style={{ color: colors.textSecondary }}>{leaderboard[0]._id}</p>
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    {getPerformanceIcon(leaderboard[0].performanceScore)}
+                    <span className="text-xs" style={{ color: colors.textMuted }}>Elite Performer</span>
+                  </div>
                   <div className="mt-3 pt-3 border-t border-yellow-400/20">
-                    <div className="text-3xl font-bold text-yellow-600">{leaderboard[0].totalSales}</div>
-                    <div className="text-xs" style={{ color: colors.textMuted }}>Sales</div>
+                    <div className="text-3xl font-bold text-yellow-600">
+                      {leaderboard[0].performanceScore || leaderboard[0].totalSales}
+                    </div>
+                    <div className="text-xs" style={{ color: colors.textMuted }}>
+                      {leaderboard[0].performanceScore ? 'Score' : 'Sales'}
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -244,9 +367,17 @@ const Leaderboard = () => {
                      style={{ backgroundColor: colors.backgroundCard, borderColor: colors.border }}>
                   <h3 className="font-bold text-lg truncate" style={{ color: colors.textPrimary }}>{leaderboard[2].name}</h3>
                   <p className="text-sm" style={{ color: colors.textSecondary }}>{leaderboard[2]._id}</p>
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    {getPerformanceIcon(leaderboard[2].performanceScore)}
+                    <span className="text-xs" style={{ color: colors.textMuted }}>Performance</span>
+                  </div>
                   <div className="mt-3 pt-3 border-t" style={{ borderColor: colors.border }}>
-                    <div className="text-2xl font-bold" style={{ color: colors.primary }}>{leaderboard[2].totalSales}</div>
-                    <div className="text-xs" style={{ color: colors.textMuted }}>Sales</div>
+                    <div className="text-2xl font-bold" style={{ color: colors.primary }}>
+                      {leaderboard[2].performanceScore || leaderboard[2].totalSales}
+                    </div>
+                    <div className="text-xs" style={{ color: colors.textMuted }}>
+                      {leaderboard[2].performanceScore ? 'Score' : 'Sales'}
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -264,6 +395,9 @@ const Leaderboard = () => {
         >
           <div className="p-4 border-b" style={{ borderColor: colors.border }}>
             <h2 className="text-lg font-bold" style={{ color: colors.textPrimary }}>All Rankings</h2>
+            <p className="text-sm" style={{ color: colors.textSecondary }}>
+              Showing {leaderboard.length} farmers • Updated in real-time
+            </p>
           </div>
           <div className="divide-y" style={{ borderColor: colors.border }}>
             {leaderboard.slice(3).map((farmer, index) => (
@@ -274,18 +408,54 @@ const Leaderboard = () => {
                 transition={{ delay: 0.7 + index * 0.05 }}
                 whileHover={{ backgroundColor: colors.surfaceHover }}
                 className="p-4 flex items-center gap-4 transition-colors cursor-pointer"
+                onClick={() => setSelectedFarmer(farmer)}
               >
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center"
                      style={{ backgroundColor: colors.primary }}>
-                  <span className="font-bold" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }}>{index + 4}</span>
+                  <span className="font-bold" style={{ color: isDarkMode ? '#0d1117' : '#ffffff' }}>
+                    {farmer.rank || index + 4}
+                  </span>
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold" style={{ color: colors.textPrimary }}>{farmer.name}</h3>
-                  <p className="text-sm" style={{ color: colors.textSecondary }}>{farmer._id}</p>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold" style={{ color: colors.textPrimary }}>{farmer.name}</h3>
+                    {farmer.performanceScore && getPerformanceIcon(farmer.performanceScore)}
+                    {farmer.isActive && (
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-sm" style={{ color: colors.textSecondary }}>
+                    <span>{farmer._id}</span>
+                    {farmer.state && (
+                      <>
+                        <span>•</span>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          <span>{farmer.state}</span>
+                        </div>
+                      </>
+                    )}
+                    {farmer.avgRating > 0 && (
+                      <>
+                        <span>•</span>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 text-yellow-500" />
+                          <span>{farmer.avgRating.toFixed(1)}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold" style={{ color: colors.primary }}>{farmer.totalSales}</div>
-                  <div className="text-xs" style={{ color: colors.textMuted }}>Sales</div>
+                  <div className="text-lg font-bold" style={{ color: colors.primary }}>
+                    {farmer.performanceScore || farmer.totalSales || 0}
+                  </div>
+                  <div className="text-xs" style={{ color: colors.textMuted }}>
+                    {farmer.performanceScore ? 'Score' : 'Sales'}
+                  </div>
+                  <div className="text-xs" style={{ color: colors.textMuted }}>
+                    ₹{formatNumber(farmer.totalRevenue || 0)}
+                  </div>
                 </div>
               </motion.div>
             ))}

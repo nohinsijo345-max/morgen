@@ -13,9 +13,11 @@ import {
   Activity
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from '../hooks/useTranslation';
 
 const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState('');
   const [isExpired, setIsExpired] = useState(false);
 
@@ -26,7 +28,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
       const diff = endDate - now;
 
       if (diff <= 0) {
-        setTimeLeft('Expired');
+        setTimeLeft(t('expired'));
         setIsExpired(true);
         return;
       }
@@ -129,7 +131,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-                Current Bid
+                {t('currentBid')}
               </span>
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" style={{ color: colors.primary }} />
@@ -148,7 +150,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
             </div>
             {bid.startingPrice !== bid.currentPrice && (
               <div className="mt-2 text-sm" style={{ color: colors.textMuted }}>
-                Started at ₹{bid.startingPrice.toLocaleString()}
+                {t('startedAt')} ₹{bid.startingPrice.toLocaleString()}
               </div>
             )}
           </div>
@@ -163,14 +165,14 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
             <div className="flex items-center gap-2 mb-2">
               <Package className="w-4 h-4" style={{ color: colors.primary }} />
               <span className="text-xs font-medium" style={{ color: colors.textSecondary }}>
-                Quantity
+                {t('quantity')}
               </span>
             </div>
             <div className="text-xl font-bold" style={{ color: colors.textPrimary }}>
               {bid.quantity} {bid.unit}
             </div>
             <div className="text-xs mt-1" style={{ color: colors.textMuted }}>
-              Grade {bid.quality}
+              {t('grade')} {bid.quality}
             </div>
           </div>
 
@@ -181,7 +183,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
             <div className="flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4" style={{ color: isExpired ? '#EF4444' : colors.primary }} />
               <span className="text-xs font-medium" style={{ color: colors.textSecondary }}>
-                Time Left
+                {t('timeLeft')}
               </span>
             </div>
             <div 
@@ -191,7 +193,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
               {timeLeft}
             </div>
             <div className="text-xs mt-1" style={{ color: colors.textMuted }}>
-              Ends {new Date(bid.bidEndDate).toLocaleDateString()}
+              {t('ends')} {new Date(bid.bidEndDate).toLocaleDateString()}
             </div>
           </div>
 
@@ -202,14 +204,14 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
             <div className="flex items-center gap-2 mb-2">
               <Users className="w-4 h-4" style={{ color: colors.primary }} />
               <span className="text-xs font-medium" style={{ color: colors.textSecondary }}>
-                Bidders
+                {t('bidders')}
               </span>
             </div>
             <div className="text-xl font-bold" style={{ color: colors.textPrimary }}>
               {bid.uniqueBidders || 0}
             </div>
             <div className="text-xs mt-1" style={{ color: colors.textMuted }}>
-              {bid.totalBids || 0} total bids
+              {bid.totalBids || 0} {t('totalBids')}
             </div>
           </div>
 
@@ -220,7 +222,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="w-4 h-4" style={{ color: colors.primary }} />
               <span className="text-xs font-medium" style={{ color: colors.textSecondary }}>
-                Harvest
+                {t('harvest')}
               </span>
             </div>
             <div className="text-xl font-bold" style={{ color: colors.textPrimary }}>
@@ -230,7 +232,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
               })}
             </div>
             <div className="text-xs mt-1" style={{ color: colors.textMuted }}>
-              {Math.ceil((new Date(bid.harvestDate) - new Date()) / (1000 * 60 * 60 * 24))} days
+              {Math.ceil((new Date(bid.harvestDate) - new Date()) / (1000 * 60 * 60 * 24))} {t('days')}
             </div>
           </div>
         </div>
@@ -247,7 +249,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
             <div className="flex items-center gap-2 mb-2">
               <Trophy className="w-5 h-5" style={{ color: colors.primary }} />
               <span className="font-semibold" style={{ color: colors.textPrimary }}>
-                Winner Declared
+                {t('winnerDeclared')}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -282,7 +284,7 @@ const EnhancedBidCard = ({ bid, onEndBid, showActions = true }) => {
                   color: colors.textSecondary
                 }}
               >
-                End Bid Early
+                {t('endBidEarly')}
               </motion.button>
             )}
           </div>

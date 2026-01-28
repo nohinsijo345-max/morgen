@@ -166,7 +166,7 @@ const Weather = () => {
       
       // Enhanced location display with PIN code if available
       const farmer = response.data.farmer;
-      let locationDisplay = farmer?.district || t('yourLocation');
+      let locationDisplay = farmer?.district || 'Your Location';
       if (farmer?.city && farmer?.pinCode) {
         locationDisplay = `${farmer.city} (${farmer.pinCode})`;
       } else if (farmer?.city) {
@@ -241,7 +241,7 @@ const Weather = () => {
       const hour = (currentHour + i) % 24;
       const hourIsNight = hour < 6 || hour >= 19;
       return {
-        time: i === 0 ? t('now') : `${String(hour).padStart(2, '0')}:00`,
+        time: i === 0 ? 'Now' : `${String(hour).padStart(2, '0')}:00`,
         temp: Math.round(weather.temperature + (i === 0 ? 0 : Math.sin(i) * 2)),
         condition: weather.condition,
         isNow: i === 0,
@@ -252,7 +252,7 @@ const Weather = () => {
 
   const generateWeeklyForecast = () => {
     if (!weather) return [];
-    const days = [t('sun'), t('mon'), t('tue'), t('wed'), t('thu'), t('fri'), t('sat')];
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const today = new Date();
     const conditions = ['sunny', 'cloudy', 'rainy', 'sunny', 'cloudy', 'sunny', 'rainy'];
     
@@ -260,7 +260,7 @@ const Weather = () => {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       return {
-        day: i === 0 ? t('today') : days[date.getDay()],
+        day: i === 0 ? 'Today' : days[date.getDay()],
         temp: weather.temperature + Math.round(Math.sin(i) * 3),
         condition: conditions[i]
       };
@@ -349,7 +349,7 @@ const Weather = () => {
           
           {/* Live Data Indicator & Last Updated */}
           <div className="flex flex-col items-center gap-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-4">
               <div className={`w-1.5 h-1.5 rounded-full ${weather?.isLiveData ? 'bg-green-400 animate-pulse' : 'bg-yellow-400'}`} />
               <span className={`text-xs ${theme.textMuted} font-medium`}>
                 {weather?.isLiveData ? t('liveWeatherData') : t('simulatedData')}
@@ -357,7 +357,7 @@ const Weather = () => {
             </div>
             {lastUpdated && (
               <span className={`text-xs ${theme.textMuted}`}>
-                Updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {t('updated')} {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
           </div>
@@ -404,7 +404,7 @@ const Weather = () => {
                   }`}
                 >
                   <span className={`text-xs mb-2 font-medium ${hour.isNow ? theme.textPrimary : theme.textMuted}`}>
-                    {hour.time}
+                    {hour.time === 'Now' ? t('now') : hour.time}
                   </span>
                   <SmallWeatherIcon condition={hour.condition} isNight={hour.isNight} size="normal" />
                   <span className={`text-sm mt-2 font-semibold ${hour.isNow ? theme.textPrimary : theme.textSecondary}`}>
@@ -432,7 +432,9 @@ const Weather = () => {
                   transition={{ delay: 0.1 * index }}
                   className="flex items-center justify-between py-2"
                 >
-                  <span className={`${theme.textPrimary} font-medium text-sm w-16`}>{day.day}</span>
+                  <span className={`${theme.textPrimary} font-medium text-sm w-16`}>
+                    {day.day === 'Today' ? t('today') : day.day}
+                  </span>
                   <div className="flex items-center gap-3">
                     <SmallWeatherIcon condition={day.condition} isNight={false} size="normal" />
                     <span className={`${theme.textPrimary} text-lg font-light w-12 text-right`}>{day.temp}°</span>
@@ -555,12 +557,12 @@ const Weather = () => {
           transition={{ delay: 0.9 }}
           className={`${theme.cardBg} backdrop-blur-xl rounded-3xl p-5 border ${theme.cardBorder} shadow-xl mb-6`}
         >
-          <h3 className={`${theme.textPrimary} font-semibold mb-4`}>Crop Conditions</h3>
+          <h3 className={`${theme.textPrimary} font-semibold mb-4`}>{t('cropConditions')}</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Soil Moisture</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('soilMoisture')}</div>
               <div className={`${theme.textPrimary} font-semibold`}>
-                {weather?.humidity > 70 ? t('high') : weather?.humidity > 40 ? t('moderate') : 'Low'}
+                {weather?.humidity > 70 ? t('high') : weather?.humidity > 40 ? t('moderate') : t('low')}
               </div>
               <div className="mt-2 h-2 bg-white/10 rounded-full overflow-hidden">
                 <div 
@@ -612,7 +614,7 @@ const Weather = () => {
         >
           <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
             <Clock className="w-5 h-5 text-blue-400" />
-            Best Times Today
+            {t('bestTimesToday')}
           </h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5">
@@ -620,7 +622,7 @@ const Weather = () => {
                 <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
                   <Droplets className="w-4 h-4 text-green-400" />
                 </div>
-                <span className={`${theme.textSecondary} text-sm`}>Irrigation</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('irrigation')}</span>
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
                 {weather?.temperature > 30 ? '6:00 AM - 8:00 AM' : '7:00 AM - 10:00 AM'}
@@ -632,7 +634,7 @@ const Weather = () => {
                 <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
                   <Sun className="w-4 h-4 text-yellow-400" />
                 </div>
-                <span className={`${theme.textSecondary} text-sm`}>Harvesting</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('harvesting')}</span>
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
                 {weather?.condition?.toLowerCase().includes('rain') ? t('notRecommended') : '9:00 AM - 4:00 PM'}
@@ -644,11 +646,11 @@ const Weather = () => {
                 <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
                   <Leaf className="w-4 h-4 text-purple-400" />
                 </div>
-                <span className={`${theme.textSecondary} text-sm`}>Spraying</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('spraying')}</span>
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
                 {weather?.windSpeed > 15 || weather?.condition?.toLowerCase().includes('rain') 
-                  ? t('notRecommended') 
+                  ? t('notRecommended')
                   : '6:00 AM - 9:00 AM'}
               </span>
             </div>
@@ -658,7 +660,7 @@ const Weather = () => {
                 <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
                   <Tractor className="w-4 h-4 text-orange-400" />
                 </div>
-                <span className={`${theme.textSecondary} text-sm`}>Field Work</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('fieldWork')}</span>
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
                 {weather?.temperature > 35 ? '6:00 AM - 10:00 AM' : '8:00 AM - 5:00 PM'}
@@ -670,7 +672,7 @@ const Weather = () => {
                 <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
                   <Sprout className="w-4 h-4 text-cyan-400" />
                 </div>
-                <span className={`${theme.textSecondary} text-sm`}>Transplanting</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('transplanting')}</span>
               </div>
               <span className={`${theme.textPrimary} font-medium text-sm`}>
                 {weather?.condition?.toLowerCase().includes('rain') ? t('idealConditions') : 
@@ -690,11 +692,11 @@ const Weather = () => {
           >
             <h3 className={`${theme.textPrimary} font-semibold mb-4 flex items-center gap-2`}>
               <Activity className="w-5 h-5 text-green-400" />
-              Air Quality Index
+              {t('airQualityIndex')}
             </h3>
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <span className={`${theme.textSecondary} text-sm`}>Overall AQI</span>
+                <span className={`${theme.textSecondary} text-sm`}>{t('overallAqi')}</span>
                 <span className={`font-bold text-lg ${
                   weather.aqi.usEpaIndex <= 2 ? 'text-green-400' :
                   weather.aqi.usEpaIndex <= 3 ? 'text-yellow-400' :
@@ -877,12 +879,12 @@ const Weather = () => {
             {/* Fungal Disease Risk */}
             <div className="p-3 rounded-2xl bg-white/5">
               <div className="flex items-center justify-between mb-2">
-                <span className={`${theme.textSecondary} text-sm`}>{t('fungalDiseaseRisk')}</span>
+                <span className={`${theme.textSecondary} text-sm`}>Fungal Disease Risk</span>
                 <span className={`font-semibold text-sm ${
                   weather?.humidity > 80 ? 'text-red-400' :
                   weather?.humidity > 65 ? 'text-yellow-400' : 'text-green-400'
                 }`}>
-                  {weather?.humidity > 80 ? t('high') : weather?.humidity > 65 ? t('moderate') : t('low')}
+                  {weather?.humidity > 80 ? 'High' : weather?.humidity > 65 ? 'Moderate' : 'Low'}
                 </span>
               </div>
               <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -895,30 +897,30 @@ const Weather = () => {
                 />
               </div>
               <p className={`text-xs ${theme.textMuted} mt-2`}>
-                {weather?.humidity > 80 ? t('applyFungicide') :
-                 weather?.humidity > 65 ? t('monitorCrops') :
-                 t('conditionsUnfavorable')}
+                {weather?.humidity > 80 ? 'Apply fungicide if needed' :
+                 weather?.humidity > 65 ? 'Monitor crops closely' :
+                 'Conditions unfavorable for diseases'}
               </p>
             </div>
             
             {/* Pest Activity */}
             <div className="p-3 rounded-2xl bg-white/5">
               <div className="flex items-center justify-between mb-2">
-                <span className={`${theme.textSecondary} text-sm`}>{t('pestActivityLevel')}</span>
+                <span className={`${theme.textSecondary} text-sm`}>Pest Activity Level</span>
                 <span className={`font-semibold text-sm ${
                   weather?.temperature > 30 && weather?.humidity > 60 ? 'text-red-400' :
                   weather?.temperature > 25 ? 'text-yellow-400' : 'text-green-400'
                 }`}>
-                  {weather?.temperature > 30 && weather?.humidity > 60 ? t('high') :
-                   weather?.temperature > 25 ? t('moderate') : t('low')}
+                  {weather?.temperature > 30 && weather?.humidity > 60 ? 'High' :
+                   weather?.temperature > 25 ? 'Moderate' : 'Low'}
                 </span>
               </div>
               <p className={`text-xs ${theme.textMuted}`}>
                 {weather?.temperature > 30 && weather?.humidity > 60 
-                  ? t('warmHumidConditions')
+                  ? 'Warm humid conditions favor pests'
                   : weather?.temperature > 25 
-                  ? t('normalPestActivity')
-                  : t('coolConditions')}
+                  ? 'Normal pest activity expected'
+                  : 'Cool conditions reduce pest activity'}
               </p>
             </div>
           </div>
@@ -937,19 +939,19 @@ const Weather = () => {
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('moonPhase')}</div>
-              <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonPhase || t('newMoon')}</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moon Phase</div>
+              <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonPhase || 'New Moon'}</div>
             </div>
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('moonrise')}</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moonrise</div>
               <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonrise || '7:30 PM'}</div>
             </div>
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('moonset')}</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Moonset</div>
               <div className={`${theme.textPrimary} font-semibold`}>{weather?.moonset || '6:00 AM'}</div>
             </div>
             <div className="p-3 rounded-2xl bg-white/5">
-              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>{t('dewPoint')}</div>
+              <div className={`text-xs ${theme.textMuted} font-medium mb-1`}>Dew Point</div>
               <div className={`${theme.textPrimary} font-semibold`}>{weather?.dewPoint || 20}°C</div>
             </div>
           </div>

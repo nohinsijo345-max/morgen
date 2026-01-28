@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import NeumorphicThemeToggle from './NeumorphicThemeToggle';
 import LanguageSelector from './LanguageSelector';
+import GoogleTranslateButton from './GoogleTranslateButton';
 
 const FarmerHeader = ({ 
   user, 
@@ -15,7 +16,7 @@ const FarmerHeader = ({
   backPath = '/dashboard'
 }) => {
   const navigate = useNavigate();
-  const { isDarkMode, toggleTheme, colors } = useTheme();
+  const { isDarkMode, colors } = useTheme();
 
   return (
     <motion.header
@@ -87,10 +88,13 @@ const FarmerHeader = ({
             </motion.div>
           </div>
 
-          {/* Right Section - Language, Theme Toggle, User Info & Logout */}
+          {/* Right Section - Language, Google Translate, Theme Toggle, User Info & Logout */}
           <div className="flex items-center gap-4">
             {/* Language Selector */}
             <LanguageSelector />
+            
+            {/* Google Translate Button */}
+            <GoogleTranslateButton size="sm" />
             
             {/* Modern Theme Toggle */}
             <NeumorphicThemeToggle size="sm" />

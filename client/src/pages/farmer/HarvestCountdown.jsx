@@ -259,7 +259,7 @@ const HarvestCountdown = () => {
                 }}
               >
                 <Plus className="w-5 h-5" />
-                <span>New Countdown</span>
+                <span>{t('newCountdown')}</span>
               </motion.button>
             )}
           </div>
@@ -363,7 +363,7 @@ const HarvestCountdown = () => {
                           {countdown.daysLeft}
                         </motion.div>
                         <div className="text-xs font-medium" style={{ color: colors.textSecondary }}>
-                          Days Left
+                          {t('daysLeft')}
                         </div>
                       </div>
                     </div>
@@ -396,7 +396,7 @@ const HarvestCountdown = () => {
                            style={{ backgroundColor: colors.surface }}>
                         <div className="flex items-center gap-2" style={{ color: colors.textSecondary }}>
                           <Sprout className="w-4 h-4" />
-                          <span className="text-sm">Planted</span>
+                          <span className="text-sm">{t('planted')}</span>
                         </div>
                         <span className="font-semibold" style={{ color: colors.textPrimary }}>
                           {new Date(countdown.plantedDate).toLocaleDateString()}
@@ -418,7 +418,7 @@ const HarvestCountdown = () => {
                       }}
                     >
                       <Edit2 className="w-4 h-4" />
-                      Edit
+                      {t('edit')}
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
