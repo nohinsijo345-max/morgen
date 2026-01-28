@@ -251,7 +251,7 @@ export const SessionManager = {
 // Auto-logout checker - runs every minute
 export const startSessionMonitoring = (onSessionExpired) => {
   const checkSessions = () => {
-    const userTypes = ['farmer', 'buyer', 'driver', 'admin'];
+    const userTypes = ['farmer', 'buyer', 'driver', 'admin', 'government'];
     
     userTypes.forEach(userType => {
       if (userType === 'buyer') {

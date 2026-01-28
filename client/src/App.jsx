@@ -131,8 +131,11 @@ export default function App() {
   };
 
   const handleGovernmentLogin = (userData) => {
+    console.log('🏛️ App.jsx: handleGovernmentLogin called with userData:', userData);
     setGovernmentUser(userData);
+    console.log('🏛️ App.jsx: Setting government session...');
     SessionManager.setUserSession('government', userData);
+    console.log('🏛️ App.jsx: Government session set successfully');
   };
 
   const handleFarmerLogout = () => {

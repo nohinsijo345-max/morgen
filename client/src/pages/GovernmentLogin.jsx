@@ -21,20 +21,31 @@ const GovernmentLogin = ({ onLogin }) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
       console.log('🏛️ Government login attempt:', { govId: formData.govId, API_URL });
+      console.log('🏛️ Full form data:', formData);
       
       const response = await axios.post(`${API_URL}/api/government/login`, formData);
       console.log('🏛️ Government login response:', response.data);
       
       if (response.data.success) {
-        console.log('✅ Government login successful, calling onLogin...');
+        console.log('✅ Government login successful, calling onLogin with user:', response.data.user);
+        
+        // Call onLogin to set the user state
         onLogin(response.data.user);
+        
+        console.log('✅ onLogin called, now navigating to dashboard...');
+        
+        // Navigate to government dashboard
         navigate('/government/dashboard');
+        
+        console.log('✅ Navigation completed');
       } else {
+        console.log('❌ Government login failed:', response.data.message);
         setError(response.data.message || 'Login failed');
       }
     } catch (error) {
       console.error('🏛️ Government login error:', error);
       console.error('🏛️ Error response:', error.response?.data);
+      console.error('🏛️ Full error object:', error);
       setError(error.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
